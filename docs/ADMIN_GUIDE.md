@@ -6,19 +6,20 @@ Anleitung für Administratoren der Vereinsbestellplattform mit Vollzugriff auf a
 
 1. [Installation](#installation)
 2. [Konfiguration](#konfiguration)
-3. [Erste Schritte nach der Installation](#erste-schritte-nach-der-installation)
-4. [Administrationsbereich](#administrationsbereich)
-5. [Veranstaltungen verwalten](#veranstaltungen-verwalten)
-5. [Vorausbestellungen aktivieren](#vorausbestellungen-aktivieren)
-6. [Speisen verwalten](#speisen-verwalten)
-7. [Bestellungen überwachen](#bestellungen-überwachen)
-8. [Mitarbeiter & Rollen](#mitarbeiter--rollen)
-9. [Schalter & Einstellungen](#schalter--einstellungen)
-10. [Abholboard einrichten](#abholboard-einrichten)
-11. [E-Mail-Benachrichtigungen](#e-mail-benachrichtigungen)
-12. [Checkliste am Veranstaltungstag](#checkliste-am-veranstaltungstag)
-13. [FAQ](#faq)
-14. [Troubleshooting](#troubleshooting)
+3. [Reverse Proxy (HTTPS)](#reverse-proxy-https)
+4. [Erste Schritte nach der Installation](#erste-schritte-nach-der-installation)
+5. [Administrationsbereich](#administrationsbereich)
+6. [Veranstaltungen verwalten](#veranstaltungen-verwalten)
+7. [Vorausbestellungen aktivieren](#vorausbestellungen-aktivieren)
+8. [Speisen verwalten](#speisen-verwalten)
+9. [Bestellungen überwachen](#bestellungen-überwachen)
+10. [Mitarbeiter & Rollen](#mitarbeiter--rollen)
+11. [Schalter & Einstellungen](#schalter--einstellungen)
+12. [Abholboard einrichten](#abholboard-einrichten)
+13. [E-Mail-Benachrichtigungen](#e-mail-benachrichtigungen)
+14. [Checkliste am Veranstaltungstag](#checkliste-am-veranstaltungstag)
+15. [FAQ](#faq)
+16. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -33,7 +34,7 @@ Anleitung für Administratoren der Vereinsbestellplattform mit Vollzugriff auf a
 | Netzwerk | Port 5173 (Frontend) und 3001 (API) erreichbar |
 | Browser | Aktueller Chrome, Firefox, Safari oder Edge |
 
-> **Hinweis:** Für den produktiven Betrieb empfiehlt sich ein Reverse Proxy (z. B. nginx, Caddy) mit HTTPS vor dem Frontend.
+> **Hinweis:** Für den produktiven Betrieb empfiehlt sich ein Reverse Proxy (z. B. Traefik, nginx, Caddy) mit HTTPS vor dem Frontend. Siehe Abschnitt [Reverse Proxy (HTTPS)](#reverse-proxy-https).
 
 ### Installation mit Docker (empfohlen)
 
@@ -119,7 +120,7 @@ CORS_ORIGIN=http://localhost:5173    # Öffentliche URL des Frontends
 |----------|--------------|
 | `JWT_SECRET` | Geheimer Schlüssel für Mitarbeiter-Login – **in Produktion unbedingt ändern** |
 | `JWT_EXPIRES_IN` | Gültigkeitsdauer des Login-Tokens (z. B. `8h`, `24h`) |
-| `CORS_ORIGIN` | Erlaubte Frontend-URL (bei HTTPS: `https://bestellung.ihr-verein.de`) |
+| `CORS_ORIGIN` | Erlaubte Frontend-URL (bei HTTPS: `https://bestellung.sv-musterstadt.de` – siehe [Reverse Proxy](#reverse-proxy-https)) |
 
 ### Frontend-URLs (Build-Zeit)
 
@@ -128,7 +129,9 @@ VITE_API_URL=http://localhost:3001
 VITE_WS_URL=http://localhost:3001
 ```
 
-Bei Docker mit eigenem Domainnamen müssen diese URLs auf die öffentlich erreichbare Backend-Adresse zeigen. Nach Änderung Frontend neu bauen:
+Bei Docker mit eigenem Domainnamen müssen diese URLs auf die öffentlich erreichbare Adresse zeigen. **Empfehlung:** Dieselbe Domain wie das Frontend nutzen und die Werte leer lassen – der eingebaute Frontend-nginx leitet `/api/` und `/socket.io/` intern weiter (Details: [Reverse Proxy](#reverse-proxy-https)).
+
+Nach Änderung an `VITE_*`-Variablen Frontend neu bauen:
 
 ```bash
 docker compose up --build -d frontend
@@ -173,6 +176,259 @@ Cloudflare Turnstile schützt die öffentliche Bestellseite vor automatisierten 
 | Admin-Passwort (nach Seed) | ✅ Ja |
 | SMTP | Optional |
 | Turnstile | Optional |
+
+---
+
+## Reverse Proxy (HTTPS)
+
+Für den produktiven Betrieb sollte die Plattform hinter einem Reverse Proxy mit TLS-Zertifikat erreichbar sein. In allen folgenden Beispielen verwenden wir die Beispiel-Domain **`bestellung.sv-musterstadt.de`**.
+
+### Architektur
+
+Das Frontend-Image enthält bereits einen nginx, der API-Anfragen, Uploads und WebSockets an das Backend weiterleitet. Der äußere Reverse Proxy muss daher **nur den Frontend-Container** ansprechen – Backend und PostgreSQL bleiben im internen Docker-Netzwerk.
+
+```
+Internet (HTTPS)
+      │
+      ▼
+┌─────────────────────┐
+│  Traefik / nginx /  │  Port 443, TLS-Terminierung
+│  Caddy              │
+└──────────┬──────────┘
+           │ HTTP → vereins-frontend:80
+           ▼
+┌─────────────────────┐
+│  Frontend (nginx)   │  /api/, /uploads/, /socket.io/ → Backend
+└──────────┬──────────┘
+           │ internes Docker-Netzwerk
+           ▼
+┌─────────────────────┐     ┌─────────────────────┐
+│  Backend            │────▶│  PostgreSQL         │
+│  (nicht öffentlich) │     │  (nicht öffentlich) │
+└─────────────────────┘     └─────────────────────┘
+```
+
+### `.env` für den Betrieb hinter dem Proxy
+
+Wenn Frontend und API über **dieselbe Domain** erreichbar sind (empfohlen), leitet der eingebaute Frontend-nginx `/api/` und `/socket.io/` intern weiter. Dann können `VITE_API_URL` und `VITE_WS_URL` leer bleiben:
+
+```env
+CORS_ORIGIN=https://bestellung.sv-musterstadt.de
+VITE_API_URL=
+VITE_WS_URL=
+```
+
+> **Hinweis:** `VITE_*`-Variablen werden beim **Build** des Frontend-Images eingebettet. Die vorgefertigten GHCR-Images nutzen standardmäßig `http://localhost:3001`. Für Same-Origin-Betrieb hinter dem Proxy muss das Frontend mit leeren Werten neu gebaut und veröffentlicht werden, **oder** der Reverse Proxy leitet zusätzlich `/api/` und `/socket.io/` direkt zum Backend weiter (siehe nginx-Beispiel unten).
+
+### Ports in Produktion einschränken
+
+In `docker-compose.yml` sind Backend (`3001`) und PostgreSQL (`5432`) standardmäßig nach außen gemappt – praktisch für lokale Entwicklung, in Produktion unnötig. Entfernen Sie die Port-Mappings oder nutzen Sie eine Override-Datei:
+
+```yaml
+# docker-compose.override.yml (nur Produktion)
+services:
+  postgres:
+    ports: []
+  backend:
+    ports: []
+  frontend:
+    ports: []   # Traefik/nginx spricht Frontend über Docker-Netzwerk an
+```
+
+### Traefik (Docker Labels)
+
+Traefik muss im selben Docker-Netzwerk wie die Anwendung laufen. Beispiel mit Let's Encrypt:
+
+```yaml
+# docker-compose.yml – Ergänzung am frontend-Service
+services:
+  frontend:
+    image: ghcr.io/timux/food-order/frontend:latest
+    container_name: vereins-frontend
+    restart: unless-stopped
+    networks:
+      - default
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      # HTTP → HTTPS Redirect
+      - "traefik.http.routers.vereinsbestellung-http.rule=Host(`bestellung.sv-musterstadt.de`)"
+      - "traefik.http.routers.vereinsbestellung-http.entrypoints=web"
+      - "traefik.http.routers.vereinsbestellung-http.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      # HTTPS
+      - "traefik.http.routers.vereinsbestellung.rule=Host(`bestellung.sv-musterstadt.de`)"
+      - "traefik.http.routers.vereinsbestellung.entrypoints=websecure"
+      - "traefik.http.routers.vereinsbestellung.tls=true"
+      - "traefik.http.routers.vereinsbestellung.tls.certresolver=letsencrypt"
+      - "traefik.http.services.vereinsbestellung.loadbalancer.server.port=80"
+
+networks:
+  traefik:
+    external: true
+```
+
+Typische Traefik-Statik-Konfiguration (`traefik.yml`):
+
+```yaml
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: admin@sv-musterstadt.de
+      storage: /letsencrypt/acme.json
+      httpChallenge:
+        entryPoint: web
+
+providers:
+  docker:
+    exposedByDefault: false
+    network: traefik
+```
+
+DNS: Ein `A`- oder `CNAME`-Eintrag für `bestellung.sv-musterstadt.de` muss auf den Server zeigen, auf dem Traefik läuft.
+
+### nginx (eigenständiger Host)
+
+Wenn nginx direkt auf dem Host installiert ist und das Frontend über `localhost:5173` oder das Docker-Netzwerk erreichbar ist:
+
+```nginx
+# /etc/nginx/sites-available/bestellung.sv-musterstadt.de
+upstream vereins_frontend {
+    server 127.0.0.1:5173;   # oder: server vereins-frontend:80; bei nginx im Docker-Netzwerk
+    keepalive 32;
+}
+
+server {
+    listen 80;
+    server_name bestellung.sv-musterstadt.de;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name bestellung.sv-musterstadt.de;
+
+    ssl_certificate     /etc/letsencrypt/live/bestellung.sv-musterstadt.de/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/bestellung.sv-musterstadt.de/privkey.pem;
+
+    # Frontend (inkl. /api/, /uploads/, /socket.io/ – weitergeleitet durch Frontend-nginx)
+    location / {
+        proxy_pass http://vereins_frontend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # WebSocket (zusätzliche Absicherung für /socket.io/)
+    location /socket.io/ {
+        proxy_pass http://vereins_frontend;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 86400;
+    }
+}
+```
+
+Zertifikat mit Certbot:
+
+```bash
+sudo certbot --nginx -d bestellung.sv-musterstadt.de
+sudo ln -s /etc/nginx/sites-available/bestellung.sv-musterstadt.de /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+**Alternative:** API und WebSocket direkt zum Backend leiten (wenn `VITE_API_URL` / `VITE_WS_URL` auf die Domain zeigen):
+
+```nginx
+location /api/ {
+    proxy_pass http://127.0.0.1:3001/api/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+
+location /uploads/ {
+    proxy_pass http://127.0.0.1:3001/uploads/;
+}
+
+location /socket.io/ {
+    proxy_pass http://127.0.0.1:3001/socket.io/;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_read_timeout 86400;
+}
+```
+
+### Caddy
+
+Caddy übernimmt TLS automatisch (Let's Encrypt):
+
+```caddy
+# /etc/caddy/Caddyfile
+bestellung.sv-musterstadt.de {
+    reverse_proxy vereins-frontend:80 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+}
+```
+
+Wenn Caddy auf dem Host läuft und Docker-Container per Published Port erreichbar sind:
+
+```caddy
+bestellung.sv-musterstadt.de {
+    reverse_proxy localhost:5173
+}
+```
+
+Caddy leitet WebSocket-Upgrades standardmäßig korrekt weiter – eine separate `location` für `/socket.io/` ist nicht nötig.
+
+Caddy neu laden:
+
+```bash
+sudo caddy validate --config /etc/caddy/Caddyfile
+sudo systemctl reload caddy
+```
+
+### Checkliste Reverse Proxy
+
+| Schritt | Erledigt? |
+|---------|-----------|
+| DNS-Eintrag `bestellung.sv-musterstadt.de` → Server-IP | ☐ |
+| TLS-Zertifikat aktiv (HTTPS) | ☐ |
+| Nur Frontend öffentlich erreichbar (Backend/DB intern) | ☐ |
+| `CORS_ORIGIN=https://bestellung.sv-musterstadt.de` in `.env` | ☐ |
+| `VITE_API_URL` / `VITE_WS_URL` passend gesetzt (leer = Same-Origin) | ☐ |
+| WebSocket-Verbindung getestet (Küche, Dashboard, Abholboard) | ☐ |
+| Testbestellung über HTTPS durchgeführt | ☐ |
+
+### Häufige Probleme
+
+| Symptom | Ursache | Lösung |
+|---------|---------|--------|
+| Login schlägt fehl, CORS-Fehler in der Browser-Konsole | `CORS_ORIGIN` stimmt nicht mit der öffentlichen URL überein | Exakte HTTPS-URL in `.env` setzen, Backend neu starten |
+| Küche/Dashboard ohne Live-Updates | WebSocket blockiert oder falsche `VITE_WS_URL` | `wss://`-Weiterleitung prüfen; bei Same-Origin `VITE_WS_URL` leer lassen |
+| Gemischte Inhalte (Mixed Content) | HTTP-API hinter HTTPS-Seite | `VITE_API_URL` auf `https://…` oder leer (Same-Origin) setzen |
+| 502 Bad Gateway | Frontend-Container nicht erreichbar | `docker compose ps`, Netzwerk/Firewall prüfen |
 
 ---
 
@@ -503,9 +759,9 @@ Für den lokalen Betrieb im Vereinsnetz reicht das interne Netzwerk. Für E-Mail
 ### Küche / Dashboard zeigt keine Live-Updates
 
 1. Seite neu laden
-2. Prüfen, ob `VITE_WS_URL` in `.env` auf die erreichbare Backend-URL zeigt
-3. Bei HTTPS: sicherstellen, dass WebSocket-Verbindungen (`wss://`) durch den Reverse Proxy erlaubt sind
-4. Firewall: Port 3001 bzw. WebSocket-Weiterleitung prüfen
+2. Prüfen, ob `VITE_WS_URL` in `.env` korrekt ist (leer bei Same-Origin hinter Reverse Proxy)
+3. Bei HTTPS: sicherstellen, dass WebSocket-Verbindungen (`wss://`) durch den Reverse Proxy erlaubt sind – siehe [Reverse Proxy](#reverse-proxy-https)
+4. Firewall: Backend-Port 3001 sollte in Produktion **nicht** öffentlich sein; WebSocket läuft über `/socket.io/` am Frontend
 
 ### Abholboard zeigt keine fertigen Bestellungen
 
