@@ -3,6 +3,7 @@ import { eventService } from './eventService';
 import { AppError } from '../middleware/errorHandler';
 import { emitFoodItemsUpdate } from '../socket';
 import { Prisma } from '@prisma/client';
+import { formatEventDate } from '../utils/helpers';
 
 export const foodItemService = {
   async getByEvent(eventId: string, publicOnly = false) {
@@ -16,8 +17,13 @@ export const foodItemService = {
     }
     const items = await foodItemRepository.findByEvent(event.id, true);
     return {
-      event,
+      event: {
+        ...event,
+        eventDateLabel: formatEventDate(event.date),
+      },
       items: items.filter((i) => !i.soldOut),
+      preOrderInfo:
+        'Sie können bereits jetzt vorbestellen. Ihre Abholnummer gilt am Veranstaltungstag.',
     };
   },
 

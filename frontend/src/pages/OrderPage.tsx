@@ -23,6 +23,7 @@ export function OrderPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [eventName, setEventName] = useState('');
+  const [eventDateLabel, setEventDateLabel] = useState('');
   const [items, setItems] = useState<FoodItem[]>([]);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [firstName, setFirstName] = useState('');
@@ -34,6 +35,7 @@ export function OrderPage() {
     api.getPublicMenu()
       .then((data) => {
         setEventName(data.event.name);
+        setEventDateLabel((data.event as { eventDateLabel?: string }).eventDateLabel || '');
         setItems(data.items);
         const initial: Record<string, number> = {};
         data.items.forEach((i) => { initial[i.id] = 0; });
@@ -109,9 +111,17 @@ export function OrderPage() {
       <Typography variant="h4" fontWeight={800} gutterBottom>
         Essen bestellen
       </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
         Wählen Sie Ihre Gerichte und geben Sie Ihre Daten ein.
       </Typography>
+      {eventDateLabel && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          <strong>Veranstaltung:</strong> {eventDateLabel}
+          <br />
+          Sie können bereits jetzt vorbestellen – auch Tage oder Wochen vor der Veranstaltung.
+          Ihre Abholnummer gilt am Veranstaltungstag.
+        </Alert>
+      )}
 
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 

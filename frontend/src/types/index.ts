@@ -50,6 +50,7 @@ export interface Order {
   orderNumber: number;
   displayNumber: string;
   orderDate: string;
+  eventDateLabel?: string;
   source: OrderSource;
   sourceLabel: string;
   status: OrderStatus;

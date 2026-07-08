@@ -178,9 +178,14 @@ export function OrderStatusPage() {
           {order.displayNumber}
         </Typography>
 
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
           Bitte merken Sie sich unbedingt Ihre Abholnummer oder zeigen Sie diese später an der Kasse vor.
         </Typography>
+        {order.eventDateLabel && (
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Veranstaltungstag: {order.eventDateLabel}
+          </Typography>
+        )}
 
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
           <StatusChip status={order.status} />

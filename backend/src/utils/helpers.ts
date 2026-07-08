@@ -22,6 +22,30 @@ export function getTodayDate(): Date {
   return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
 }
 
+/** Normalisiert ein Datum auf UTC-Mitternacht (Veranstaltungstag). */
+export function normalizeDate(date: Date | string): Date {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+}
+
+/**
+ * Bestellnummern und orderDate beziehen sich auf den Veranstaltungstag –
+ * auch bei Vorausbestellungen Tage oder Wochen vorher.
+ */
+export function getEventOrderDate(eventDate: Date | string): Date {
+  return normalizeDate(eventDate);
+}
+
+export function formatEventDate(date: Date | string): string {
+  return normalizeDate(date).toLocaleDateString('de-DE', {
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+
 export function formatPrice(value: number | string): string {
   const num = typeof value === 'string' ? parseFloat(value) : value;
   return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(num);

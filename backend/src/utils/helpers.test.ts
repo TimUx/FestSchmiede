@@ -1,11 +1,18 @@
 import { describe, it, expect } from 'vitest';
-import { canTransition, formatOrderNumber, getNextStatus } from './helpers';
+import { canTransition, formatOrderNumber, getNextStatus, getEventOrderDate, formatEventDate } from './helpers';
 
 describe('helpers', () => {
   it('formatiert Bestellnummern korrekt', () => {
     expect(formatOrderNumber(1)).toBe('001');
     expect(formatOrderNumber(42)).toBe('042');
     expect(formatOrderNumber(123)).toBe('123');
+  });
+
+  it('verwendet Veranstaltungsdatum für Vorausbestellungen', () => {
+    const eventDate = '2026-08-15T00:00:00.000Z';
+    const orderDate = getEventOrderDate(eventDate);
+    expect(orderDate.toISOString()).toBe('2026-08-15T00:00:00.000Z');
+    expect(formatEventDate(eventDate)).toContain('2026');
   });
 
   it('erlaubt gültige Statusübergänge', () => {

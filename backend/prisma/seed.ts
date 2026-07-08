@@ -45,7 +45,12 @@ async function main() {
   });
 
   const today = new Date();
-  const eventDate = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+  // Veranstaltung in 14 Tagen – demonstriert Vorausbestellungen
+  const eventDate = new Date(Date.UTC(
+    today.getUTCFullYear(),
+    today.getUTCMonth(),
+    today.getUTCDate() + 14
+  ));
 
   const event = await prisma.event.upsert({
     where: { id: '00000000-0000-0000-0000-000000000001' },

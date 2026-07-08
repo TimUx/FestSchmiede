@@ -8,11 +8,12 @@ import { eventService } from './eventService';
 import { AppError } from '../middleware/errorHandler';
 import {
   formatOrderNumber,
-  getTodayDate,
+  getEventOrderDate,
   canTransition,
   getNextStatus,
   STATUS_LABELS,
   SOURCE_LABELS,
+  formatEventDate,
 } from '../utils/helpers';
 import { emitOrderCreated, emitOrderUpdate } from '../socket';
 import { emailService } from './emailService';
@@ -35,6 +36,7 @@ function mapOrder(order: OrderWithRelations) {
     orderNumber: order.orderNumber,
     displayNumber: formatOrderNumber(order.orderNumber),
     orderDate: order.orderDate,
+    eventDateLabel: formatEventDate(order.orderDate),
     source: order.source,
     sourceLabel: SOURCE_LABELS[order.source],
     status: order.status,
@@ -90,7 +92,7 @@ export const orderService = {
 
   async lookupByNumberAndName(orderNumber: number, lastName: string) {
     const event = await eventService.getActive();
-    const orderDate = getTodayDate();
+    const orderDate = getEventOrderDate(event.date);
     const order = await orderRepository.findByOrderNumber(
       event.id,
       orderDate,
@@ -108,7 +110,7 @@ export const orderService = {
 
   async lookupByNumber(orderNumber: number) {
     const event = await eventService.getActive();
-    const orderDate = getTodayDate();
+    const orderDate = getEventOrderDate(event.date);
     const order = await orderRepository.findByOrderNumber(
       event.id,
       orderDate,
@@ -130,7 +132,7 @@ export const orderService = {
       throw new AppError(403, 'Online-Bestellungen sind derzeit nicht möglich');
     }
 
-    return this._createOrder(event.id, 'ONLINE', data.items, {
+    return this._createOrder(event, 'ONLINE', data.items, {
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email || undefined,
@@ -143,11 +145,11 @@ export const orderService = {
     if (!event.cashierActive || event.ordersClosed) {
       throw new AppError(403, 'Kassenbestellungen sind derzeit nicht möglich');
     }
-    return this._createOrder(event.id, 'CASHIER', items);
+    return this._createOrder(event, 'CASHIER', items);
   },
 
   async _createOrder(
-    eventId: string,
+    event: { id: string; date: Date },
     source: 'ONLINE' | 'CASHIER',
     items: { foodItemId: string; quantity: number }[],
     customerData?: {
@@ -157,7 +159,8 @@ export const orderService = {
       phone?: string;
     }
   ) {
-    const orderDate = getTodayDate();
+    const eventId = event.id;
+    const orderDate = getEventOrderDate(event.date);
     let totalPrice = new Prisma.Decimal(0);
     const orderItems: {
       foodItemId: string;

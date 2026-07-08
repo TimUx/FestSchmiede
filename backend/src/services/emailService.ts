@@ -21,6 +21,7 @@ export const emailService = {
     order: {
       displayNumber: string;
       totalPrice: number;
+      eventDateLabel?: string;
       items: { name: string; quantity: number; lineTotal: number }[];
     }
   ) {
@@ -37,7 +38,8 @@ export const emailService = {
       <h2>Bestellbestätigung</h2>
       <p>Vielen Dank für Ihre Bestellung!</p>
       <p><strong>Ihre Abholnummer: ${order.displayNumber}</strong></p>
-      <p>Bitte merken Sie sich diese Nummer oder zeigen Sie sie an der Kasse vor.</p>
+      ${order.eventDateLabel ? `<p><strong>Veranstaltungstag:</strong> ${order.eventDateLabel}</p>` : ''}
+      <p>Bitte merken Sie sich diese Nummer oder zeigen Sie sie am Veranstaltungstag an der Kasse vor.</p>
       <h3>Bestellung:</h3>
       <pre>${itemsList}</pre>
       <p><strong>Gesamt: ${formatPrice(order.totalPrice)}</strong></p>
