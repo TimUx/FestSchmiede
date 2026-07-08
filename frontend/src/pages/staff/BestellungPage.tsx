@@ -17,7 +17,7 @@ import { api, formatPrice } from '@/services/api';
 import { FoodItem } from '@/types';
 import { touchPrimaryButtonSx } from '@/theme/touch';
 
-export function LocalCashierPage() {
+export function BestellungPage() {
   const { token } = useAuth();
   const [items, setItems] = useState<FoodItem[]>([]);
   const [quantities, setQuantities] = useState<Record<string, number>>({});

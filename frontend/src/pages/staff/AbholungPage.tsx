@@ -18,7 +18,7 @@ import { api, formatPrice } from '@/services/api';
 import { Order } from '@/types';
 import { touchFieldSx, touchPrimaryButtonSx, touchIconButtonSx } from '@/theme/touch';
 
-export function CashierPage() {
+export function AbholungPage() {
   const { token } = useAuth();
   const [orderNumber, setOrderNumber] = useState('');
   const [order, setOrder] = useState<Order | null>(null);

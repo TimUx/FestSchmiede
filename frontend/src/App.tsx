@@ -11,8 +11,8 @@ import { ContactPage } from '@/pages/ContactPage';
 import { LoginPage } from '@/pages/staff/LoginPage';
 import { DashboardPage } from '@/pages/staff/DashboardPage';
 import { KitchenPage } from '@/pages/staff/KitchenPage';
-import { CashierPage } from '@/pages/staff/CashierPage';
-import { LocalCashierPage } from '@/pages/staff/LocalCashierPage';
+import { AbholungPage } from '@/pages/staff/AbholungPage';
+import { BestellungPage } from '@/pages/staff/BestellungPage';
 import { OrdersPage } from '@/pages/staff/OrdersPage';
 import { FoodItemsPage } from '@/pages/staff/FoodItemsPage';
 import { EventsPage } from '@/pages/staff/EventsPage';
@@ -46,8 +46,8 @@ export default function App() {
               <Route path="/mitarbeiter" element={<AdminRoute><DashboardPage /></AdminRoute>} />
               <Route path="/mitarbeiter/bestellungen" element={<AdminRoute><OrdersPage /></AdminRoute>} />
               <Route path="/mitarbeiter/kueche" element={<AdminRoute><KitchenPage /></AdminRoute>} />
-              <Route path="/mitarbeiter/abholung" element={<AdminRoute><CashierPage /></AdminRoute>} />
-              <Route path="/mitarbeiter/bestellung" element={<AdminRoute><LocalCashierPage /></AdminRoute>} />
+              <Route path="/mitarbeiter/abholung" element={<AdminRoute><AbholungPage /></AdminRoute>} />
+              <Route path="/mitarbeiter/bestellung" element={<AdminRoute><BestellungPage /></AdminRoute>} />
               <Route path="/mitarbeiter/speisen" element={<AdminOnlyRoute><FoodItemsPage /></AdminOnlyRoute>} />
               <Route path="/mitarbeiter/veranstaltungen" element={<AdminOnlyRoute><EventsPage /></AdminOnlyRoute>} />
               <Route path="/mitarbeiter/verein" element={<AdminOnlyRoute><ClubSettingsPage /></AdminOnlyRoute>} />
