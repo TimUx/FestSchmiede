@@ -153,10 +153,7 @@ export function OrderPage() {
           </Box>
           {eventDateLabel && (
             <Alert severity="info" sx={{ mb: 3, fontSize: '1.05rem' }}>
-              <strong>Veranstaltung:</strong> {eventDateLabel}
-              <br />
-              Sie können bereits jetzt vorbestellen – auch Tage oder Wochen vor der Veranstaltung.
-              Ihre Abholnummer gilt am Veranstaltungstag.
+              <strong>Veranstaltung:</strong> {eventDateLabel} · Vorbestellung möglich
             </Alert>
           )}
 
