@@ -9,6 +9,7 @@ import {
   Alert,
   CircularProgress,
   Stack,
+  IconButton,
 } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
@@ -18,7 +19,7 @@ import { FoodItemCard } from '@/components/FoodItemCard';
 import { TurnstileWidget } from '@/components/TurnstileWidget';
 import { api, formatPrice } from '@/services/api';
 import { FoodItem } from '@/types';
-import { touchFieldSx, touchPrimaryButtonSx, touchButtonSx } from '@/theme/touch';
+import { touchFieldSx, touchPrimaryButtonSx, touchButtonSx, touchIconButtonSx } from '@/theme/touch';
 
 export function OrderPage() {
   const navigate = useNavigate();
@@ -141,12 +142,27 @@ export function OrderPage() {
                 Wählen Sie Ihre Gerichte und geben Sie Ihre Daten ein.
               </Typography>
             </Box>
+            <IconButton
+              component={Link}
+              to="/kontakt"
+              aria-label="Kontakt"
+              color="primary"
+              sx={{
+                ...touchIconButtonSx,
+                display: { xs: 'inline-flex', sm: 'none' },
+                border: 1,
+                borderColor: 'divider',
+                flexShrink: 0,
+              }}
+            >
+              <ContactMailIcon />
+            </IconButton>
             <Button
               component={Link}
               to="/kontakt"
               variant="outlined"
               startIcon={<ContactMailIcon />}
-              sx={{ ...touchButtonSx, flexShrink: 0, minWidth: 120 }}
+              sx={{ ...touchButtonSx, display: { xs: 'none', sm: 'inline-flex' }, flexShrink: 0 }}
             >
               Kontakt
             </Button>
