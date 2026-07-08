@@ -11,7 +11,8 @@ import {
   Stack,
 } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { useNavigate } from 'react-router-dom';
+import ContactMailIcon from '@mui/icons-material/ContactMail';
+import { useNavigate, Link } from 'react-router-dom';
 import { PublicLayout } from '@/components/PublicLayout';
 import { FoodItemCard } from '@/components/FoodItemCard';
 import { api, formatPrice } from '@/services/api';
@@ -108,12 +109,25 @@ export function OrderPage() {
 
   return (
     <PublicLayout title={eventName || 'Bestellung'}>
-      <Typography variant="h4" fontWeight={800} gutterBottom>
-        Essen bestellen
-      </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
-        Wählen Sie Ihre Gerichte und geben Sie Ihre Daten ein.
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2, mb: 2 }}>
+        <Box>
+          <Typography variant="h4" fontWeight={800} gutterBottom>
+            Essen bestellen
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Wählen Sie Ihre Gerichte und geben Sie Ihre Daten ein.
+          </Typography>
+        </Box>
+        <Button
+          component={Link}
+          to="/kontakt"
+          variant="outlined"
+          startIcon={<ContactMailIcon />}
+          sx={{ flexShrink: 0 }}
+        >
+          Kontakt
+        </Button>
+      </Box>
       {eventDateLabel && (
         <Alert severity="info" sx={{ mb: 3 }}>
           <strong>Veranstaltung:</strong> {eventDateLabel}

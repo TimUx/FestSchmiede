@@ -73,7 +73,7 @@ export function LocalCashierPage() {
 
   if (loading) {
     return (
-      <StaffLayout title="Lokale Kasse">
+      <StaffLayout title="Bestellung">
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
           <CircularProgress />
         </Box>
@@ -83,7 +83,7 @@ export function LocalCashierPage() {
 
   if (lastOrderNumber) {
     return (
-      <StaffLayout title="Lokale Kasse" fullWidth>
+      <StaffLayout title="Bestellung" fullWidth>
         <Box
           sx={{
             display: 'flex',
@@ -120,7 +120,7 @@ export function LocalCashierPage() {
   return (
     <StaffLayout title="Lokale Kasse" fullWidth>
       <Typography variant="h5" fontWeight={700} gutterBottom>
-        Kassenbestellung aufgeben
+        Bestellung vor Ort aufgeben
       </Typography>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 

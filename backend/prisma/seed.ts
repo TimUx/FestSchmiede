@@ -121,6 +121,21 @@ async function main() {
     });
   }
 
+  await prisma.clubSettings.upsert({
+    where: { id: 'default' },
+    update: {},
+    create: {
+      id: 'default',
+      clubName: 'SV Musterstadt e.V.',
+      description: 'Sportverein Musterstadt – seit 1920',
+      contactName: 'Vereinsverwaltung',
+      email: 'kontakt@sv-musterstadt.de',
+      phone: '+49 1234 567890',
+      address: 'Sportplatzstraße 1, 12345 Musterstadt',
+      website: 'https://www.sv-musterstadt.de',
+    },
+  });
+
   console.log('Seed abgeschlossen!');
   console.log('');
   console.log('Test-Zugangsdaten:');

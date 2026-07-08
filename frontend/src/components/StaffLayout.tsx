@@ -17,25 +17,31 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import KitchenIcon from '@mui/icons-material/Kitchen';
-import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import EventIcon from '@mui/icons-material/Event';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import { Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { useClub } from '@/contexts/ClubContext';
+import { getImageUrl } from '@/services/api';
+import { Avatar } from '@mui/material';
 import { useAuth } from '@/contexts/AuthContext';
 import { useThemeMode } from '@/contexts/ThemeContext';
+import { Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 
 const navItems = [
   { path: '/mitarbeiter', label: 'Dashboard', icon: <DashboardIcon />, roles: ['ADMIN', 'STAFF'] },
   { path: '/mitarbeiter/bestellungen', label: 'Bestellungen', icon: <ReceiptLongIcon />, roles: ['ADMIN', 'STAFF'] },
   { path: '/mitarbeiter/kueche', label: 'Küche', icon: <KitchenIcon />, roles: ['ADMIN', 'STAFF'] },
-  { path: '/mitarbeiter/kasse', label: 'Kasse', icon: <PointOfSaleIcon />, roles: ['ADMIN', 'STAFF'] },
-  { path: '/mitarbeiter/lokale-kasse', label: 'Lokale Kasse', icon: <PointOfSaleIcon />, roles: ['ADMIN', 'STAFF'] },
+  { path: '/mitarbeiter/abholung', label: 'Abholung', icon: <DoneAllIcon />, roles: ['ADMIN', 'STAFF'] },
+  { path: '/mitarbeiter/bestellung', label: 'Bestellung', icon: <AddShoppingCartIcon />, roles: ['ADMIN', 'STAFF'] },
   { path: '/mitarbeiter/speisen', label: 'Speisen', icon: <RestaurantMenuIcon />, roles: ['ADMIN'] },
   { path: '/mitarbeiter/veranstaltungen', label: 'Veranstaltungen', icon: <EventIcon />, roles: ['ADMIN'] },
+  { path: '/mitarbeiter/verein', label: 'Verein', icon: <SettingsIcon />, roles: ['ADMIN'] },
 ];
 
 interface StaffLayoutProps {
@@ -52,6 +58,8 @@ export function StaffLayout({ children, title, fullWidth = false }: StaffLayoutP
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { club } = useClub();
+  const logoUrl = getImageUrl(club.logoUrl || undefined);
 
   const filteredNav = navItems.filter(
     (item) => item.roles.includes('ADMIN') && isAdmin || item.roles.includes('STAFF')
@@ -98,8 +106,11 @@ export function StaffLayout({ children, title, fullWidth = false }: StaffLayoutP
                 <MenuIcon />
               </IconButton>
             )}
-            <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
-              {title || 'Mitarbeiterbereich'}
+            <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1 }}>
+              {logoUrl ? (
+                <Avatar src={logoUrl} alt="" sx={{ width: 28, height: 28 }} />
+              ) : null}
+              {title || club.clubName}
             </Typography>
             <Typography variant="body2" sx={{ mr: 2, display: { xs: 'none', sm: 'block' } }}>
               {user?.firstName} {user?.lastName}

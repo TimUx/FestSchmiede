@@ -48,6 +48,7 @@ export const api = {
     request<Order>('/public/orders/lookup', { method: 'POST', body: JSON.stringify({ orderNumber, lastName }) }),
   getOrder: (id: string) => request<Order>(`/public/orders/${id}`),
   getPickupBoard: () => request<PickupBoardOrder[]>('/public/pickup-board'),
+  getClub: () => request<import('@/types/club').ClubSettings>('/public/club'),
 
   // Auth
   login: (email: string, password: string) =>
@@ -102,6 +103,26 @@ export const api = {
     request<Order>(`/staff/orders/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }, token),
   advanceOrder: (token: string, id: string) =>
     request<Order>(`/staff/orders/${id}/advance`, { method: 'POST' }, token),
+
+  getClubSettings: (token: string) =>
+    request<import('@/types/club').ClubSettings>('/staff/club', {}, token),
+  updateClubSettings: (token: string, data: Partial<import('@/types/club').ClubSettings>) =>
+    request<import('@/types/club').ClubSettings>('/staff/club', { method: 'PUT', body: JSON.stringify(data) }, token),
+  uploadClubLogo: async (token: string, file: File) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const url = `${API_URL}/api/staff/club/logo`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({ error: 'Upload fehlgeschlagen' }));
+      throw new ApiError(res.status, body.error);
+    }
+    return res.json() as Promise<import('@/types/club').ClubSettings>;
+  },
 };
 
 import type { Event, FoodItem, Order, User, DashboardStats, PickupBoardOrder, OrderStatus } from '@/types';

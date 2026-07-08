@@ -1,14 +1,14 @@
 # Benutzerhandbuch (Mitarbeiter)
 
-Anleitung für Mitarbeiter in Küche, Kasse und Service – ohne Administratorrechte.
+Anleitung für Mitarbeiter in Küche, Abholung und Service – ohne Administratorrechte.
 
 ## Inhaltsverzeichnis
 
 1. [Anmeldung](#anmeldung)
 2. [Übersicht der Bereiche](#übersicht-der-bereiche)
 3. [Küchenansicht](#küchenansicht)
-4. [Kassenansicht (Abholung)](#kassenansicht-abholung)
-5. [Lokale Kasse](#lokale-kasse)
+4. [Abholung](#abholung)
+5. [Bestellung vor Ort](#bestellung-vor-ort)
 6. [Bestellungen verwalten](#bestellungen-verwalten)
 7. [Vorausbestellungen am Event-Tag](#vorausbestellungen-am-event-tag)
 8. [Tipps & häufige Fragen](#tipps--häufige-fragen)
@@ -44,8 +44,8 @@ Nach der Anmeldung sehen Sie das **Dashboard** mit aktuellen Zahlen:
 | Dashboard | Alle | Übersicht & Statistiken |
 | Bestellungen | Alle | Alle Bestellungen einsehen |
 | Küche | Küchenteam | Bestellungen bearbeiten |
-| Kasse | Ausgabe | Abholung bestätigen |
-| Lokale Kasse | Kasse vor Ort | Bestellung vor Ort aufgeben |
+| Abholung | Ausgabe | Abholung per Nummer bestätigen |
+| Bestellung | Vor Ort | Neue Bestellung aufgeben |
 
 ---
 
@@ -72,23 +72,19 @@ Optional einschaltbar:
 - ☑ Fertig anzeigen
 - ☑ Abgeholt anzeigen
 
-### Wichtig
-
-- Bestellungen werden **nach Eingang** sortiert (älteste zuerst)
-- Jede Karte zeigt: Abholnummer, Uhrzeit, Gerichte mit Mengen
-- Änderungen werden sofort an alle Geräte übertragen (kein manuelles Aktualisieren nötig)
-
 ---
 
-## Kassenansicht (Abholung)
+## Abholung
 
-**Adresse:** `/mitarbeiter/kasse`
+**Adresse:** `/mitarbeiter/abholung`
 
-![Kassenansicht](screenshots/08-kassenansicht.png)
+Hier bestätigen Sie, dass ein Kunde seine Bestellung abgeholt hat.
+
+![Abholung](screenshots/08-abholung.png)
 
 ### Ablauf
 
-1. Kunde nennt seine **Abholnummer** (z. B. „042")
+1. Kunde nennt seine **Abholnummer** (z. B. „043")
 2. Nummer eingeben und suchen
 3. Bestellung wird angezeigt: Gerichte, Gesamtpreis, Status
 4. Wenn Status **Fertig**: **Abholung bestätigen** tippen
@@ -105,13 +101,13 @@ Optional einschaltbar:
 
 ---
 
-## Lokale Kasse
+## Bestellung vor Ort
 
-**Adresse:** `/mitarbeiter/lokale-kasse`
+**Adresse:** `/mitarbeiter/bestellung`
 
 Für Bestellungen **vor Ort** ohne Kundendaten (kein Name nötig).
 
-![Lokale Kasse](screenshots/09-lokale-kasse.png)
+![Bestellung](screenshots/09-bestellung.png)
 
 ### Ablauf
 
@@ -129,11 +125,7 @@ Für Bestellungen **vor Ort** ohne Kundendaten (kein Name nötig).
 
 ![Bestellungen](screenshots/10-bestellungen.png)
 
-Zeigt alle Bestellungen mit:
-- Abholnummer und Uhrzeit
-- Gerichte und Gesamtpreis
-- Quelle (Online oder Kasse)
-- Aktueller Status
+Zeigt alle Bestellungen mit Abholnummer, Uhrzeit, Gerichten, Quelle (Online / Vor Ort) und Status.
 
 ### Status per Klick ändern
 
@@ -150,13 +142,9 @@ Zeigt alle Bestellungen mit:
 Kunden können **Wochen vorher** online bestellen. Am Veranstaltungstag:
 
 1. Alle Vorbestellungen erscheinen in der Küchenansicht
-2. Die Abholnummer (z. B. 001) wurde bereits bei der Bestellung vergeben
+2. Die Abholnummer wurde bereits bei der Bestellung vergeben
 3. Kunden können ihren Status unter `/status` verfolgen
 4. Bei Abfrage mit **Abholnummer + Nachname** finden Kunden ihre Bestellung wieder
-
-### Für Kunden wichtig
-
-> *Bitte merken Sie sich unbedingt Ihre Abholnummer oder zeigen Sie diese später an der Kasse vor.*
 
 ![Kundenstatus](screenshots/02-kundenstatus.png)
 
@@ -164,25 +152,16 @@ Kunden können **Wochen vorher** online bestellen. Am Veranstaltungstag:
 
 ## Tipps & häufige Fragen
 
-### Die Küche zeigt keine neuen Bestellungen?
-
-- Internetverbindung prüfen
-- Seite neu laden
-- Admin fragen, ob die richtige Veranstaltung aktiv ist
-
 ### Kunde hat Abholnummer vergessen?
 
 - Kunde kann unter `/status` mit **Abholnummer + Nachname** nachschauen
 - Oder in der Bestellübersicht nach dem Namen suchen
 
-### Hell- oder Dunkelmodus?
+### Kontaktdaten für Kunden
 
-Tippen Sie oben rechts auf das Sonnen/Mond-Symbol.
+Kunden finden Vereinskontaktdaten über den **Kontakt**-Button auf der Bestellseite oder unter `/kontakt`.
 
-### App installieren (Tablet)
-
-**Android:** Menü → „Zum Startbildschirm hinzufügen"
-**iOS:** Teilen → „Zum Home-Bildschirm"
+![Kontakt](screenshots/14-kontakt.png)
 
 ### Abholboard für Gäste
 
@@ -199,14 +178,5 @@ Neu  →  In Bearbeitung  →  Fertig  →  Abgeholt
                               ↓
                          Storniert
 ```
-
-| Status | Bedeutung für Kunden |
-|--------|---------------------|
-| Neu | Bestellung eingegangen |
-| In Bearbeitung | Wird zubereitet |
-| Fertig | Abholbereit – Nummer auf dem Board |
-| Abgeholt | Essen wurde ausgegeben |
-
----
 
 Weitere Informationen für Administratoren: [Admin Guide](ADMIN_GUIDE.md)

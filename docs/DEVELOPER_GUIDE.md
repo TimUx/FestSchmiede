@@ -114,7 +114,7 @@ docker compose exec backend npm run seed
 
 ### Wichtige Modelle
 
-- **Event** – Veranstaltung (Datum, Schalter für Online/Kasse)
+- **ClubSettings** – Vereinsname, Logo, Kontaktdaten (Singleton)
 - **FoodItem** – Gerichte pro Veranstaltung
 - **Order** – Bestellung mit `orderNumber`, `orderDate`, `status`
 - **DailyOrderCounter** – Atomarer Zähler für Tages-Bestellnummern
@@ -148,6 +148,7 @@ Basis-URL: `/api`
 
 | Methode | Pfad | Beschreibung |
 |---------|------|-------------|
+| GET | `/public/club` | Vereinsdaten (öffentlich) |
 | GET | `/public/event` | Aktive Veranstaltung |
 | GET | `/public/menu` | Speisekarte + Event-Info |
 | POST | `/public/orders` | Online-Bestellung |
@@ -163,7 +164,8 @@ Basis-URL: `/api`
 | GET | `/staff/events` | ADMIN, STAFF |
 | POST | `/staff/orders/cashier` | ADMIN, STAFF |
 | PATCH | `/staff/orders/:id/status` | ADMIN, STAFF |
-| POST | `/staff/events` | ADMIN |
+| PUT | `/staff/club` | ADMIN |
+| POST | `/staff/club/logo` | ADMIN |
 
 Vollständige Liste: siehe `backend/src/routes/index.ts`.
 
@@ -209,7 +211,7 @@ Implementierung in `backend/src/utils/helpers.ts`:
 - `getEventOrderDate(event.date)` – normalisiertes Veranstaltungsdatum
 - `formatEventDate()` – deutsche Datumsanzeige
 
-Küche und Kasse sehen am Veranstaltungstag alle Bestellungen – auch solche, die Wochen vorher aufgegeben wurden.
+Küche und Abholung sehen am Veranstaltungstag alle Bestellungen – auch solche, die Wochen vorher aufgegeben wurden.
 
 ---
 

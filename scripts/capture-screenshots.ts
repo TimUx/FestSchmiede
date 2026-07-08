@@ -1,10 +1,8 @@
 /**
  * Erstellt Screenshots aller Ansichten für die Dokumentation.
- * Verwendet API-Mocking, damit kein laufendes Backend nötig ist.
- *
- * Ausführen: npx tsx scripts/capture-screenshots.ts
+ * Verwendet API-Mocking mit realistischen Beispieldaten.
  */
-import { chromium } from 'playwright';
+import { chromium, Page } from 'playwright';
 import { createServer } from 'http';
 import { readFileSync, existsSync, mkdirSync } from 'fs';
 import { join, extname } from 'path';
@@ -12,6 +10,9 @@ import { join, extname } from 'path';
 const PORT = 4173;
 const OUT_DIR = join(process.cwd(), 'docs', 'screenshots');
 const DIST = join(process.cwd(), 'frontend', 'dist');
+
+const EVENT_ID = '00000000-0000-0000-0000-000000000001';
+const ORDER_ID = '00000000-0000-0000-0000-000000000042';
 
 const MIME: Record<string, string> = {
   '.html': 'text/html',
@@ -24,10 +25,21 @@ const MIME: Record<string, string> = {
   '.woff2': 'font/woff2',
 };
 
+const mockClub = {
+  clubName: 'SV Musterstadt e.V.',
+  description: 'Sportverein Musterstadt – seit 1920',
+  contactName: 'Vereinsverwaltung',
+  email: 'kontakt@sv-musterstadt.de',
+  phone: '+49 1234 567890',
+  address: 'Sportplatzstraße 1, 12345 Musterstadt',
+  website: 'https://www.sv-musterstadt.de',
+  logoUrl: null,
+};
+
 const mockEvent = {
-  id: '00000000-0000-0000-0000-000000000001',
+  id: EVENT_ID,
   name: 'Sommerfest 2026',
-  description: 'Jährliches Vereins-Sommerfest',
+  description: 'Jährliches Vereins-Sommerfest mit leckerem Essen',
   date: '2026-08-15T00:00:00.000Z',
   startTime: '11:00',
   endTime: '22:00',
@@ -39,30 +51,33 @@ const mockEvent = {
 };
 
 const mockFoodItems = [
-  { id: '1', eventId: mockEvent.id, name: 'Bratwurst mit Brötchen', description: 'Frische Bratwurst vom Grill', price: 4.5, sortOrder: 1, active: true, soldOut: false },
-  { id: '2', eventId: mockEvent.id, name: 'Currywurst', description: 'Mit Pommes und Soße', price: 6.0, sortOrder: 2, active: true, soldOut: false },
-  { id: '3', eventId: mockEvent.id, name: 'Schnitzel mit Pommes', description: 'Paniertes Schnitzel', price: 8.5, sortOrder: 3, active: true, soldOut: false },
-  { id: '4', eventId: mockEvent.id, name: 'Vegetarischer Burger', description: 'Gemüseburger mit Salat', price: 7.0, sortOrder: 4, active: true, soldOut: false },
+  { id: '00000000-0000-0000-0001-000000000001', eventId: EVENT_ID, name: 'Bratwurst mit Brötchen', description: 'Frische Bratwurst vom Grill mit Senf und Brötchen', price: 4.5, sortOrder: 1, active: true, soldOut: false },
+  { id: '00000000-0000-0000-0001-000000000002', eventId: EVENT_ID, name: 'Currywurst', description: 'Currywurst mit Pommes und hausgemachter Soße', price: 6.0, sortOrder: 2, active: true, soldOut: false },
+  { id: '00000000-0000-0000-0001-000000000003', eventId: EVENT_ID, name: 'Schnitzel mit Pommes', description: 'Paniertes Schnitzel mit knusprigen Pommes', price: 8.5, sortOrder: 3, active: true, soldOut: false },
+  { id: '00000000-0000-0000-0001-000000000004', eventId: EVENT_ID, name: 'Vegetarischer Burger', description: 'Gemüseburger mit Salat und hausgemachter Soße', price: 7.0, sortOrder: 4, active: true, soldOut: false },
+  { id: '00000000-0000-0000-0001-000000000005', eventId: EVENT_ID, name: 'Apfelstrudel', description: 'Warmer Apfelstrudel mit Vanillesauce', price: 3.5, sortOrder: 5, active: true, soldOut: false },
 ];
 
-const mockOrder = {
-  id: 'order-1',
-  orderNumber: 42,
-  displayNumber: '042',
+const mockOrderBase = {
   orderDate: '2026-08-15T00:00:00.000Z',
   eventDateLabel: 'Samstag, 15. August 2026',
   source: 'ONLINE',
   sourceLabel: 'Online',
-  status: 'READY',
-  statusLabel: 'Fertig',
-  totalPrice: 14.5,
-  createdAt: new Date().toISOString(),
-  customer: { firstName: 'Max', lastName: 'Mustermann', email: 'max@example.com' },
+  totalPrice: 15.0,
+  createdAt: '2026-07-08T10:30:00.000Z',
+  customer: { firstName: 'Max', lastName: 'Mustermann', email: 'max@example.com', phone: '+49 170 1234567' },
   items: [
-    { id: 'i1', foodItemId: '1', name: 'Bratwurst mit Brötchen', quantity: 2, unitPrice: 4.5, lineTotal: 9 },
-    { id: 'i2', foodItemId: '2', name: 'Currywurst', quantity: 1, unitPrice: 6, lineTotal: 6 },
+    { id: 'i1', foodItemId: mockFoodItems[0].id, name: 'Bratwurst mit Brötchen', quantity: 2, unitPrice: 4.5, lineTotal: 9 },
+    { id: 'i2', foodItemId: mockFoodItems[1].id, name: 'Currywurst', quantity: 1, unitPrice: 6, lineTotal: 6 },
   ],
 };
+
+const mockOrders = [
+  { ...mockOrderBase, id: '00000000-0000-0000-0000-000000000041', orderNumber: 41, displayNumber: '041', status: 'NEW', statusLabel: 'Neu' },
+  { ...mockOrderBase, id: '00000000-0000-0000-0000-000000000042', orderNumber: 42, displayNumber: '042', status: 'IN_PROGRESS', statusLabel: 'In Bearbeitung' },
+  { ...mockOrderBase, id: '00000000-0000-0000-0000-000000000043', orderNumber: 43, displayNumber: '043', status: 'READY', statusLabel: 'Fertig', totalPrice: 8.5, items: [{ id: 'i3', foodItemId: mockFoodItems[2].id, name: 'Schnitzel mit Pommes', quantity: 1, unitPrice: 8.5, lineTotal: 8.5 }] },
+  { ...mockOrderBase, id: '00000000-0000-0000-0000-000000000044', orderNumber: 44, displayNumber: '044', status: 'PICKED_UP', statusLabel: 'Abgeholt', source: 'CASHIER', sourceLabel: 'Vor Ort' },
+];
 
 const mockStats = {
   totalOrders: 87,
@@ -74,40 +89,46 @@ const mockStats = {
     { name: 'Bratwurst mit Brötchen', count: 45 },
     { name: 'Currywurst', count: 32 },
     { name: 'Schnitzel mit Pommes', count: 28 },
+    { name: 'Vegetarischer Burger', count: 19 },
+    { name: 'Apfelstrudel', count: 15 },
   ],
   avgProcessingMinutes: 8,
 };
 
-const mockOrders = [
-  { ...mockOrder, id: 'o1', orderNumber: 41, displayNumber: '041', status: 'NEW', statusLabel: 'Neu' },
-  { ...mockOrder, id: 'o2', orderNumber: 42, displayNumber: '042', status: 'IN_PROGRESS', statusLabel: 'In Bearbeitung' },
-  { ...mockOrder, id: 'o3', orderNumber: 43, displayNumber: '043', status: 'READY', statusLabel: 'Fertig' },
-];
+const mockUser = { id: 'u1', email: 'admin@verein.local', firstName: 'Admin', lastName: 'Verein', role: 'ADMIN' };
 
-function mockApi(path: string, method: string) {
-  if (path === '/api/public/menu') {
+function mockApi(pathname: string, method: string, body?: string): unknown {
+  if (pathname === '/api/public/club' || pathname === '/api/staff/club') return mockClub;
+  if (pathname === '/api/public/menu') {
     return { event: mockEvent, items: mockFoodItems, preOrderInfo: 'Vorbestellung möglich' };
   }
-  if (path === '/api/public/event') return mockEvent;
-  if (path.startsWith('/api/public/orders/order-1')) return { ...mockOrder, status: 'IN_PROGRESS', statusLabel: 'In Bearbeitung' };
-  if (path === '/api/public/pickup-board') {
+  if (pathname === '/api/public/event') return mockEvent;
+  if (pathname === `/api/public/orders/${ORDER_ID}`) {
+    return { ...mockOrders[1] };
+  }
+  if (pathname === '/api/public/pickup-board') {
     return [
-      { id: 'o3', orderNumber: 43, displayNumber: '043' },
-      { id: 'o4', orderNumber: 44, displayNumber: '044' },
-      { id: 'o5', orderNumber: 45, displayNumber: '045' },
+      { id: mockOrders[2].id, orderNumber: 43, displayNumber: '043', readyAt: '2026-07-08T11:00:00.000Z' },
+      { id: '00000000-0000-0000-0000-000000000045', orderNumber: 45, displayNumber: '045', readyAt: '2026-07-08T11:05:00.000Z' },
+      { id: '00000000-0000-0000-0000-000000000046', orderNumber: 46, displayNumber: '046', readyAt: '2026-07-08T11:08:00.000Z' },
     ];
   }
-  if (path === '/api/auth/login') {
-    return { token: 'mock-token', user: { id: 'u1', email: 'admin@verein.local', firstName: 'Admin', lastName: 'Verein', role: 'ADMIN' } };
+  if (pathname === '/api/public/orders/lookup' && method === 'POST') {
+    return mockOrders[1];
   }
-  if (path === '/api/auth/me') {
-    return { id: 'u1', email: 'admin@verein.local', firstName: 'Admin', lastName: 'Verein', role: 'ADMIN' };
+  if (pathname === '/api/auth/login') {
+    return { token: 'mock-token', user: mockUser };
   }
-  if (path === '/api/staff/events/active' || path === '/api/staff/events') return [mockEvent];
-  if (path.includes('/food-items')) return mockFoodItems;
-  if (path.includes('/stats')) return mockStats;
-  if (path.includes('/orders') && method === 'GET') return mockOrders;
-  if (path === '/api/health') return { status: 'ok' };
+  if (pathname === '/api/auth/me') return mockUser;
+  if (pathname === '/api/staff/events/active') return mockEvent;
+  if (pathname === '/api/staff/events') return [mockEvent];
+  if (pathname.includes('/food-items')) return mockFoodItems;
+  if (pathname.includes('/stats')) return mockStats;
+  if (pathname.includes('/orders/lookup') && method === 'POST') {
+    return mockOrders[2];
+  }
+  if (pathname.match(/\/staff\/events\/[^/]+\/orders$/) && method === 'GET') return mockOrders;
+  if (pathname === '/api/health') return { status: 'ok' };
   return {};
 }
 
@@ -124,6 +145,29 @@ function startStaticServer(): Promise<void> {
   });
 }
 
+async function setupPage(page: Page, auth = false) {
+  await page.route('**/socket.io/**', (route) => route.abort());
+  await page.route('**/api/**', async (route) => {
+    const url = new URL(route.request().url());
+    const body = mockApi(url.pathname, route.request().method(), route.request().postData() || undefined);
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
+  });
+  if (auth) {
+    await page.addInitScript(() => {
+      localStorage.setItem('verein_token', 'mock-token');
+    });
+  }
+}
+
+interface PageSpec {
+  name: string;
+  url: string;
+  viewport?: { width: number; height: number };
+  auth?: boolean;
+  prepare?: (page: Page) => Promise<void>;
+  fullPage?: boolean;
+}
+
 async function main() {
   if (!existsSync(DIST)) {
     console.error('Frontend nicht gebaut. Bitte zuerst: cd frontend && npm run build');
@@ -134,46 +178,89 @@ async function main() {
   await startStaticServer();
 
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({
-    viewport: { width: 1280, height: 800 },
-    locale: 'de-DE',
-  });
 
-  const pages: { name: string; url: string; viewport?: { width: number; height: number }; setup?: boolean }[] = [
-    { name: '01-bestellseite', url: '/' },
-    { name: '02-kundenstatus', url: '/status/order-1' },
-    { name: '03-status-abfrage', url: '/status' },
-    { name: '04-abholboard-monitor', url: '/abholboard', viewport: { width: 1920, height: 1080 } },
+  const pages: PageSpec[] = [
+    {
+      name: '01-bestellseite',
+      url: '/',
+      prepare: async (page) => {
+        await page.getByLabel('Vorname *').fill('Max');
+        await page.getByLabel('Nachname *').fill('Mustermann');
+        await page.locator('button[aria-label="Menge erhöhen"]').first().click();
+        await page.locator('button[aria-label="Menge erhöhen"]').first().click();
+        await page.locator('button[aria-label="Menge erhöhen"]').nth(1).click();
+      },
+    },
+    {
+      name: '02-kundenstatus',
+      url: `/status/${ORDER_ID}`,
+    },
+    {
+      name: '03-status-abfrage',
+      url: '/status',
+      prepare: async (page) => {
+        await page.getByLabel('Abholnummer').fill('42');
+        await page.getByLabel('Nachname').fill('Mustermann');
+      },
+    },
+    { name: '04-abholboard-monitor', url: '/abholboard', viewport: { width: 1920, height: 1080 }, fullPage: false },
     { name: '05-mitarbeiter-login', url: '/mitarbeiter/login' },
-    { name: '06-dashboard', url: '/mitarbeiter', setup: true },
-    { name: '07-kuechenansicht-tablet', url: '/mitarbeiter/kueche', viewport: { width: 1024, height: 768 }, setup: true },
-    { name: '08-kassenansicht', url: '/mitarbeiter/kasse', setup: true },
-    { name: '09-lokale-kasse', url: '/mitarbeiter/lokale-kasse', setup: true },
-    { name: '10-bestellungen', url: '/mitarbeiter/bestellungen', setup: true },
-    { name: '11-speisenverwaltung', url: '/mitarbeiter/speisen', setup: true },
-    { name: '12-veranstaltungen', url: '/mitarbeiter/veranstaltungen', setup: true },
+    { name: '06-dashboard', url: '/mitarbeiter', auth: true },
+    { name: '07-kuechenansicht-tablet', url: '/mitarbeiter/kueche', viewport: { width: 1024, height: 768 }, auth: true },
+    {
+      name: '08-abholung',
+      url: '/mitarbeiter/abholung',
+      auth: true,
+      prepare: async (page) => {
+        await page.getByLabel('Abholnummer').fill('43');
+        await page.locator('button').filter({ has: page.locator('svg') }).last().click();
+        await page.waitForTimeout(500);
+      },
+    },
+    {
+      name: '09-bestellung',
+      url: '/mitarbeiter/bestellung',
+      auth: true,
+      prepare: async (page) => {
+        await page.locator('button[aria-label="Menge erhöhen"]').first().click();
+        await page.locator('button[aria-label="Menge erhöhen"]').nth(2).click();
+      },
+    },
+    { name: '10-bestellungen', url: '/mitarbeiter/bestellungen', auth: true },
+    { name: '11-speisenverwaltung', url: '/mitarbeiter/speisen', auth: true },
+    { name: '12-veranstaltungen', url: '/mitarbeiter/veranstaltungen', auth: true },
+    { name: '13-vereinseinstellungen', url: '/mitarbeiter/verein', auth: true },
+    { name: '14-kontakt', url: '/kontakt' },
   ];
 
   for (const spec of pages) {
-    const page = await context.newPage();
-    await page.route('**/api/**', async (route) => {
-      const url = new URL(route.request().url());
-      const body = mockApi(url.pathname, route.request().method());
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
+    const context = await browser.newContext({
+      viewport: spec.viewport || { width: 1280, height: 800 },
+      locale: 'de-DE',
     });
+    const page = await context.newPage();
+    await setupPage(page, spec.auth);
 
-    if (spec.setup) {
-      await page.addInitScript(() => {
-        localStorage.setItem('verein_token', 'mock-token');
-      });
-    }
-
-    if (spec.viewport) await page.setViewportSize(spec.viewport);
     await page.goto(`http://localhost:${PORT}${spec.url}`, { waitUntil: 'networkidle' });
-    await page.waitForTimeout(1200);
-    await page.screenshot({ path: join(OUT_DIR, `${spec.name}.png`), fullPage: spec.name !== '04-abholboard-monitor' });
+    await page.waitForTimeout(1000);
+    if (spec.prepare) await spec.prepare(page);
+    await page.waitForTimeout(500);
+
+    await page.screenshot({
+      path: join(OUT_DIR, `${spec.name}.png`),
+      fullPage: spec.fullPage !== false,
+    });
     console.log(`✓ ${spec.name}.png`);
-    await page.close();
+    await context.close();
+  }
+
+  // Alte Dateinamen entfernen
+  const oldNames = ['08-kassenansicht.png', '09-lokale-kasse.png'];
+  for (const old of oldNames) {
+    try {
+      const { unlinkSync } = await import('fs');
+      unlinkSync(join(OUT_DIR, old));
+    } catch { /* ignore */ }
   }
 
   await browser.close();

@@ -143,12 +143,31 @@ Neu → In Bearbeitung → Fertig → Abgeholt
 
 ---
 
+## Vereinseinstellungen
+
+Navigieren Sie zu **Verein** (`/mitarbeiter/verein`).
+
+![Vereinseinstellungen](screenshots/13-vereinseinstellungen.png)
+
+Konfigurierbar:
+
+| Feld | Anzeige |
+|------|---------|
+| Vereinsname | Header auf allen öffentlichen Seiten |
+| Logo | Header (Avatar), Kontaktseite |
+| Beschreibung | Kontaktseite |
+| Ansprechpartner, E-Mail, Telefon, Adresse, Website | Kontaktseite (`/kontakt`) |
+
+Ohne eigene Angaben werden Standardwerte verwendet. Kunden erreichen die Kontaktseite über den **Kontakt**-Button auf der Bestellseite.
+
+---
+
 ## Mitarbeiter & Rollen
 
 | Rolle | Berechtigungen |
 |-------|---------------|
-| **ADMIN** | Vollzugriff: Veranstaltungen, Speisen, alle Mitarbeiterfunktionen |
-| **STAFF** | Küche, Kasse, Bestellungen, Dashboard |
+| **ADMIN** | Vollzugriff: Verein, Veranstaltungen, Speisen, alle Mitarbeiterfunktionen |
+| **STAFF** | Küche, Abholung, Bestellung, Bestellungen, Dashboard |
 
 Neue Benutzer werden aktuell über das Seed-Skript oder direkt in der Datenbank angelegt. Eine Benutzerverwaltungs-Oberfläche ist als zukünftige Erweiterung vorgesehen.
 
@@ -161,13 +180,13 @@ Pro Veranstaltung drei Schalter:
 | Schalter | Wirkung |
 |----------|---------|
 | **Onlinebestellungen aktiv** | Öffentliche Bestellseite erreichbar |
-| **Kasse aktiv** | Lokale Kasse für Mitarbeiter |
-| **Bestellungen geschlossen** | Keine neuen Bestellungen (weder online noch Kasse) |
+| **Bestellung vor Ort aktiv** | Mitarbeiter können Bestellungen vor Ort aufgeben |
+| **Bestellungen geschlossen** | Keine neuen Bestellungen |
 
 ### Typische Szenarien
 
-| Situation | Online | Kasse | Geschlossen |
-|---------|--------|-------|-------------|
+| Situation | Online | Vor Ort | Geschlossen |
+|---------|--------|---------|-------------|
 | Vorbestellphase (2 Wochen vorher) | ✅ | ❌ | ❌ |
 | Veranstaltungstag | ✅ | ✅ | ❌ |
 | Ausverkauf / Ende | ❌ | ❌ | ✅ |
@@ -219,7 +238,8 @@ SMTP_FROM=noreply@ihr-verein.de
 - [ ] Richtige Veranstaltung ist **aktiviert**
 - [ ] Online- und Kassenbestellungen nach Bedarf **aktiviert**
 - [ ] Küchen-Tablet zeigt `/mitarbeiter/kueche`
-- [ ] Kasse zeigt `/mitarbeiter/kasse`
+- [ ] Abholung zeigt `/mitarbeiter/abholung`
+- [ ] Bestellung vor Ort unter `/mitarbeiter/bestellung`
 - [ ] Abholboard auf Monitor: `/abholboard`
 - [ ] Alle Vorbestellungen sind in der Küchenansicht sichtbar
 - [ ] Testbestellung durchgeführt

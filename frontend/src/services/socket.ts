@@ -49,3 +49,9 @@ export function onFoodItemsUpdated(callback: (items: unknown) => void): () => vo
   s.on('fooditems:updated', callback);
   return () => s.off('fooditems:updated', callback);
 }
+
+export function onClubUpdated(callback: (club: unknown) => void): () => void {
+  const s = getSocket();
+  s.on('club:updated', callback);
+  return () => s.off('club:updated', callback);
+}

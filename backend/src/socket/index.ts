@@ -63,3 +63,8 @@ export function emitFoodItemsUpdate(eventId: string, items: unknown): void {
   if (!io) return;
   io.to(`event:${eventId}`).emit('fooditems:updated', items);
 }
+
+export function emitClubUpdate(club: unknown): void {
+  if (!io) return;
+  io.emit('club:updated', club);
+}

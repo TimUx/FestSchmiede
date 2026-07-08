@@ -152,7 +152,7 @@ export function EventsPage() {
                 </Typography>
                 <Stack direction="row" spacing={1} sx={{ mt: 1 }} flexWrap="wrap" useFlexGap>
                   <Chip label={event.onlineOrdersActive ? 'Online aktiv' : 'Online inaktiv'} size="small" color={event.onlineOrdersActive ? 'success' : 'default'} />
-                  <Chip label={event.cashierActive ? 'Kasse aktiv' : 'Kasse inaktiv'} size="small" color={event.cashierActive ? 'success' : 'default'} />
+                  <Chip label={event.cashierActive ? 'Bestellung vor Ort aktiv' : 'Bestellung vor Ort inaktiv'} size="small" color={event.cashierActive ? 'success' : 'default'} />
                   {event.ordersClosed && <Chip label="Bestellungen geschlossen" size="small" color="error" />}
                 </Stack>
               </CardContent>
@@ -177,7 +177,7 @@ export function EventsPage() {
             <TextField label="Beginn" type="time" fullWidth required value={form.startTime} onChange={(e) => setForm({ ...form, startTime: e.target.value })} InputLabelProps={{ shrink: true }} />
             <TextField label="Ende" type="time" fullWidth required value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} InputLabelProps={{ shrink: true }} />
             <FormControlLabel control={<Switch checked={form.onlineOrdersActive} onChange={(e) => setForm({ ...form, onlineOrdersActive: e.target.checked })} />} label="Onlinebestellungen aktiv" />
-            <FormControlLabel control={<Switch checked={form.cashierActive} onChange={(e) => setForm({ ...form, cashierActive: e.target.checked })} />} label="Kasse aktiv" />
+            <FormControlLabel control={<Switch checked={form.cashierActive} onChange={(e) => setForm({ ...form, cashierActive: e.target.checked })} />} label="Bestellung vor Ort aktiv" />
             <FormControlLabel control={<Switch checked={form.ordersClosed} onChange={(e) => setForm({ ...form, ordersClosed: e.target.checked })} />} label="Bestellungen geschlossen" />
           </Stack>
         </DialogContent>

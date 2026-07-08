@@ -3,12 +3,14 @@ import { authController } from '../controllers/authController';
 import { eventController } from '../controllers/eventController';
 import { foodItemController } from '../controllers/foodItemController';
 import { orderController } from '../controllers/orderController';
+import { clubController } from '../controllers/clubController';
 import { authenticate, requireRole, loadUser } from '../middleware/auth';
 import { validateBody, validateParams } from '../middleware/validation';
 import {
   loginSchema,
   createEventSchema,
   updateEventSchema,
+  updateClubSchema,
   createFoodItemSchema,
   updateFoodItemSchema,
   createOnlineOrderSchema,
@@ -58,6 +60,7 @@ router.post('/auth/login', validateBody(loginSchema), authController.login);
 router.get('/auth/me', authenticate, loadUser, authController.me);
 
 // Public
+router.get('/public/club', clubController.getPublic);
 router.get('/public/event', eventController.getActive);
 router.get('/public/menu', foodItemController.getPublic);
 router.post('/public/orders', validateBody(createOnlineOrderSchema), orderController.createOnline);
@@ -100,5 +103,22 @@ router.post('/staff/orders/cashier', requireRole('ADMIN', 'STAFF'), validateBody
 router.post('/staff/orders/lookup', requireRole('ADMIN', 'STAFF'), validateBody(lookupByNumberSchema), orderController.lookupByNumber);
 router.patch('/staff/orders/:id/status', requireRole('ADMIN', 'STAFF'), validateParams(idParamSchema), validateBody(updateOrderStatusSchema), orderController.updateStatus);
 router.post('/staff/orders/:id/advance', requireRole('ADMIN', 'STAFF'), validateParams(idParamSchema), orderController.advanceStatus);
+
+router.get('/staff/club', requireRole('ADMIN'), clubController.get);
+router.put('/staff/club', requireRole('ADMIN'), validateBody(updateClubSchema), clubController.update);
+router.post('/staff/club/logo', requireRole('ADMIN'), upload.single('image'), async (req, res, next) => {
+  try {
+    if (!req.file) {
+      res.status(400).json({ error: 'Kein Bild hochgeladen' });
+      return;
+    }
+    const { clubService } = await import('../services/clubService');
+    const logoUrl = `/uploads/${req.file.filename}`;
+    const club = await clubService.update({ logoUrl });
+    res.json(club);
+  } catch (err) {
+    next(err);
+  }
+});
 
 export default router;

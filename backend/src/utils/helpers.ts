@@ -10,7 +10,7 @@ export const STATUS_LABELS: Record<StatusCode, string> = {
 
 export const SOURCE_LABELS = {
   ONLINE: 'Online',
-  CASHIER: 'Kasse',
+  CASHIER: 'Vor Ort',
 };
 
 export function formatOrderNumber(num: number): string {

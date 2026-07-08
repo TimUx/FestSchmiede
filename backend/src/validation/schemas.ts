@@ -26,6 +26,16 @@ export const createEventSchema = z.object({
 
 export const updateEventSchema = createEventSchema.partial();
 
+export const updateClubSchema = z.object({
+  clubName: z.string().min(1, 'Vereinsname erforderlich').optional(),
+  description: z.string().optional().nullable(),
+  contactName: z.string().optional().nullable(),
+  email: z.string().email('Ungültige E-Mail').optional().nullable().or(z.literal('')),
+  phone: z.string().optional().nullable(),
+  address: z.string().optional().nullable(),
+  website: z.string().url('Ungültige URL').optional().nullable().or(z.literal('')),
+});
+
 export const createFoodItemSchema = z.object({
   name: z.string().min(1, 'Name erforderlich'),
   description: z.string().optional(),

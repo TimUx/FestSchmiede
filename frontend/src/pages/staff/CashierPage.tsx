@@ -54,7 +54,7 @@ export function CashierPage() {
   };
 
   return (
-    <StaffLayout title="Kasse">
+    <StaffLayout title="Abholung">
       <Typography variant="h5" fontWeight={700} gutterBottom>
         Abholung bestätigen
       </Typography>

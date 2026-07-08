@@ -145,3 +145,16 @@ model OrderStatus {
 
   @@index([orderId])
 }
+
+model ClubSettings {
+  id          String   @id @default("default")
+  clubName    String   @default("Vereinsbestellung")
+  description String?
+  contactName String?
+  email       String?
+  phone       String?
+  address     String?
+  website     String?
+  logoUrl     String?
+  updatedAt   DateTime @updatedAt
+}
