@@ -108,13 +108,13 @@ export const api = {
     request<Order>(`/staff/orders/${id}/advance`, { method: 'POST' }, token),
 
   getClubSettings: (token: string) =>
-    request<import('@/types/club').ClubSettings>('/staff/club', {}, token),
+    request<import('@/types/club').ClubSettings>('/admin/club', {}, token),
   updateClubSettings: (token: string, data: Partial<import('@/types/club').ClubSettings>) =>
-    request<import('@/types/club').ClubSettings>('/staff/club', { method: 'PUT', body: JSON.stringify(data) }, token),
+    request<import('@/types/club').ClubSettings>('/admin/club', { method: 'PUT', body: JSON.stringify(data) }, token),
   uploadClubLogo: async (token: string, file: File) => {
     const formData = new FormData();
     formData.append('image', file);
-    const url = `${API_URL}/api/staff/club/logo`;
+    const url = `${API_URL}/api/admin/club/logo`;
     const res = await fetch(url, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
@@ -126,9 +126,26 @@ export const api = {
     }
     return res.json() as Promise<import('@/types/club').ClubSettings>;
   },
+
+  getUsers: (token: string) => request<User[]>('/admin/users', {}, token),
+  createUser: (token: string, data: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    role: UserRole;
+  }) => request<User>('/admin/users', { method: 'POST', body: JSON.stringify(data) }, token),
+  updateUser: (token: string, id: string, data: {
+    email?: string;
+    password?: string;
+    firstName?: string;
+    lastName?: string;
+    role?: UserRole;
+    active?: boolean;
+  }) => request<User>(`/admin/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }, token),
 };
 
-import type { Event, FoodItem, Order, User, DashboardStats, PickupBoardOrder, OrderStatus } from '@/types';
+import type { Event, FoodItem, Order, User, UserRole, DashboardStats, PickupBoardOrder, OrderStatus } from '@/types';
 
 export { ApiError };
 

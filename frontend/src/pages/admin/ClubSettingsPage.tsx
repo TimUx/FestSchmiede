@@ -13,7 +13,7 @@ import {
 import SaveIcon from '@mui/icons-material/Save';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
-import { StaffLayout } from '@/components/StaffLayout';
+import { AdminLayout } from '@/components/AdminLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useClub } from '@/contexts/ClubContext';
 import { api, getImageUrl } from '@/services/api';
@@ -68,7 +68,7 @@ export function ClubSettingsPage() {
   const logoUrl = getImageUrl(form.logoUrl || undefined);
 
   return (
-    <StaffLayout title="Vereinseinstellungen">
+    <AdminLayout title="Vereinseinstellungen">
       <Typography variant="h5" fontWeight={700} gutterBottom>
         Vereinsname, Logo & Kontaktdaten
       </Typography>
@@ -162,6 +162,6 @@ export function ClubSettingsPage() {
           </Button>
         </Stack>
       </Paper>
-    </StaffLayout>
+    </AdminLayout>
   );
 }

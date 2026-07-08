@@ -19,15 +19,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import KitchenIcon from '@mui/icons-material/Kitchen';
-import SettingsIcon from '@mui/icons-material/Settings';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
-import EventIcon from '@mui/icons-material/Event';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { useClub } from '@/contexts/ClubContext';
 import { getImageUrl } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
@@ -48,9 +46,6 @@ const navItems = [
   { path: '/mitarbeiter/kueche', label: 'Küche', icon: <KitchenIcon />, roles: ['ADMIN', 'STAFF'] },
   { path: '/mitarbeiter/abholung', label: 'Abholung', icon: <DoneAllIcon />, roles: ['ADMIN', 'STAFF'] },
   { path: '/mitarbeiter/bestellung', label: 'Bestellung', icon: <AddShoppingCartIcon />, roles: ['ADMIN', 'STAFF'] },
-  { path: '/mitarbeiter/speisen', label: 'Speisen', icon: <RestaurantMenuIcon />, roles: ['ADMIN'] },
-  { path: '/mitarbeiter/veranstaltungen', label: 'Veranstaltungen', icon: <EventIcon />, roles: ['ADMIN'] },
-  { path: '/mitarbeiter/verein', label: 'Verein', icon: <SettingsIcon />, roles: ['ADMIN'] },
 ];
 
 function isFocusModePath(pathname: string): boolean {
@@ -102,6 +97,12 @@ export function StaffLayout({ children, title, fullWidth = false }: StaffLayoutP
             <ListItemText primary={item.label} />
           </ListItemButton>
         ))}
+        {isAdmin && (
+          <ListItemButton component={Link} to="/admin" onClick={() => setMobileDrawerOpen(false)}>
+            <ListItemIcon><AdminPanelSettingsIcon /></ListItemIcon>
+            <ListItemText primary="Administration" />
+          </ListItemButton>
+        )}
         <ListItemButton onClick={() => { logout(); navigate('/mitarbeiter/login'); }}>
           <ListItemIcon><LogoutIcon /></ListItemIcon>
           <ListItemText primary="Abmelden" />

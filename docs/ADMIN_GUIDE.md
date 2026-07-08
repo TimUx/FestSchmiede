@@ -7,18 +7,18 @@ Anleitung für Administratoren der Vereinsbestellplattform mit Vollzugriff auf a
 1. [Installation](#installation)
 2. [Konfiguration](#konfiguration)
 3. [Erste Schritte nach der Installation](#erste-schritte-nach-der-installation)
-4. [Veranstaltungen verwalten](#veranstaltungen-verwalten)
+4. [Administrationsbereich](#administrationsbereich)
+5. [Veranstaltungen verwalten](#veranstaltungen-verwalten)
 5. [Vorausbestellungen aktivieren](#vorausbestellungen-aktivieren)
 6. [Speisen verwalten](#speisen-verwalten)
 7. [Bestellungen überwachen](#bestellungen-überwachen)
-8. [Vereinseinstellungen](#vereinseinstellungen)
-9. [Mitarbeiter & Rollen](#mitarbeiter--rollen)
-10. [Schalter & Einstellungen](#schalter--einstellungen)
-11. [Abholboard einrichten](#abholboard-einrichten)
-12. [E-Mail-Benachrichtigungen](#e-mail-benachrichtigungen)
-13. [Checkliste am Veranstaltungstag](#checkliste-am-veranstaltungstag)
-14. [FAQ](#faq)
-15. [Troubleshooting](#troubleshooting)
+8. [Mitarbeiter & Rollen](#mitarbeiter--rollen)
+9. [Schalter & Einstellungen](#schalter--einstellungen)
+10. [Abholboard einrichten](#abholboard-einrichten)
+11. [E-Mail-Benachrichtigungen](#e-mail-benachrichtigungen)
+12. [Checkliste am Veranstaltungstag](#checkliste-am-veranstaltungstag)
+13. [FAQ](#faq)
+14. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -37,13 +37,19 @@ Anleitung für Administratoren der Vereinsbestellplattform mit Vollzugriff auf a
 
 ### Installation mit Docker (empfohlen)
 
+Die Anwendung nutzt fertige Images aus der GitHub Container Registry (kein lokaler Build nötig):
+
 ```bash
 git clone https://github.com/TimUx/food-order.git
 cd food-order
 cp .env.example .env
-docker compose up --build -d
+docker compose pull
+docker compose up -d
 docker compose exec backend npm run seed
 ```
+
+Standard-Images: `ghcr.io/timux/food-order/backend:latest` und `ghcr.io/timux/food-order/frontend:latest`  
+Tag ändern über `IMAGE_TAG` in `.env` (z. B. Release-Version).
 
 Das Backend synchronisiert das Datenbankschema beim Start automatisch per `prisma db push`.
 
@@ -77,7 +83,8 @@ Auslösung: manuell über GitHub Actions oder automatisch beim Erstellen eines R
 
 ```bash
 git pull
-docker compose up --build -d
+docker compose pull
+docker compose up -d
 ```
 
 Daten in PostgreSQL und hochgeladene Bilder bleiben in Docker-Volumes erhalten.
@@ -190,28 +197,49 @@ Cloudflare Turnstile schützt die öffentliche Bestellseite vor automatisierten 
 
 ### 2. Verein einrichten
 
-Navigieren Sie zu **Verein** (`/mitarbeiter/verein`) und tragen Sie ein:
+Navigieren Sie zum **Administrationsbereich** (`/admin/verein`) und tragen Sie ein:
 
 - Vereinsname und Logo
 - Kontaktdaten für die öffentliche Kontaktseite
 
-### 3. Erste Veranstaltung anlegen
+### 3. Benutzer anlegen
 
-Unter **Veranstaltungen** eine Veranstaltung mit korrektem **Veranstaltungsdatum** anlegen und **aktivieren**.
+Unter `/admin/benutzer` können Sie weitere Mitarbeiter und Administratoren anlegen.
 
-### 4. Speisen pflegen
+### 4. Erste Veranstaltung anlegen
 
-Unter **Speisen** Gerichte für die aktive Veranstaltung anlegen.
+Unter **Veranstaltungen** (`/admin/veranstaltungen`) eine Veranstaltung mit korrektem **Veranstaltungsdatum** anlegen und **aktivieren**.
 
-### 5. Testbestellung durchführen
+### 5. Speisen pflegen
+
+Unter **Speisen** (`/admin/speisen`) Gerichte für die aktive Veranstaltung anlegen.
+
+### 6. Testbestellung durchführen
 
 Öffnen Sie die öffentliche Bestellseite (`/`), geben Sie eine Testbestellung auf und prüfen Sie, ob sie in der Küchenansicht erscheint.
 
 ---
 
+## Administrationsbereich
+
+Der **Administrationsbereich** (`/admin`) ist vom Mitarbeiterbereich getrennt und nur für Administratoren zugänglich.
+
+| Route | Funktion |
+|-------|----------|
+| `/admin/login` | Admin-Anmeldung |
+| `/admin` | Übersicht |
+| `/admin/verein` | Vereinsname, Logo, Kontaktdaten |
+| `/admin/benutzer` | Benutzerverwaltung (anlegen, bearbeiten, deaktivieren) |
+| `/admin/veranstaltungen` | Veranstaltungen verwalten |
+| `/admin/speisen` | Speisekarte pflegen |
+
+Der **Mitarbeiterbereich** (`/mitarbeiter`) bleibt für den operativen Betrieb: Dashboard, Küche, Abholung, Bestellung, Bestellübersicht.
+
+---
+
 ## Veranstaltungen verwalten
 
-Navigieren Sie zu **Veranstaltungen** (`/mitarbeiter/veranstaltungen`).
+Navigieren Sie zu **Veranstaltungen** (`/admin/veranstaltungen`).
 
 ![Veranstaltungen](screenshots/12-veranstaltungen.png)
 
@@ -272,7 +300,7 @@ Die Bestellseite ist für Touch-Bedienung auf Smartphone und Tablet optimiert:
 
 ## Speisen verwalten
 
-Navigieren Sie zu **Speisen** (`/mitarbeiter/speisen`).
+Navigieren Sie zu **Speisen** (`/admin/speisen`).
 
 ![Speisenverwaltung](screenshots/11-speisenverwaltung.png)
 
@@ -320,33 +348,14 @@ Neu → In Bearbeitung → Fertig → Abgeholt
 
 ---
 
-## Vereinseinstellungen
-
-Navigieren Sie zu **Verein** (`/mitarbeiter/verein`).
-
-![Vereinseinstellungen](screenshots/13-vereinseinstellungen.png)
-
-Konfigurierbar:
-
-| Feld | Anzeige |
-|------|---------|
-| Vereinsname | Header auf allen öffentlichen Seiten |
-| Logo | Header (Avatar), Kontaktseite |
-| Beschreibung | Kontaktseite |
-| Ansprechpartner, E-Mail, Telefon, Adresse, Website | Kontaktseite (`/kontakt`) |
-
-Ohne eigene Angaben werden Standardwerte verwendet. Kunden erreichen die Kontaktseite über den **Kontakt**-Button auf der Bestellseite.
-
----
-
 ## Mitarbeiter & Rollen
 
-| Rolle | Berechtigungen |
-|-------|---------------|
-| **ADMIN** | Vollzugriff: Verein, Veranstaltungen, Speisen, alle Mitarbeiterfunktionen |
-| **STAFF** | Küche, Abholung, Bestellung, Bestellungen, Dashboard |
+| Rolle | Bereich | Berechtigungen |
+|-------|---------|---------------|
+| **ADMIN** | `/admin` + `/mitarbeiter` | Verein, Benutzer, Veranstaltungen, Speisen + operativer Betrieb |
+| **STAFF** | `/mitarbeiter` | Küche, Abholung, Bestellung, Bestellungen, Dashboard |
 
-Neue Benutzer werden aktuell über das Seed-Skript oder direkt in der Datenbank angelegt. Eine Benutzerverwaltungs-Oberfläche ist als zukünftige Erweiterung vorgesehen.
+Benutzer werden unter `/admin/benutzer` angelegt und verwaltet.
 
 ---
 
@@ -443,7 +452,7 @@ Ja. Die Anwendung ist als PWA nutzbar: Im Browser **Zum Startbildschirm hinzufü
 
 ### Wie lege ich neue Mitarbeiter an?
 
-Aktuell über das Seed-Skript (`npm run seed`) oder direkt in der Datenbank. Eine Benutzeroberfläche zur Verwaltung ist geplant.
+Unter `/admin/benutzer` → **Neuer Benutzer**. Rolle „Mitarbeiter“ für Küche/Abholung, „Administrator“ für den Admin-Bereich.
 
 ### Was passiert mit hochgeladenen Speisebildern bei einem Update?
 

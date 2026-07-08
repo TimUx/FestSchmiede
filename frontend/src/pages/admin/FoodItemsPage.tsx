@@ -24,7 +24,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import { StaffLayout } from '@/components/StaffLayout';
+import { AdminLayout } from '@/components/AdminLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { api, formatPrice } from '@/services/api';
 import { FoodItem } from '@/types';
@@ -140,16 +140,16 @@ export function FoodItemsPage() {
 
   if (loading) {
     return (
-      <StaffLayout title="Speisenverwaltung">
+      <AdminLayout title="Speisenverwaltung">
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
           <CircularProgress />
         </Box>
-      </StaffLayout>
+      </AdminLayout>
     );
   }
 
   return (
-    <StaffLayout title="Speisenverwaltung" fullWidth>
+    <AdminLayout title="Speisenverwaltung" fullWidth>
       {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>{error}</Alert>}
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
@@ -223,6 +223,6 @@ export function FoodItemsPage() {
           <Button variant="contained" onClick={handleSave}>Speichern</Button>
         </DialogActions>
       </Dialog>
-    </StaffLayout>
+    </AdminLayout>
   );
 }

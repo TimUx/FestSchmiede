@@ -3,7 +3,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ClubProvider } from '@/contexts/ClubContext';
 import { ProtectedRoute } from '@/components/StaffLayout';
-import { useAuth } from '@/contexts/AuthContext';
+import { AdminRoute } from '@/components/AdminLayout';
 import { OrderPage } from '@/pages/OrderPage';
 import { OrderStatusPage } from '@/pages/OrderStatusPage';
 import { PickupBoardPage } from '@/pages/PickupBoardPage';
@@ -14,21 +14,11 @@ import { KitchenPage } from '@/pages/staff/KitchenPage';
 import { AbholungPage } from '@/pages/staff/AbholungPage';
 import { BestellungPage } from '@/pages/staff/BestellungPage';
 import { OrdersPage } from '@/pages/staff/OrdersPage';
-import { FoodItemsPage } from '@/pages/staff/FoodItemsPage';
-import { EventsPage } from '@/pages/staff/EventsPage';
-import { ClubSettingsPage } from '@/pages/staff/ClubSettingsPage';
-
-function AdminRoute({ children }: { children: React.ReactNode }) {
-  return <ProtectedRoute>{children}</ProtectedRoute>;
-}
-
-function AdminOnlyRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
-  if (loading) return null;
-  if (!user) return <Navigate to="/mitarbeiter/login" replace />;
-  if (user.role !== 'ADMIN') return <Navigate to="/mitarbeiter" replace />;
-  return <>{children}</>;
-}
+import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage';
+import { ClubSettingsPage } from '@/pages/admin/ClubSettingsPage';
+import { UsersPage } from '@/pages/admin/UsersPage';
+import { EventsPage } from '@/pages/admin/EventsPage';
+import { FoodItemsPage } from '@/pages/admin/FoodItemsPage';
 
 export default function App() {
   return (
@@ -42,18 +32,27 @@ export default function App() {
               <Route path="/status" element={<OrderStatusPage />} />
               <Route path="/status/:orderId" element={<OrderStatusPage />} />
               <Route path="/abholboard" element={<PickupBoardPage />} />
+
               <Route path="/mitarbeiter/login" element={<LoginPage />} />
-              <Route path="/mitarbeiter" element={<AdminRoute><DashboardPage /></AdminRoute>} />
-              <Route path="/mitarbeiter/bestellungen" element={<AdminRoute><OrdersPage /></AdminRoute>} />
-              <Route path="/mitarbeiter/kueche" element={<AdminRoute><KitchenPage /></AdminRoute>} />
-              <Route path="/mitarbeiter/abholung" element={<AdminRoute><AbholungPage /></AdminRoute>} />
-              <Route path="/mitarbeiter/bestellung" element={<AdminRoute><BestellungPage /></AdminRoute>} />
-              <Route path="/mitarbeiter/speisen" element={<AdminOnlyRoute><FoodItemsPage /></AdminOnlyRoute>} />
-              <Route path="/mitarbeiter/veranstaltungen" element={<AdminOnlyRoute><EventsPage /></AdminOnlyRoute>} />
-              <Route path="/mitarbeiter/verein" element={<AdminOnlyRoute><ClubSettingsPage /></AdminOnlyRoute>} />
+              <Route path="/mitarbeiter" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+              <Route path="/mitarbeiter/bestellungen" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+              <Route path="/mitarbeiter/kueche" element={<ProtectedRoute><KitchenPage /></ProtectedRoute>} />
+              <Route path="/mitarbeiter/abholung" element={<ProtectedRoute><AbholungPage /></ProtectedRoute>} />
+              <Route path="/mitarbeiter/bestellung" element={<ProtectedRoute><BestellungPage /></ProtectedRoute>} />
+
+              <Route path="/admin/login" element={<LoginPage />} />
+              <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
+              <Route path="/admin/verein" element={<AdminRoute><ClubSettingsPage /></AdminRoute>} />
+              <Route path="/admin/benutzer" element={<AdminRoute><UsersPage /></AdminRoute>} />
+              <Route path="/admin/veranstaltungen" element={<AdminRoute><EventsPage /></AdminRoute>} />
+              <Route path="/admin/speisen" element={<AdminRoute><FoodItemsPage /></AdminRoute>} />
+
               {/* Alte Routen weiterleiten */}
               <Route path="/mitarbeiter/kasse" element={<Navigate to="/mitarbeiter/abholung" replace />} />
               <Route path="/mitarbeiter/lokale-kasse" element={<Navigate to="/mitarbeiter/bestellung" replace />} />
+              <Route path="/mitarbeiter/verein" element={<Navigate to="/admin/verein" replace />} />
+              <Route path="/mitarbeiter/speisen" element={<Navigate to="/admin/speisen" replace />} />
+              <Route path="/mitarbeiter/veranstaltungen" element={<Navigate to="/admin/veranstaltungen" replace />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </BrowserRouter>

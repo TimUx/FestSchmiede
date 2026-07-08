@@ -13,6 +13,15 @@ export const createUserSchema = z.object({
   role: z.enum(['ADMIN', 'STAFF']),
 });
 
+export const updateUserSchema = z.object({
+  email: z.string().email('Ungültige E-Mail-Adresse').optional(),
+  password: z.string().min(6, 'Mindestens 6 Zeichen').optional(),
+  firstName: z.string().min(1, 'Vorname erforderlich').optional(),
+  lastName: z.string().min(1, 'Nachname erforderlich').optional(),
+  role: z.enum(['ADMIN', 'STAFF']).optional(),
+  active: z.boolean().optional(),
+});
+
 export const createEventSchema = z.object({
   name: z.string().min(1, 'Name erforderlich'),
   description: z.string().optional(),

@@ -9,7 +9,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import LoginIcon from '@mui/icons-material/Login';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { PublicLayout } from '@/components/PublicLayout';
 
@@ -20,14 +20,24 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isAdminLogin = location.pathname.startsWith('/admin');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     try {
-      await login(email, password);
-      navigate('/mitarbeiter');
+      const user = await login(email, password);
+      if (isAdminLogin) {
+        if (user.role !== 'ADMIN') {
+          setError('Nur Administratoren können sich hier anmelden.');
+          return;
+        }
+        navigate('/admin');
+      } else {
+        navigate('/mitarbeiter');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Anmeldung fehlgeschlagen');
     } finally {
@@ -39,7 +49,14 @@ export function LoginPage() {
     <PublicLayout>
       <Box sx={{ maxWidth: 400, mx: 'auto', mt: 4 }}>
         <Typography variant="h4" fontWeight={800} gutterBottom align="center">
-          Mitarbeiter-Login
+          {isAdminLogin ? 'Admin-Login' : 'Mitarbeiter-Login'}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
+          {isAdminLogin ? (
+            <>Mitarbeiter melden sich im <Link to="/mitarbeiter/login">Mitarbeiterbereich</Link> an.</>
+          ) : (
+            <>Administratoren können sich im <Link to="/admin/login">Admin-Bereich</Link> anmelden.</>
+          )}
         </Typography>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         <Paper sx={{ p: 3 }}>

@@ -22,7 +22,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { StaffLayout } from '@/components/StaffLayout';
+import { AdminLayout } from '@/components/AdminLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
 import { Event } from '@/types';
@@ -116,16 +116,16 @@ export function EventsPage() {
 
   if (loading) {
     return (
-      <StaffLayout title="Veranstaltungen">
+      <AdminLayout title="Veranstaltungen">
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
           <CircularProgress />
         </Box>
-      </StaffLayout>
+      </AdminLayout>
     );
   }
 
   return (
-    <StaffLayout title="Veranstaltungen" fullWidth>
+    <AdminLayout title="Veranstaltungen" fullWidth>
       {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>{error}</Alert>}
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
@@ -186,6 +186,6 @@ export function EventsPage() {
           <Button variant="contained" onClick={handleSave}>Speichern</Button>
         </DialogActions>
       </Dialog>
-    </StaffLayout>
+    </AdminLayout>
   );
 }

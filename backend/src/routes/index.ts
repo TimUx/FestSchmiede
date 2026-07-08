@@ -4,6 +4,7 @@ import { eventController } from '../controllers/eventController';
 import { foodItemController } from '../controllers/foodItemController';
 import { orderController } from '../controllers/orderController';
 import { clubController } from '../controllers/clubController';
+import { userController } from '../controllers/userController';
 import { authenticate, requireRole, loadUser } from '../middleware/auth';
 import { validateBody, validateParams } from '../middleware/validation';
 import {
@@ -19,6 +20,8 @@ import {
   lookupOrderSchema,
   lookupByNumberSchema,
   idParamSchema,
+  createUserSchema,
+  updateUserSchema,
 } from '../validation/schemas';
 import multer from 'multer';
 import path from 'path';
@@ -120,5 +123,29 @@ router.post('/staff/club/logo', requireRole('ADMIN'), upload.single('image'), as
     next(err);
   }
 });
+
+// Admin – Verein, Benutzer
+router.use('/admin', authenticate, loadUser, requireRole('ADMIN'));
+
+router.get('/admin/club', clubController.get);
+router.put('/admin/club', validateBody(updateClubSchema), clubController.update);
+router.post('/admin/club/logo', upload.single('image'), async (req, res, next) => {
+  try {
+    if (!req.file) {
+      res.status(400).json({ error: 'Kein Bild hochgeladen' });
+      return;
+    }
+    const { clubService } = await import('../services/clubService');
+    const logoUrl = `/uploads/${req.file.filename}`;
+    const club = await clubService.update({ logoUrl });
+    res.json(club);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/admin/users', userController.list);
+router.post('/admin/users', validateBody(createUserSchema), userController.create);
+router.put('/admin/users/:id', validateParams(idParamSchema), validateBody(updateUserSchema), userController.update);
 
 export default router;

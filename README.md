@@ -15,7 +15,7 @@ Moderne Webanwendung zur Verwaltung von Essensbestellungen bei Vereinsveranstalt
 | **Küchenansicht** | Tablet-optimiert mit großen Buttons |
 | **Abholung** | Abholung per Tages-Bestellnummer bestätigen |
 | **Bestellung** | Bestellungen vor Ort aufgeben (ohne Kundendaten) |
-| **Vereinseinstellungen** | Name, Logo, Kontaktdaten (Admin) |
+| **Vereinseinstellungen** | Name, Logo, Kontaktdaten, Benutzer (Admin) |
 | **Speisenverwaltung** | CRUD mit Bild-Upload (Admin) |
 | **Veranstaltungsverwaltung** | Mehrere Events, eine aktiv (Admin) |
 
@@ -25,7 +25,7 @@ Kunden können **Tage oder Wochen vor** der Veranstaltung bestellen. Die Abholnu
 
 ## Vereins-Branding
 
-Administratoren können unter **Verein** (`/mitarbeiter/verein`) konfigurieren:
+Administratoren können unter **Verein** (`/admin/verein`) konfigurieren:
 
 - Vereinsname und Logo (im Header sichtbar)
 - Beschreibung, Ansprechpartner, E-Mail, Telefon, Adresse, Website
@@ -67,7 +67,8 @@ Ohne Konfiguration werden sinnvolle Standardwerte verwendet.
 git clone https://github.com/TimUx/food-order.git
 cd food-order
 cp .env.example .env
-docker compose up --build -d
+docker compose pull
+docker compose up -d
 docker compose exec backend npm run seed
 ```
 
@@ -80,6 +81,7 @@ Das Backend synchronisiert das Datenbankschema automatisch per `prisma db push` 
 | Kontakt | http://localhost:5173/kontakt |
 | Abholboard | http://localhost:5173/abholboard |
 | Mitarbeiter-Login | http://localhost:5173/mitarbeiter/login |
+| Admin-Login | http://localhost:5173/admin/login |
 
 ## Test-Zugangsdaten
 
@@ -107,9 +109,19 @@ Das Backend synchronisiert das Datenbankschema automatisch per `prisma db push` 
 | `/mitarbeiter/abholung` | Abholung bestätigen | ADMIN, STAFF |
 | `/mitarbeiter/bestellung` | Bestellung vor Ort | ADMIN, STAFF |
 | `/mitarbeiter/kueche` | Küchenansicht | ADMIN, STAFF |
-| `/mitarbeiter/verein` | Vereinseinstellungen | ADMIN |
+| `/mitarbeiter/bestellungen` | Bestellübersicht | ADMIN, STAFF |
 
-> Alte Routen `/mitarbeiter/kasse` und `/mitarbeiter/lokale-kasse` leiten automatisch weiter.
+### Administration
+
+| Route | Beschreibung | Rolle |
+|-------|-------------|-------|
+| `/admin` | Admin-Übersicht | ADMIN |
+| `/admin/verein` | Vereinseinstellungen | ADMIN |
+| `/admin/benutzer` | Benutzerverwaltung | ADMIN |
+| `/admin/veranstaltungen` | Veranstaltungen | ADMIN |
+| `/admin/speisen` | Speisenverwaltung | ADMIN |
+
+> Alte Routen `/mitarbeiter/kasse`, `/mitarbeiter/lokale-kasse`, `/mitarbeiter/verein`, `/mitarbeiter/speisen` und `/mitarbeiter/veranstaltungen` leiten automatisch weiter.
 
 ## Dokumentation
 

@@ -6,7 +6,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
   logout: () => void;
   isAdmin: boolean;
 }
@@ -39,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(TOKEN_KEY, result.token);
     setToken(result.token);
     setUser(result.user);
+    return result.user;
   }, []);
 
   const logout = useCallback(() => {

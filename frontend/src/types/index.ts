@@ -8,6 +8,8 @@ export interface User {
   firstName: string;
   lastName: string;
   role: UserRole;
+  active?: boolean;
+  createdAt?: string;
 }
 
 export interface Event {
