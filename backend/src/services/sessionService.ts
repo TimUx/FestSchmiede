@@ -94,6 +94,7 @@ export const sessionService = {
       email: session.user.email,
       role: session.user.role.name,
       scope: 'tenant',
+      tenantId: session.user.tenantId,
     };
 
     const accessToken = jwt.sign(

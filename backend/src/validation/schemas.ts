@@ -15,7 +15,7 @@ export const revokeAllSessionsSchema = z.object({
 
 export const createUserSchema = z.object({
   email: z.string().email('Ungültige E-Mail-Adresse'),
-  password: z.string().min(6, 'Mindestens 6 Zeichen'),
+  password: z.string().min(8, 'Mindestens 8 Zeichen'),
   firstName: z.string().min(1, 'Vorname erforderlich'),
   lastName: z.string().min(1, 'Nachname erforderlich'),
   role: z.enum(['ADMIN', 'STAFF']),
@@ -23,7 +23,7 @@ export const createUserSchema = z.object({
 
 export const updateUserSchema = z.object({
   email: z.string().email('Ungültige E-Mail-Adresse').optional(),
-  password: z.string().min(6, 'Mindestens 6 Zeichen').optional(),
+  password: z.string().min(8, 'Mindestens 8 Zeichen').optional(),
   firstName: z.string().min(1, 'Vorname erforderlich').optional(),
   lastName: z.string().min(1, 'Nachname erforderlich').optional(),
   role: z.enum(['ADMIN', 'STAFF']).optional(),

@@ -18,6 +18,7 @@ export interface AuthPayload {
   email: string;
   role: string;
   scope: AuthScope;
+  tenantId?: string;
   permissions?: string[];
   sessionId?: string;
   impersonation?: ImpersonationMeta;

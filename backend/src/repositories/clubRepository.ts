@@ -16,10 +16,8 @@ export const clubRepository = {
     const tenantId = requireTenantId();
     let settings = await prisma.clubSettings.findFirst({ where: { tenantId } });
     if (!settings) {
-      const legacy = await prisma.clubSettings.findUnique({ where: { id: 'default' } });
-      if (legacy) return legacy;
       settings = await prisma.clubSettings.create({
-        data: { id: 'default', tenantId, ...DEFAULT_CLUB },
+        data: { id: `club-${tenantId}`, tenantId, ...DEFAULT_CLUB },
       });
     }
     return settings;
@@ -49,7 +47,7 @@ export const clubRepository = {
     const tenantId = requireTenantId();
     return prisma.clubSettings.upsert({
       where: { tenantId },
-      create: { id: 'default', tenantId, clubName: data.clubName || DEFAULT_CLUB.clubName, ...data },
+      create: { id: `club-${tenantId}`, tenantId, clubName: data.clubName || DEFAULT_CLUB.clubName, ...data },
       update: data,
     });
   },

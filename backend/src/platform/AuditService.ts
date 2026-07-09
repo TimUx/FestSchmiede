@@ -2,6 +2,7 @@ import { prisma } from '../config/database';
 import { logger } from '../utils/logger';
 import type { AuditLogEntry } from './types';
 import { optionalTenantId } from './tenant/tenantScope';
+import { safeAuditLogLine } from './auditRedaction';
 
 export class AuditService {
   async log(entry: AuditLogEntry): Promise<void> {
@@ -17,7 +18,7 @@ export class AuditService {
       });
     } catch (err) {
       logger.warn('AuditService: persist failed, logging to console', err);
-      logger.info(`AUDIT ${entry.action}`, entry);
+      logger.info('AUDIT', safeAuditLogLine(entry));
     }
   }
 

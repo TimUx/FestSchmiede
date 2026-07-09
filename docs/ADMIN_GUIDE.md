@@ -144,7 +144,10 @@ CORS_ORIGIN=http://localhost:5173    # Öffentliche Frontend-URL (auch für E-Ma
 
 | Variable | Beschreibung |
 |----------|--------------|
-| `JWT_SECRET` | Geheimer Schlüssel für Mitarbeiter-Login – **in Produktion unbedingt ändern** |
+| `JWT_SECRET` | Geheimer Schlüssel für Mitarbeiter-Login – **in Produktion unbedingt ändern** (min. 32 Zeichen) |
+| `APP_ENCRYPTION_KEY` | Verschlüsselung für SMTP/Payment-Settings (min. 32 Zeichen) |
+| `PLATFORM_ADMIN_PASSWORD` | Initiales Plattformadmin-Passwort – **Pflicht in Produktion** (min. 16 Zeichen) |
+| `TRUSTED_PROXY_HOPS` | Anzahl Reverse-Proxy-Hops (z. B. `1` hinter Traefik/nginx) |
 | `JWT_EXPIRES_IN` | Gültigkeitsdauer des Login-Tokens (z. B. `8h`, `24h`) |
 | `CORS_ORIGIN` | Erlaubte Frontend-URL; wird auch für Links in Bestätigungs-E-Mails verwendet (bei HTTPS: `https://bestellung.sv-musterstadt.de` – siehe [Reverse Proxy](#reverse-proxy-https)) |
 

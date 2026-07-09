@@ -13,6 +13,7 @@ interface TenantResolverConfig {
   multiTenantEnabled: boolean;
   defaultTenantSlug: string;
   trustedProxies: string[];
+  trustProxyHops: number;
 }
 
 interface CacheEntry {
@@ -146,8 +147,16 @@ export class TenantResolver {
   }
 
   extractHost(req: Request): string | null {
-    const forwarded = req.headers['x-forwarded-host'];
-    const raw = typeof forwarded === 'string' ? forwarded.split(',')[0]?.trim() : req.hostname;
+    const trustProxy = this.config.trustProxyHops > 0;
+    let raw: string | undefined;
+
+    if (trustProxy) {
+      const forwarded = req.headers['x-forwarded-host'];
+      raw = typeof forwarded === 'string' ? forwarded.split(',')[0]?.trim() : req.hostname;
+    } else {
+      raw = req.hostname;
+    }
+
     if (!raw) return null;
     return raw.toLowerCase().split(':')[0] ?? null;
   }

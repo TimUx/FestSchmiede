@@ -33,6 +33,7 @@ export class ImpersonationService {
       email: adminUser.email,
       role: adminUser.role.name,
       scope: 'tenant',
+      tenantId: tenant.id,
       impersonation: {
         platformUserId,
         platformSessionId,
@@ -42,7 +43,7 @@ export class ImpersonationService {
     };
 
     const accessToken = jwt.sign(payload, config.jwt.secret, {
-      expiresIn: '2h',
+      expiresIn: '30m',
     } as jwt.SignOptions);
 
     await this.audit.log({

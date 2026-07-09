@@ -502,6 +502,17 @@ Mandantenfähige Kommunikation über `modules/notifications/`:
 
 → **[NOTIFICATION_GUIDE.md](./NOTIFICATION_GUIDE.md)**
 
+### Security (Phase 8)
+
+Multi-Tenant-Härtung und OWASP-Review:
+
+- Host-Validation: `TenantResolver` + Trust Proxy
+- Upload-Zugriff: `uploadAccess` Middleware
+- WebSocket-Isolation: `socket/index.ts`
+- JWT `tenantId`-Binding
+
+→ **[SECURITY.md](../SECURITY.md)** · **[ADR-029](./architecture/029-multi-tenant-security-hardening.md)**
+
 ### Payment & PayableResource
 
 Das Payment-Modul arbeitet ausschließlich mit `PayableResource` – es kennt keine Bestellungen. Der Core registriert Bestellungen als zahlbare Ressource:

@@ -34,7 +34,8 @@ import {
 } from '../validation/schemas';
 
 import { uploadService } from '../services/uploadService';
-import { loginRateLimiter, publicOrderRateLimiter, lookupRateLimiter } from '../middleware/rateLimit';
+import { loginRateLimiter, publicOrderRateLimiter, lookupRateLimiter, authRefreshRateLimiter, uploadRateLimiter, paymentPublicRateLimiter } from '../middleware/rateLimit';
+import { config } from '../config';
 import { openApiDocument } from '../core/openapi';
 import moduleAdminRoutes from '../core/routes/modules';
 import settingsRoutes from '../core/routes/settings';
@@ -70,13 +71,17 @@ router.get('/health', async (req, res) => {
   });
 });
 router.get('/openapi.json', (_req, res) => {
+  if (config.nodeEnv === 'production') {
+    res.status(404).json({ error: 'Nicht gefunden' });
+    return;
+  }
   res.json(openApiDocument);
 });
 
 // Auth
 router.post('/auth/login', loginRateLimiter, validateBody(loginSchema), authController.login);
-router.post('/auth/logout', validateBody(refreshTokenSchema), authController.logout);
-router.post('/auth/refresh', loginRateLimiter, validateBody(refreshTokenSchema), authController.refresh);
+router.post('/auth/logout', authRefreshRateLimiter, validateBody(refreshTokenSchema), authController.logout);
+router.post('/auth/refresh', authRefreshRateLimiter, validateBody(refreshTokenSchema), authController.refresh);
 router.post('/auth/revoke-all', authenticate, loadUser, requireRole('ADMIN'), validateBody(revokeAllSessionsSchema), authController.revokeAll);
 router.get('/auth/me', authenticate, loadUser, authController.me);
 
@@ -92,7 +97,7 @@ router.get('/public/menu', foodItemController.getPublic);
 router.post('/public/orders', publicOrderRateLimiter, validateBody(createOnlineOrderSchema), orderController.createOnline);
 router.post('/public/orders/lookup', lookupRateLimiter, validateBody(lookupOrderSchema), orderController.lookup);
 router.post('/public/orders/:id/checkout', publicOrderRateLimiter, validateParams(idParamSchema), validateBody(createOrderCheckoutSchema), orderController.createCheckout);
-router.get('/public/orders/status/:token', validateParams(tokenParamSchema), orderController.getByLookupToken);
+router.get('/public/orders/status/:token', lookupRateLimiter, validateParams(tokenParamSchema), orderController.getByLookupToken);
 router.post('/public/orders/:token/cancel', lookupRateLimiter, validateParams(tokenParamSchema), validateBody(cancelOrderSchema), orderController.cancelOnline);
 router.get('/public/pickup-board', orderController.getReady);
 
@@ -110,7 +115,7 @@ router.post('/staff/events/:eventId/food-items', requireRole('ADMIN'), validateB
 router.put('/staff/food-items/:id', requireRole('ADMIN'), validateParams(idParamSchema), validateBody(updateFoodItemSchema), foodItemController.update);
 router.delete('/staff/food-items/:id', requireRole('ADMIN'), validateParams(idParamSchema), foodItemController.delete);
 
-router.post('/staff/food-items/:id/image', requireRole('ADMIN'), validateParams(idParamSchema), upload.single('image'), async (req, res, next) => {
+router.post('/staff/food-items/:id/image', requireRole('ADMIN'), uploadRateLimiter, validateParams(idParamSchema), upload.single('image'), async (req, res, next) => {
   try {
     if (!req.file) {
       res.status(400).json({ error: 'Kein Bild hochgeladen' });
@@ -143,7 +148,7 @@ router.get('/realtime/club', realtimeController.syncClub);
 
 router.get('/staff/club', requireRole('ADMIN'), clubController.get);
 router.put('/staff/club', requireRole('ADMIN'), validateBody(updateClubSchema), clubController.update);
-router.post('/staff/club/logo', requireRole('ADMIN'), upload.single('image'), async (req, res, next) => {
+router.post('/staff/club/logo', requireRole('ADMIN'), uploadRateLimiter, upload.single('image'), async (req, res, next) => {
   try {
     if (!req.file) {
       res.status(400).json({ error: 'Kein Bild hochgeladen' });
@@ -246,7 +251,7 @@ router.get('/public/payment/methods', async (_req, res) => {
   });
 });
 
-router.get('/public/payment/checkout/:sessionId/status', async (req, res, next) => {
+router.get('/public/payment/checkout/:sessionId/status', paymentPublicRateLimiter, async (req, res, next) => {
   try {
     const status = await getPaymentServiceRegistry().getPaymentStatus(req.params.sessionId);
     if (!status) {
@@ -259,7 +264,7 @@ router.get('/public/payment/checkout/:sessionId/status', async (req, res, next) 
   }
 });
 
-router.post('/public/payment/checkout/:sessionId/retry', async (req, res, next) => {
+router.post('/public/payment/checkout/:sessionId/retry', paymentPublicRateLimiter, async (req, res, next) => {
   try {
     const result = await getPaymentServiceRegistry().retryCheckout(req.params.sessionId);
     if (!result) {

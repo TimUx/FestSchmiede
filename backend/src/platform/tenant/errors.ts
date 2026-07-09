@@ -45,6 +45,15 @@ export class TenantInvalidHostError extends AppError {
   }
 }
 
+export class TenantContextRequiredError extends AppError {
+  constructor(
+    message = 'Mandanten-Kontext erforderlich. Bitte Subdomain oder Pfad-Präfix verwenden.'
+  ) {
+    super(400, message, 'TENANT_CONTEXT_REQUIRED');
+    this.name = 'TenantContextRequiredError';
+  }
+}
+
 export class TenantContextMissingError extends AppError {
   constructor(message = 'Kein Veranstalter-Kontext für diese Anfrage verfügbar.') {
     super(500, message, TENANT_ERROR_CODES.CONTEXT_MISSING);

@@ -3,6 +3,7 @@ import type { AuthPayload } from '../middleware/platformAuth';
 import type { TenantContext } from '../platform/tenant/TenantContext';
 import type { TenantResolver } from '../platform/tenant/TenantResolver';
 import type { TenantService } from '../platform/tenant/TenantService';
+import { TenantContextRequiredError } from '../platform/tenant/errors';
 
 const PLATFORM_ONLY_PREFIXES = ['/api/platform', '/platform'];
 const TENANT_OPTIONAL_PATHS = new Set([
@@ -45,9 +46,7 @@ export function createTenantContextMiddleware(
       }
 
       if (result.type === 'platform' && requiresTenantContext(req.path)) {
-        const tenant = await tenantService.getDefaultTenant();
-        const contextData = await tenantService.resolveContextData(tenant);
-        tenantContext.run(contextData, () => next());
+        next(new TenantContextRequiredError());
         return;
       }
 

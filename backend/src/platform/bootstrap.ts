@@ -105,6 +105,7 @@ export function bootstrapPlatform(): void {
       multiTenantEnabled: config.multiTenant.enabled,
       defaultTenantSlug: config.multiTenant.defaultTenantSlug,
       trustedProxies: config.multiTenant.trustedProxies,
+      trustProxyHops: config.multiTenant.trustProxyHops,
     }
   );
 

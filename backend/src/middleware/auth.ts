@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config';
 import { prisma } from '../config/database';
 import { AppError } from './errorHandler';
-import { tenantWhere } from '../platform/tenant/tenantScope';
+import { tenantWhere, optionalTenantId } from '../platform/tenant/tenantScope';
 import { parsePermissionKeys } from '../platform/permissions';
 import type { AuthPayload } from './platformAuth';
 
@@ -28,13 +28,33 @@ export function authenticate(req: AuthRequest, _res: Response, next: NextFunctio
         next(new AppError(403, 'Plattform-Token nicht für Mandanten-APIs gültig'));
         return;
       }
-      if (payload.sessionId && !payload.impersonation) {
+      if (payload.impersonation) {
+        const { platformSessionService } = await import('../services/platformSessionService');
+        const valid = await platformSessionService.validateSession(
+          payload.impersonation.platformSessionId
+        );
+        if (!valid) {
+          next(new AppError(401, 'Impersonation-Sitzung ungültig oder abgelaufen'));
+          return;
+        }
+      } else if (payload.sessionId) {
         const { sessionService } = await import('../services/sessionService');
         const valid = await sessionService.validateSession(payload.sessionId);
         if (!valid) {
           next(new AppError(401, 'Sitzung ungültig oder abgelaufen'));
           return;
         }
+      }
+
+      const resolvedTenantId = optionalTenantId();
+      if (
+        resolvedTenantId &&
+        payload.tenantId &&
+        payload.tenantId !== resolvedTenantId &&
+        !payload.impersonation
+      ) {
+        next(new AppError(403, 'Token gehört zu einem anderen Mandanten'));
+        return;
       }
       req.user = { ...payload, scope: payload.scope ?? 'tenant' };
       next();

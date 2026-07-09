@@ -4,6 +4,7 @@ import { AppError } from '../middleware/errorHandler';
 import { AuthPayload } from '../middleware/auth';
 import { parsePermissionKeys } from '../platform/permissions';
 import { hookSystem } from '../platform/bootstrap';
+import { requireTenantId } from '../platform/tenant/tenantScope';
 import { CORE_HOOKS } from '../platform/types';
 import { sessionService } from './sessionService';
 
@@ -24,6 +25,7 @@ export const authService = {
       email: user.email,
       role: user.role.name,
       scope: 'tenant',
+      tenantId: requireTenantId(),
     };
 
     const { accessToken, refreshToken } = await sessionService.createSession(
@@ -66,6 +68,10 @@ export const authService = {
   },
 
   async revokeAllForUser(userId: string) {
+    const user = await userRepository.findById(userId);
+    if (!user) {
+      throw new AppError(404, 'Benutzer nicht gefunden');
+    }
     await sessionService.revokeAllUserSessions(userId);
   },
 
