@@ -7,7 +7,7 @@ CREATE TABLE "legal_pages" (
     "enabled" BOOLEAN NOT NULL DEFAULT false,
     "published" BOOLEAN NOT NULL DEFAULT false,
     "content_html" TEXT NOT NULL DEFAULT '',
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "legal_pages_pkey" PRIMARY KEY ("id")

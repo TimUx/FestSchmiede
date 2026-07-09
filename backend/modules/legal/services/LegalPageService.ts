@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { prisma } from '../../../src/config/database';
 import { settingsService } from '../../../src/platform/bootstrap';
 import { AppError } from '../../../src/middleware/errorHandler';
@@ -167,9 +168,10 @@ export const legalPageService = {
     for (const pageType of LEGAL_PAGE_TYPES) {
       const defaults = LEGAL_PAGE_DEFAULTS[pageType];
       await prisma.$executeRawUnsafe(
-        `INSERT INTO legal_pages (page_type, title, slug, enabled, published, content_html)
-         VALUES ($1, $2, $3, false, false, '')
+        `INSERT INTO legal_pages (id, page_type, title, slug, enabled, published, content_html, updated_at, created_at)
+         VALUES ($1, $2, $3, $4, false, false, '', NOW(), NOW())
          ON CONFLICT (page_type) DO NOTHING`,
+        randomUUID(),
         pageType,
         defaults.title,
         defaults.slug
