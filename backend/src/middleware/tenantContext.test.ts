@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { Request, Response, NextFunction } from 'express';
-import { createTenantContextMiddleware } from '../../middleware/tenantContext';
+import { createTenantContextMiddleware } from './tenantContext';
 import { TenantContext } from '../platform/tenant/TenantContext';
 import type { TenantService } from '../platform/tenant/TenantService';
 import type { TenantResolver } from '../platform/tenant/TenantResolver';

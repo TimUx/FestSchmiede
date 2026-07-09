@@ -1,5 +1,7 @@
-import { tenantContext } from '../bootstrap';
+import { sharedTenantContext } from './sharedTenantContext';
 import { TenantContextMissingError } from './errors';
+
+const tenantContext = sharedTenantContext;
 
 /**
  * Liefert die aktuelle Mandanten-ID aus dem TenantContext.

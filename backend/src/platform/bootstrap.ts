@@ -35,6 +35,7 @@ import { registerCoreSettings } from '../core/settings/registerCoreSettings';
 import { registerCoreAdminMetadata } from '../core/admin/coreAdminMetadata';
 import { CoreAdminMetadataRegistry } from './adminUi/CoreAdminMetadataRegistry';
 import { TenantContext } from './tenant/TenantContext';
+import { sharedTenantContext } from './tenant/sharedTenantContext';
 import { PlatformContext } from './tenant/PlatformContext';
 import { TenantRepository } from '../repositories/tenantRepository';
 import { TenantService } from './tenant/TenantService';
@@ -92,7 +93,7 @@ let tenantInfrastructureInitialized = false;
 export function bootstrapPlatform(): void {
   if (bootstrapped) return;
 
-  tenantContextInstance = new TenantContext();
+  tenantContextInstance = sharedTenantContext;
   platformContextInstance = new PlatformContext();
   const tenantRepository = new TenantRepository();
   tenantServiceInstance = new TenantService(tenantRepository);
