@@ -1,9 +1,19 @@
 import { prisma } from '../config/database';
 import type { FeatureContext, Module, ModuleHealthCheckResult } from './types';
 import type { FeatureFlags } from './FeatureFlags';
+import type { TenantContext } from './tenant/TenantContext';
+
+export interface PlatformHealthStatus {
+  tenantContextReady: boolean;
+  defaultTenantAvailable: boolean;
+  message?: string;
+}
 
 export class HealthService {
-  constructor(private readonly flags: FeatureFlags) {}
+  constructor(
+    private readonly flags: FeatureFlags,
+    private readonly tenantContext?: TenantContext
+  ) {}
 
   async checkModule(
     moduleId: string,
@@ -35,5 +45,19 @@ export class HealthService {
       results[mod.id] = await this.checkModule(mod.id, mod, context);
     }
     return results;
+  }
+
+  async checkTenantInfrastructure(
+    defaultTenantExists: boolean
+  ): Promise<PlatformHealthStatus> {
+    const tenantContextReady = this.tenantContext !== undefined;
+    const ok = tenantContextReady && defaultTenantExists;
+    return {
+      tenantContextReady,
+      defaultTenantAvailable: defaultTenantExists,
+      message: ok
+        ? undefined
+        : 'Tenant-Infrastruktur ist nicht vollständig initialisiert.',
+    };
   }
 }

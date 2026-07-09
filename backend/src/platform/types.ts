@@ -177,6 +177,8 @@ export interface FeatureContext {
   readonly flags: import('./FeatureFlags').FeatureFlags;
   readonly audit: import('./AuditService').AuditService;
   readonly settings: import('./settings/SettingsService').SettingsService;
+  getTenantId(): string;
+  hasTenant(): boolean;
   getConfig<T = Record<string, unknown>>(moduleId: string): Promise<T>;
   setConfig<T = Record<string, unknown>>(moduleId: string, config: T): Promise<void>;
 }

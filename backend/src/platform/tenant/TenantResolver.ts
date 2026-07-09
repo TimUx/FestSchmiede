@@ -1,0 +1,231 @@
+import type { Request } from 'express';
+import type { TenantService } from './TenantService';
+import type { PlatformContext } from './PlatformContext';
+import type { ResolveResult } from './types';
+import { RESERVED_SUBDOMAINS } from './types';
+import {
+  TenantInvalidDomainError,
+  TenantInvalidHostError,
+  TenantNotFoundError,
+} from './errors';
+
+interface TenantResolverConfig {
+  multiTenantEnabled: boolean;
+  defaultTenantSlug: string;
+  trustedProxies: string[];
+}
+
+interface CacheEntry {
+  result: ResolveResult;
+  expiresAt: number;
+}
+
+export class TenantResolver {
+  private readonly cache = new Map<string, CacheEntry>();
+  private readonly negativeCache = new Map<string, number>();
+  private readonly cacheTtlMs = 60_000;
+  private readonly negativeCacheTtlMs = 30_000;
+
+  constructor(
+    private readonly tenantService: TenantService,
+    private readonly platformContext: PlatformContext,
+    private readonly config: TenantResolverConfig
+  ) {}
+
+  async resolve(req: Request): Promise<ResolveResult> {
+    const host = this.extractHost(req);
+    if (!host) {
+      throw new TenantInvalidHostError();
+    }
+
+    this.validateHost(host);
+
+    const platform = this.platformContext.current();
+    const cacheKey = this.buildCacheKey(host, req.path, platform.pathPrefixRoutingEnabled);
+    const cached = this.getFromCache(cacheKey);
+    if (cached) return cached;
+
+    const result = await this.resolveInternal(host, req.path, platform);
+    this.setCache(cacheKey, result);
+    return result;
+  }
+
+  private async resolveInternal(
+    host: string,
+    path: string,
+    platform: ReturnType<PlatformContext['current']>
+  ): Promise<ResolveResult> {
+    const normalizedHost = host.toLowerCase();
+
+    if (this.isPlatformHost(normalizedHost, platform.baseDomain)) {
+      if (platform.pathPrefixRoutingEnabled) {
+        const prefixResult = await this.resolvePathPrefix(path);
+        if (prefixResult) return prefixResult;
+      }
+
+      if (path.startsWith('/api/platform') || path.startsWith('/platform')) {
+        return { type: 'platform' };
+      }
+
+      if (!this.config.multiTenantEnabled) {
+        return this.resolveDefaultTenant('default_fallback');
+      }
+
+      return { type: 'platform' };
+    }
+
+    const subdomain = this.extractSubdomain(normalizedHost, platform.baseDomain);
+    if (subdomain) {
+      if ((RESERVED_SUBDOMAINS as readonly string[]).includes(subdomain)) {
+        return { type: 'platform' };
+      }
+      return this.resolveSubdomain(subdomain);
+    }
+
+    if (!this.config.multiTenantEnabled || normalizedHost === 'localhost') {
+      return this.resolveDefaultTenant('default_fallback');
+    }
+
+    throw new TenantNotFoundError();
+  }
+
+  private async resolveSubdomain(subdomain: string): Promise<ResolveResult> {
+    const negativeKey = `neg:sub:${subdomain}`;
+    if (this.isNegativeCached(negativeKey)) {
+      throw new TenantNotFoundError();
+    }
+
+    const tenant = await this.tenantService.findBySubdomain(subdomain);
+    if (!tenant) {
+      this.setNegativeCache(negativeKey);
+      throw new TenantNotFoundError();
+    }
+
+    const contextData = await this.tenantService.resolveContextData(tenant);
+    return {
+      type: 'tenant',
+      tenant: contextData,
+      matchedBy: 'subdomain',
+    };
+  }
+
+  private async resolvePathPrefix(path: string): Promise<ResolveResult | null> {
+    const segments = path.split('/').filter(Boolean);
+    if (segments.length === 0) return null;
+
+    const slug = segments[0];
+    if ((RESERVED_SUBDOMAINS as readonly string[]).includes(slug) || slug === 'api') {
+      return null;
+    }
+
+    const tenant = await this.tenantService.findBySlug(slug);
+    if (!tenant) return null;
+
+    const contextData = await this.tenantService.resolveContextData(tenant);
+    return {
+      type: 'tenant',
+      tenant: contextData,
+      matchedBy: 'path_prefix',
+      pathPrefix: `/${slug}`,
+    };
+  }
+
+  private async resolveDefaultTenant(
+    matchedBy: ResolveResult['matchedBy']
+  ): Promise<ResolveResult> {
+    const tenant = await this.tenantService.findBySlug(this.config.defaultTenantSlug);
+    if (!tenant) {
+      throw new TenantNotFoundError('Der Standard-Veranstalter ist nicht konfiguriert.');
+    }
+    const contextData = await this.tenantService.resolveContextData(tenant);
+    return {
+      type: 'tenant',
+      tenant: contextData,
+      matchedBy,
+    };
+  }
+
+  extractHost(req: Request): string | null {
+    const forwarded = req.headers['x-forwarded-host'];
+    const raw = typeof forwarded === 'string' ? forwarded.split(',')[0]?.trim() : req.hostname;
+    if (!raw) return null;
+    return raw.toLowerCase().split(':')[0] ?? null;
+  }
+
+  private validateHost(host: string): void {
+    if (!/^[a-z0-9.-]+$/i.test(host)) {
+      throw new TenantInvalidHostError();
+    }
+
+    const platform = this.platformContext.current();
+    const allowed = platform.allowedDomains;
+    const baseDomain = platform.baseDomain.toLowerCase();
+
+    const isAllowed =
+      host === 'localhost' ||
+      host === baseDomain ||
+      host.endsWith(`.${baseDomain}`) ||
+      allowed.some((domain) => host === domain.toLowerCase() || host.endsWith(`.${domain.toLowerCase()}`));
+
+    if (!isAllowed) {
+      throw new TenantInvalidDomainError();
+    }
+  }
+
+  private isPlatformHost(host: string, baseDomain: string): boolean {
+    return host === baseDomain.toLowerCase() || host === 'localhost';
+  }
+
+  private extractSubdomain(host: string, baseDomain: string): string | null {
+    const base = baseDomain.toLowerCase();
+    if (host === base || host === 'localhost') return null;
+    if (host.endsWith(`.${base}`)) {
+      return host.slice(0, -(base.length + 1)).split('.')[0] ?? null;
+    }
+    if (host.includes('.') && !host.endsWith(`.${base}`)) {
+      const parts = host.split('.');
+      return parts[0] || null;
+    }
+    if (!host.includes('.')) {
+      return host;
+    }
+    return null;
+  }
+
+  private buildCacheKey(host: string, path: string, prefixEnabled: boolean): string {
+    return prefixEnabled ? `${host}:${path.split('/').filter(Boolean)[0] ?? ''}` : host;
+  }
+
+  private getFromCache(key: string): ResolveResult | null {
+    const entry = this.cache.get(key);
+    if (!entry) return null;
+    if (Date.now() > entry.expiresAt) {
+      this.cache.delete(key);
+      return null;
+    }
+    return entry.result;
+  }
+
+  private setCache(key: string, result: ResolveResult): void {
+    this.cache.set(key, { result, expiresAt: Date.now() + this.cacheTtlMs });
+  }
+
+  private isNegativeCached(key: string): boolean {
+    const expiresAt = this.negativeCache.get(key);
+    if (!expiresAt) return false;
+    if (Date.now() > expiresAt) {
+      this.negativeCache.delete(key);
+      return false;
+    }
+    return true;
+  }
+
+  private setNegativeCache(key: string): void {
+    this.negativeCache.set(key, Date.now() + this.negativeCacheTtlMs);
+  }
+
+  invalidateCache(): void {
+    this.cache.clear();
+    this.negativeCache.clear();
+  }
+}

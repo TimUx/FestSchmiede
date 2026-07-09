@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { PlatformProvider } from '@/contexts/PlatformProvider';
+import { TenantProvider } from '@/contexts/TenantProvider';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { ClubProvider } from '@/contexts/ClubContext';
 import { ProtectedRoute } from '@/components/StaffLayout';
 import { OrderPage } from '@/pages/OrderPage';
 import { OrderStatusPage } from '@/pages/OrderStatusPage';
@@ -21,8 +22,9 @@ import { SetupWizardPage } from '@/pages/admin/SetupWizardPage';
 export default function App() {
   return (
     <ThemeProvider>
-      <ClubProvider>
-        <AuthProvider>
+      <PlatformProvider>
+        <TenantProvider>
+          <AuthProvider>
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<OrderPage />} />
@@ -53,8 +55,9 @@ export default function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </BrowserRouter>
-        </AuthProvider>
-      </ClubProvider>
+          </AuthProvider>
+        </TenantProvider>
+      </PlatformProvider>
     </ThemeProvider>
   );
 }

@@ -108,6 +108,62 @@ export function subscribePaymentStatus(
   );
 }
 
+export function subscribeTenantUpdates(
+  onData: (tenant: import('@/types/tenant').TenantPublicData) => void
+): () => void {
+  return realtimeService.subscribe(
+    'tenant',
+    (msg) => {
+      if (msg.type === 'club:updated' && msg.payload) {
+        const club = msg.payload as ClubSettings;
+        onData({
+          name: club.clubName,
+          slug: 'default',
+          description: club.description,
+          contactName: club.contactName,
+          email: club.email,
+          phone: club.phone,
+          address: club.address,
+          website: club.website,
+          logoUrl: club.logoUrl,
+          theme: 'default',
+          locale: 'de-DE',
+          timezone: 'Europe/Berlin',
+          currency: 'EUR',
+        });
+      }
+    },
+    {
+      wsEvents: ['club:updated'],
+      activity: 'idle',
+      poll: async (etag) => {
+        const result = await api.syncClub(etag);
+        if (!result.data) return result;
+        const club = result.data;
+        return {
+          ...result,
+          data: {
+            name: club.clubName,
+            slug: 'default',
+            description: club.description,
+            contactName: club.contactName,
+            email: club.email,
+            phone: club.phone,
+            address: club.address,
+            website: club.website,
+            logoUrl: club.logoUrl,
+            theme: 'default',
+            locale: 'de-DE',
+            timezone: 'Europe/Berlin',
+            currency: 'EUR',
+          },
+        };
+      },
+      onPollData: (data) => onData(data as import('@/types/tenant').TenantPublicData),
+    }
+  );
+}
+
 export function subscribeClubUpdates(onData: (club: ClubSettings) => void): () => void {
   return realtimeService.subscribe(
     'club',

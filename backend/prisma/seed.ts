@@ -136,6 +136,32 @@ async function main() {
     },
   });
 
+  await (prisma as unknown as { tenant: { upsert: (args: unknown) => Promise<unknown> } }).tenant.upsert({
+    where: { slug: 'default' },
+    update: {
+      name: 'SV Musterstadt e.V.',
+      shortName: 'SVM',
+      status: 'ACTIVE',
+      activatedAt: new Date(),
+    },
+    create: {
+      id: '00000000-0000-0000-0000-000000000010',
+      name: 'SV Musterstadt e.V.',
+      shortName: 'SVM',
+      slug: 'default',
+      subdomain: 'default',
+      status: 'ACTIVE',
+      contactName: 'Vereinsverwaltung',
+      email: 'kontakt@sv-musterstadt.de',
+      phone: '+49 1234 567890',
+      description: 'Sportverein Musterstadt – seit 1920',
+      address: 'Sportplatzstraße 1, 12345 Musterstadt',
+      website: 'https://www.sv-musterstadt.de',
+      activatedAt: new Date(),
+      settings: { create: {} },
+    },
+  });
+
   console.log('Seed abgeschlossen!');
   console.log('');
   console.log('Test-Zugangsdaten:');

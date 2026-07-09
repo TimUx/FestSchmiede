@@ -114,6 +114,15 @@ export const api = {
     }),
   getPickupBoard: () => request<PickupBoardOrder[]>('/public/pickup-board'),
   getClub: () => request<import('@/types/club').ClubSettings>('/public/club'),
+  getTenant: () => request<import('@/types/tenant').TenantPublicData>('/public/tenant'),
+  getPlatform: () =>
+    request<import('@/types/tenant').PlatformPublicData>('/public/platform').then((data) => ({
+      name: data.name,
+      version: data.version,
+      baseDomain: data.baseDomain,
+      maintenanceMode: data.maintenanceMode,
+      maintenanceMessage: data.maintenanceMessage,
+    })),
   getOrderSettings: () => request<import('@/types/club').OrderSettings>('/public/order-settings'),
 
   // Auth

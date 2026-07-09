@@ -34,6 +34,16 @@ import { ModuleSettingsStore } from './settings/stores/ModuleSettingsStore';
 import { registerCoreSettings } from '../core/settings/registerCoreSettings';
 import { registerCoreAdminMetadata } from '../core/admin/coreAdminMetadata';
 import { CoreAdminMetadataRegistry } from './adminUi/CoreAdminMetadataRegistry';
+import { TenantContext } from './tenant/TenantContext';
+import { PlatformContext } from './tenant/PlatformContext';
+import { TenantRepository } from '../repositories/tenantRepository';
+import { TenantService } from './tenant/TenantService';
+import { TenantResolver } from './tenant/TenantResolver';
+import { PlatformSettingsService } from './tenant/PlatformSettingsService';
+import { config } from '../config';
+import { createPlatformContextMiddleware, createPlatformPublicMiddleware } from '../middleware/platformContext';
+import { createTenantContextMiddleware } from '../middleware/tenantContext';
+import { createTenantController } from '../controllers/tenantController';
 
 export const platformContainer = new ServiceContainer();
 
@@ -59,15 +69,38 @@ export let adminUiServiceInstance!: AdminUiService;
 export let coreAdminMetadataRegistryInstance!: CoreAdminMetadataRegistry;
 export let schemaRegistryInstance!: SchemaRegistry;
 export let settingsServiceInstance!: SettingsService;
+export let tenantContextInstance!: TenantContext;
+export let platformContextInstance!: PlatformContext;
+export let tenantServiceInstance!: TenantService;
+export let tenantResolverInstance!: TenantResolver;
+export let platformSettingsServiceInstance!: PlatformSettingsService;
+export let tenantControllerInstance!: ReturnType<typeof createTenantController>;
+
+let tenantInfrastructureInitialized = false;
 
 export function bootstrapPlatform(): void {
   if (bootstrapped) return;
 
-  eventBusInstance = new EventBus();
+  tenantContextInstance = new TenantContext();
+  platformContextInstance = new PlatformContext();
+  const tenantRepository = new TenantRepository();
+  tenantServiceInstance = new TenantService(tenantRepository);
+  platformSettingsServiceInstance = new PlatformSettingsService();
+  tenantResolverInstance = new TenantResolver(
+    tenantServiceInstance,
+    platformContextInstance,
+    {
+      multiTenantEnabled: config.multiTenant.enabled,
+      defaultTenantSlug: config.multiTenant.defaultTenantSlug,
+      trustedProxies: config.multiTenant.trustedProxies,
+    }
+  );
+
+  eventBusInstance = new EventBus(tenantContextInstance);
   hookSystemInstance = new HookSystem(eventBusInstance);
   featureFlagsInstance = new FeatureFlags();
   auditServiceInstance = new AuditService();
-  healthServiceInstance = new HealthService(featureFlagsInstance);
+  healthServiceInstance = new HealthService(featureFlagsInstance, tenantContextInstance);
   metadataRegistryInstance = new MetadataRegistry();
   extensionPointRegistryInstance = new ExtensionPointRegistry();
   moduleRegistryInstance = new ModuleRegistry();
@@ -107,7 +140,14 @@ export function bootstrapPlatform(): void {
     hookSystemInstance,
     featureFlagsInstance,
     auditServiceInstance,
-    settingsServiceInstance
+    settingsServiceInstance,
+    tenantContextInstance
+  );
+
+  tenantControllerInstance = createTenantController(
+    tenantServiceInstance,
+    tenantContextInstance,
+    platformContextInstance
   );
 
   moduleRegistryInstance.bindPlatformDeps({
@@ -143,8 +183,41 @@ export function bootstrapPlatform(): void {
   platformContainer.registerSingleton(PLATFORM_TOKENS.FeatureContext, featureContextInstance);
   platformContainer.registerSingleton(PLATFORM_TOKENS.FeatureFlags, featureFlagsInstance);
   platformContainer.registerSingleton(PLATFORM_TOKENS.SettingsService, settingsServiceInstance);
+  platformContainer.registerSingleton(PLATFORM_TOKENS.TenantService, tenantServiceInstance);
+  platformContainer.registerSingleton(PLATFORM_TOKENS.TenantContext, tenantContextInstance);
+  platformContainer.registerSingleton(PLATFORM_TOKENS.TenantResolver, tenantResolverInstance);
+  platformContainer.registerSingleton(PLATFORM_TOKENS.PlatformContext, platformContextInstance);
+  platformContainer.registerSingleton(PLATFORM_TOKENS.PlatformSettingsService, platformSettingsServiceInstance);
 
   bootstrapped = true;
+}
+
+export async function initializeTenantInfrastructure(): Promise<void> {
+  if (tenantInfrastructureInitialized) return;
+
+  const platformData = await platformSettingsServiceInstance.loadContextData(config.coreVersion);
+  platformData.baseDomain = config.multiTenant.baseDomain;
+  if (!platformData.allowedDomains.includes('localhost')) {
+    platformData.allowedDomains = [...platformData.allowedDomains, 'localhost'];
+  }
+  platformContextInstance.initialize(platformData);
+
+  const { ensureDefaultTenant } = await import('../core/tenant/ensureDefaultTenant');
+  await ensureDefaultTenant();
+
+  tenantInfrastructureInitialized = true;
+}
+
+export function createTenantMiddlewareStack() {
+  return [
+    createPlatformContextMiddleware(platformContextInstance),
+    createPlatformPublicMiddleware(platformContextInstance),
+    createTenantContextMiddleware(
+      tenantContextInstance,
+      tenantResolverInstance,
+      tenantServiceInstance
+    ),
+  ];
 }
 
 bootstrapPlatform();
@@ -165,3 +238,9 @@ export const permissionService = permissionServiceInstance;
 export const adminUiService = adminUiServiceInstance;
 export const settingsService = settingsServiceInstance;
 export const schemaRegistry = schemaRegistryInstance;
+export const tenantContext = tenantContextInstance;
+export const platformContext = platformContextInstance;
+export const tenantService = tenantServiceInstance;
+export const tenantResolver = tenantResolverInstance;
+export const platformSettingsService = platformSettingsServiceInstance;
+export const tenantController = tenantControllerInstance;

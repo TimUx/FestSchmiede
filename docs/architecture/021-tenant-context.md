@@ -2,7 +2,7 @@
 
 | Feld | Wert |
 |------|------|
-| **Status** | Accepted (Phase 0 – Architektur) |
+| **Status** | Accepted (implementiert Phase 1) |
 | **Datum** | 2026-07-09 |
 | **Version** | 2.0 |
 | **Abhängigkeiten** | ADR-020, ADR-023 |

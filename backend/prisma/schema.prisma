@@ -25,6 +25,68 @@ enum StatusCode {
   CANCELLED
 }
 
+enum TenantStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+model Tenant {
+  id            String       @id @default(uuid())
+  name          String
+  shortName     String?      @map("short_name")
+  slug          String       @unique
+  subdomain     String       @unique
+  status        TenantStatus @default(ACTIVE)
+  contactName   String?      @map("contact_name")
+  email         String?
+  phone         String?
+  logoUrl       String?      @map("logo_url")
+  locale        String       @default("de-DE")
+  timezone      String       @default("Europe/Berlin")
+  currency      String       @default("EUR")
+  theme         String       @default("default")
+  description   String?
+  address       String?
+  website       String?
+  activatedAt   DateTime?    @map("activated_at")
+  archivedAt    DateTime?    @map("archived_at")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  settings      TenantSettings?
+
+  @@index([status])
+  @@index([subdomain])
+  @@index([slug])
+  @@map("tenants")
+}
+
+model TenantSettings {
+  tenantId                    String   @id @map("tenant_id")
+  tenant                      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orderFieldFirstNameRequired Boolean  @default(true) @map("order_field_first_name_required")
+  orderFieldLastNameRequired  Boolean  @default(true) @map("order_field_last_name_required")
+  orderFieldEmailRequired     Boolean  @default(false) @map("order_field_email_required")
+  orderFieldPhoneRequired     Boolean  @default(false) @map("order_field_phone_required")
+  cancellationDeadlineHours   Int      @default(24) @map("cancellation_deadline_hours")
+  dataRetentionDays           Int      @default(365) @map("data_retention_days")
+  extraJson                   Json     @default("{}") @map("extra_json")
+  updatedAt                   DateTime @updatedAt @map("updated_at")
+
+  @@map("tenant_settings")
+}
+
+model PlatformSettings {
+  key       String   @id
+  value     Json
+  encrypted Boolean  @default(false)
+  updatedAt DateTime @updatedAt @map("updated_at")
+  updatedBy String?  @map("updated_by")
+
+  @@map("platform_settings")
+}
+
 model Role {
   id        String   @id @default(uuid())
   name      RoleName @unique

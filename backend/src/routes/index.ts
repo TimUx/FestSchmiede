@@ -40,14 +40,21 @@ import moduleAdminRoutes from '../core/routes/modules';
 import settingsRoutes from '../core/routes/settings';
 import permissionsRoutes from '../core/routes/permissions';
 import adminUiRoutes from '../core/routes/adminUi';
+import { tenantController, healthService, tenantService } from '../platform/bootstrap';
 
 const upload = uploadService.memory;
 
 const router = Router();
 
 // Health & API-Dokumentation
-router.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+router.get('/health', async (_req, res) => {
+  const defaultTenantExists = await tenantService.exists({ slug: 'default' });
+  const tenantHealth = await healthService.checkTenantInfrastructure(defaultTenantExists);
+  res.json({
+    status: tenantHealth.tenantContextReady && tenantHealth.defaultTenantAvailable ? 'ok' : 'degraded',
+    timestamp: new Date().toISOString(),
+    tenant: tenantHealth,
+  });
 });
 router.get('/openapi.json', (_req, res) => {
   res.json(openApiDocument);
@@ -61,6 +68,8 @@ router.post('/auth/revoke-all', authenticate, loadUser, requireRole('ADMIN'), va
 router.get('/auth/me', authenticate, loadUser, authController.me);
 
 // Public
+router.get('/public/tenant', tenantController.getPublic);
+router.get('/public/platform', tenantController.getPlatformPublic);
 router.get('/public/club', clubController.getPublic);
 router.get('/public/order-settings', clubController.getOrderSettings);
 router.get('/public/event', eventController.getActive);

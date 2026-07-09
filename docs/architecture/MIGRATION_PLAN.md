@@ -230,7 +230,7 @@ Eine Installation → beliebig viele Veranstalter → beliebig viele Veranstaltu
 | Phase | Inhalt | Status |
 |-------|--------|--------|
 | **Phase 0** | Architektur, ADRs, Dokumentation | ✅ Abgeschlossen |
-| **Phase 1** | TenantContext, Resolver, Datenmodell, Standard-Mandant-Migration | Geplant |
+| **Phase 1** | TenantContext, Resolver, Datenmodell, Standard-Mandant-Migration | ✅ Abgeschlossen |
 | **Phase 2** | Plattform-Administration, PlatformSettings, CORS dynamisch | Geplant |
 | **Phase 3** | Subdomain-Routing, Traefik, Wildcard-TLS, TenantProvider | Geplant |
 | **Phase 4** | Modul-Anpassungen, Security-Härtung, Redis-Cache | Geplant |

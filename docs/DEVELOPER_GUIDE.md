@@ -50,7 +50,25 @@ Ab Version 2.0 arbeitet die Plattform mandantenfähig. Kernbausteine:
 - Alle Datenbankzugriffe mandantenbezogener Tabellen filtern über `tenant_id` aus `TenantContext`
 - UI-Begriff bleibt **Veranstalter**; intern **Mandant**
 
-ADRs: [020–027](architecture/README.md#version-20--multi-tenant) · Branch: `feature/v2-multi-tenant-platform`
+ADRs: [020–027](architecture/README.md#version-20--multi-tenant) · Implementierung: [Phase 1 Report](architecture/PHASE_1_COMPLETION_REPORT.md) · Branch: `feature/v2-multi-tenant-platform`
+
+### Implementierte APIs (Phase 1)
+
+| Endpoint | Beschreibung |
+|----------|--------------|
+| `GET /api/public/tenant` | Öffentliche Mandantendaten (host-aufgelöst) |
+| `GET /api/public/platform` | Plattforminformationen |
+
+### Backend-Nutzung in Modulen
+
+```typescript
+// Über FeatureContext (bevorzugt in Modulen)
+const tenantId = context.getTenantId();
+
+// Über DI (Services, Middleware)
+const tenantContext = platformContainer.get<TenantContext>(PLATFORM_TOKENS.TenantContext);
+const id = tenantContext.require().id;
+```
 
 ### Schichten im Backend
 
