@@ -42,17 +42,13 @@ app.use(errorHandler);
 export async function bootstrapApp(): Promise<void> {
   await initializeTenantInfrastructure();
   registerCorePayables();
-  await migrateLegacySettingsSecrets();
 
   const defaultTenant = await tenantService.getDefaultTenant();
-  if (defaultTenant) {
-    const contextData = await tenantService.resolveContextData(defaultTenant);
-    await tenantContext.runAsync(contextData, async () => {
-      await moduleManager.initialize();
-    });
-  } else {
+  const contextData = await tenantService.resolveContextData(defaultTenant);
+  await tenantContext.runAsync(contextData, async () => {
+    await migrateLegacySettingsSecrets();
     await moduleManager.initialize();
-  }
+  });
 
   await moduleManager.mountRoutes(routes);
 }

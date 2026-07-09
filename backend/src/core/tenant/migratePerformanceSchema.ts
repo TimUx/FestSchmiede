@@ -5,7 +5,7 @@ const MIGRATION_MARKER = 'performance_schema_v1';
 
 /**
  * Performance-Indizes für Hot Paths (Realtime, Kitchen, Pickup).
- * Idempotent – nur bei erstem Lauf.
+ * Idempotent – Prisma db push legt Indizes bereits an.
  */
 export async function migratePerformanceSchema(): Promise<void> {
   const marker = await prisma.$queryRaw<{ key: string }[]>`
@@ -19,22 +19,30 @@ export async function migratePerformanceSchema(): Promise<void> {
 
   logger.info('Starte Performance-Schema-Migration');
 
-  await prisma.$executeRawUnsafe(`
-    CREATE INDEX IF NOT EXISTS orders_tenant_event_status_idx
-      ON orders(tenant_id, event_id, status);
-    CREATE INDEX IF NOT EXISTS orders_tenant_updated_at_idx
-      ON orders(tenant_id, updated_at DESC);
-    CREATE INDEX IF NOT EXISTS orders_event_status_ready_at_idx
-      ON orders(event_id, status, ready_at)
-      WHERE status = 'READY';
-    CREATE INDEX IF NOT EXISTS order_items_order_id_idx
-      ON order_items(order_id);
-    CREATE INDEX IF NOT EXISTS orders_lookup_token_tenant_idx
-      ON orders(tenant_id, lookup_token);
-  `);
+  const indexExists = await prisma.$queryRaw<{ exists: boolean }[]>`
+    SELECT EXISTS (
+      SELECT 1 FROM pg_indexes
+      WHERE schemaname = 'public' AND tablename = 'Order' AND indexname = 'Order_tenantId_eventId_status_idx'
+    ) AS exists
+  `.catch(() => [{ exists: false }]);
+
+  if (!indexExists[0]?.exists) {
+    const statements = [
+      `CREATE INDEX IF NOT EXISTS "Order_tenantId_eventId_status_idx" ON "Order"("tenant_id", "eventId", status)`,
+      `CREATE INDEX IF NOT EXISTS "Order_tenantId_updatedAt_idx" ON "Order"("tenant_id", "updatedAt" DESC)`,
+      `CREATE INDEX IF NOT EXISTS "Order_eventId_status_readyAt_idx" ON "Order"("eventId", status, "readyAt") WHERE status = 'READY'`,
+      `CREATE INDEX IF NOT EXISTS "OrderItem_orderId_idx" ON "OrderItem"("orderId")`,
+      `CREATE INDEX IF NOT EXISTS "Order_tenantId_lookupToken_idx" ON "Order"("tenant_id", "lookupToken")`,
+    ];
+    for (const sql of statements) {
+      await prisma.$executeRawUnsafe(sql);
+    }
+  } else {
+    logger.info('Performance-Indizes bereits via Prisma vorhanden');
+  }
 
   await prisma.$executeRaw`
-    INSERT INTO platform_settings (key, value, encrypted, "updatedAt")
+    INSERT INTO platform_settings (key, value, encrypted, updated_at)
     VALUES (${MIGRATION_MARKER}, ${JSON.stringify({ appliedAt: new Date().toISOString() })}::jsonb, false, NOW())
     ON CONFLICT (key) DO NOTHING
   `;

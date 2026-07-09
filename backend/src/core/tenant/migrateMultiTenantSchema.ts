@@ -10,6 +10,16 @@ type MigrationStep = {
   sql: string;
 };
 
+async function markMigrationComplete(defaultTenantId: string): Promise<void> {
+  await migrateUploadFiles(defaultTenantId);
+  await prisma.$executeRaw`
+    INSERT INTO platform_settings (key, value, encrypted, updated_at)
+    VALUES (${MIGRATION_MARKER}, ${JSON.stringify({ appliedAt: new Date().toISOString(), tenantId: defaultTenantId })}::jsonb, false, NOW())
+    ON CONFLICT (key) DO NOTHING
+  `;
+  logger.info('Multi-Tenant-Schema-Migration abgeschlossen', { tenant_id: defaultTenantId });
+}
+
 /**
  * Idempotente Schema-Migration für Multi-Tenant (Phase 2).
  * Wird beim App-Start ausgeführt, nachdem der Standard-Mandant existiert.
@@ -21,6 +31,21 @@ export async function migrateMultiTenantSchema(defaultTenantId: string): Promise
 
   if (marker.length > 0) {
     logger.info('Multi-Tenant-Schema-Migration bereits angewendet', { tenant_id: defaultTenantId });
+    return;
+  }
+
+  const tenantColumn = await prisma.$queryRaw<{ exists: boolean }[]>`
+    SELECT EXISTS (
+      SELECT 1 FROM information_schema.columns
+      WHERE table_schema = 'public' AND table_name = 'User' AND column_name = 'tenant_id'
+    ) AS exists
+  `.catch(() => [{ exists: false }]);
+
+  if (tenantColumn[0]?.exists) {
+    logger.info('Multi-Tenant-Schema bereits via Prisma synchronisiert — Marker setzen', {
+      tenant_id: defaultTenantId,
+    });
+    await markMigrationComplete(defaultTenantId);
     return;
   }
 
@@ -216,15 +241,7 @@ export async function migrateMultiTenantSchema(defaultTenantId: string): Promise
     }
   }
 
-  await migrateUploadFiles(defaultTenantId);
-
-  await prisma.$executeRaw`
-    INSERT INTO platform_settings (key, value, encrypted, "updatedAt")
-    VALUES (${MIGRATION_MARKER}, ${JSON.stringify({ appliedAt: new Date().toISOString(), tenantId: defaultTenantId })}::jsonb, false, NOW())
-    ON CONFLICT (key) DO NOTHING
-  `;
-
-  logger.info('Multi-Tenant-Schema-Migration abgeschlossen', { tenant_id: defaultTenantId });
+  await markMigrationComplete(defaultTenantId);
 }
 
 async function migrateUploadFiles(defaultTenantId: string): Promise<void> {
