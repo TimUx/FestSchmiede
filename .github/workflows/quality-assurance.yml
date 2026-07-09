@@ -92,6 +92,7 @@ jobs:
       - name: Module scenarios
         run: |
           npm ci --prefix backend
+          npm run prisma:generate --prefix backend
           npm run qa:module-scenarios
           docker compose -f docker-compose.ci.yml restart backend
           npm run qa:wait
