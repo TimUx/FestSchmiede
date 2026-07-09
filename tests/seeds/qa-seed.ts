@@ -126,6 +126,17 @@ export async function runQaSeed(options: { orderCount?: number; demoMode?: boole
 
     const qty = (i % 3) + 1;
     const lineTotal = firstDish.price * qty;
+    let customerId: string | undefined;
+    if (i % 3 !== 0) {
+      const customer = await prisma.customer.create({
+        data: {
+          firstName: 'Test',
+          lastName: `Kunde${i}`,
+          email: i % 2 === 0 ? `kunde${i}@example.test` : null,
+        },
+      });
+      customerId = customer.id;
+    }
     await prisma.order.create({
       data: {
         id: orderId,
@@ -135,13 +146,7 @@ export async function runQaSeed(options: { orderCount?: number; demoMode?: boole
         source: i % 5 === 0 ? OrderSource.CASHIER : OrderSource.ONLINE,
         status: i % 4 === 0 ? StatusCode.READY : StatusCode.NEW,
         totalPrice: lineTotal,
-        customer: i % 3 !== 0 ? {
-          create: {
-            firstName: 'Test',
-            lastName: `Kunde${i}`,
-            email: i % 2 === 0 ? `kunde${i}@example.test` : undefined,
-          },
-        } : undefined,
+        customerId,
         items: {
           create: [{
             foodItemId: firstDish.id,
