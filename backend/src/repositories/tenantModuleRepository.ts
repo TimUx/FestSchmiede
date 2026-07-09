@@ -58,4 +58,32 @@ export const tenantModuleRepository = {
       data,
     });
   },
+
+  /** Plattform-Bootstrap: Modul für mindestens einen Mandanten aktiviert? */
+  async isEnabledForAnyTenant(moduleId: string): Promise<boolean> {
+    const count = await prisma.tenantModule.count({
+      where: {
+        moduleId,
+        installed: true,
+        enabled: true,
+        OR: [{ lifecycleStatus: null }, { lifecycleStatus: { not: 'FAILED' } }],
+      },
+    });
+    return count > 0;
+  },
+
+  /** Plattform-Bootstrap: Modul für mindestens einen Mandanten installiert? */
+  async isInstalledForAnyTenant(moduleId: string): Promise<boolean> {
+    const count = await prisma.tenantModule.count({
+      where: { moduleId, installed: true },
+    });
+    return count > 0;
+  },
+
+  async findFirstInstalled(moduleId: string): Promise<TenantModule | null> {
+    return prisma.tenantModule.findFirst({
+      where: { moduleId, installed: true },
+      orderBy: { installedAt: 'asc' },
+    });
+  },
 };

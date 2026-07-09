@@ -42,6 +42,8 @@ Ab Version 2.0 arbeitet die Plattform mandantenfähig. Kernbausteine:
 | `PlatformContext` | Plattformweite Konfiguration |
 | `TenantResolver` | Einzige Stelle für Host-/URL-Auflösung |
 | `TenantProvider` | React-Provider (ersetzt `ClubContext`) |
+| `TenantSettingsService` | Mandantenspezifische Einstellungen (`tenant.order`, `tenant.organization`, `tenant.module.*`) |
+| `PlatformSettingsService` | Plattformweite Einstellungen (`platform.*`) |
 
 **Verbindliche Regeln für Entwickler:**
 
@@ -50,7 +52,7 @@ Ab Version 2.0 arbeitet die Plattform mandantenfähig. Kernbausteine:
 - Alle Datenbankzugriffe mandantenbezogener Tabellen filtern über `tenant_id` aus `TenantContext`
 - UI-Begriff bleibt **Veranstalter**; intern **Mandant**
 
-ADRs: [020–027](architecture/README.md#version-20--multi-tenant) · Phase 1: [Report](architecture/PHASE_1_COMPLETION_REPORT.md) · Phase 2: [Report](architecture/PHASE_2_COMPLETION_REPORT.md) · Phase 3: [Report](architecture/PHASE_3_COMPLETION_REPORT.md)
+ADRs: [020–027](architecture/README.md#version-20--multi-tenant) · Phase 1: [Report](architecture/PHASE_1_COMPLETION_REPORT.md) · Phase 2: [Report](architecture/PHASE_2_COMPLETION_REPORT.md) · Phase 3: [Report](architecture/PHASE_3_COMPLETION_REPORT.md) · Phase 4: [Report](architecture/PHASE_4_COMPLETION_REPORT.md)
 
 ### Plattform-API (Phase 3)
 

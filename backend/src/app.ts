@@ -5,7 +5,7 @@ import path from 'path';
 import routes from './routes';
 import { errorHandler } from './middleware/errorHandler';
 import { config } from './config';
-import { moduleManager, createTenantMiddlewareStack, initializeTenantInfrastructure } from './platform/bootstrap';
+import { moduleManager, createTenantMiddlewareStack, initializeTenantInfrastructure, tenantContext, tenantService } from './platform/bootstrap';
 import { registerCorePayables } from './core/payable/registerPayables';
 import { migrateLegacySettingsSecrets } from './core/settings/migrateLegacySecrets';
 
@@ -44,7 +44,17 @@ export async function bootstrapApp(): Promise<void> {
   await initializeTenantInfrastructure();
   registerCorePayables();
   await migrateLegacySettingsSecrets();
-  await moduleManager.initialize();
+
+  const defaultTenant = await tenantService.getDefaultTenant();
+  if (defaultTenant) {
+    const contextData = await tenantService.resolveContextData(defaultTenant);
+    await tenantContext.runAsync(contextData, async () => {
+      await moduleManager.initialize();
+    });
+  } else {
+    await moduleManager.initialize();
+  }
+
   await moduleManager.mountRoutes(routes);
 }
 

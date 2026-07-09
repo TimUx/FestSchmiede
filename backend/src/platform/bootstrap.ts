@@ -40,6 +40,8 @@ import { TenantRepository } from '../repositories/tenantRepository';
 import { TenantService } from './tenant/TenantService';
 import { TenantResolver } from './tenant/TenantResolver';
 import { PlatformSettingsService } from './tenant/PlatformSettingsService';
+import { TenantSettingsServiceImpl } from './tenant/TenantSettingsServiceImpl';
+import type { TenantSettingsService } from './tenant/TenantSettingsService';
 import { config } from '../config';
 import { createPlatformContextMiddleware, createPlatformPublicMiddleware } from '../middleware/platformContext';
 import { createTenantContextMiddleware } from '../middleware/tenantContext';
@@ -77,6 +79,7 @@ export let platformContextInstance!: PlatformContext;
 export let tenantServiceInstance!: TenantService;
 export let tenantResolverInstance!: TenantResolver;
 export let platformSettingsServiceInstance!: PlatformSettingsService;
+export let tenantSettingsServiceInstance!: TenantSettingsService;
 export let tenantControllerInstance!: ReturnType<typeof createTenantController>;
 export let platformDashboardServiceInstance!: PlatformDashboardService;
 export let platformMonitoringServiceInstance!: PlatformMonitoringService;
@@ -93,6 +96,7 @@ export function bootstrapPlatform(): void {
   const tenantRepository = new TenantRepository();
   tenantServiceInstance = new TenantService(tenantRepository);
   platformSettingsServiceInstance = new PlatformSettingsService();
+  tenantSettingsServiceInstance = new TenantSettingsServiceImpl();
   tenantResolverInstance = new TenantResolver(
     tenantServiceInstance,
     platformContextInstance,
@@ -205,6 +209,7 @@ export function bootstrapPlatform(): void {
   platformContainer.registerSingleton(PLATFORM_TOKENS.TenantResolver, tenantResolverInstance);
   platformContainer.registerSingleton(PLATFORM_TOKENS.PlatformContext, platformContextInstance);
   platformContainer.registerSingleton(PLATFORM_TOKENS.PlatformSettingsService, platformSettingsServiceInstance);
+  platformContainer.registerSingleton(PLATFORM_TOKENS.TenantSettingsService, tenantSettingsServiceInstance);
 
   bootstrapped = true;
 }
@@ -230,6 +235,11 @@ export async function initializeTenantInfrastructure(): Promise<void> {
 
   const { migratePlatformAdminSchema } = await import('../core/tenant/migratePlatformAdminSchema');
   await migratePlatformAdminSchema();
+
+  if (defaultTenant) {
+    const { migrateModulesTenantSchema } = await import('../core/tenant/migrateModulesTenantSchema');
+    await migrateModulesTenantSchema(defaultTenant.id);
+  }
 
   const { ensurePlatformAdmin } = await import('../core/tenant/ensurePlatformAdmin');
   await ensurePlatformAdmin();
@@ -272,6 +282,7 @@ export const platformContext = platformContextInstance;
 export const tenantService = tenantServiceInstance;
 export const tenantResolver = tenantResolverInstance;
 export const platformSettingsService = platformSettingsServiceInstance;
+export const tenantSettingsService = tenantSettingsServiceInstance;
 export const tenantController = tenantControllerInstance;
 export const platformDashboardService = platformDashboardServiceInstance;
 export const platformMonitoringService = platformMonitoringServiceInstance;

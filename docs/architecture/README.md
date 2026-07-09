@@ -46,6 +46,9 @@ Technische Architektur der FestManager-Plattform – Architecture Decision Recor
 |----------|--------|
 | [PHASE_0_COMPLETION_REPORT.md](./PHASE_0_COMPLETION_REPORT.md) | Abschlussbericht Phase 0 |
 | [PHASE_1_COMPLETION_REPORT.md](./PHASE_1_COMPLETION_REPORT.md) | Abschlussbericht Phase 1 (Tenant Core) |
+| [PHASE_2_COMPLETION_REPORT.md](./PHASE_2_COMPLETION_REPORT.md) | Abschlussbericht Phase 2 (Tenant Data) |
+| [PHASE_3_COMPLETION_REPORT.md](./PHASE_3_COMPLETION_REPORT.md) | Abschlussbericht Phase 3 (Platform Admin) |
+| [PHASE_4_COMPLETION_REPORT.md](./PHASE_4_COMPLETION_REPORT.md) | Abschlussbericht Phase 4 (Tenant-Aware Modules) |
 
 Siehe auch: [architecture-consolidation-report.md](../audits/architecture-consolidation-report.md) – Abschlussbericht mit Bewertung aller Kritikpunkte.
 

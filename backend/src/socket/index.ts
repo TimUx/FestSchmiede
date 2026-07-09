@@ -5,6 +5,7 @@ import { config } from '../config';
 import { logger } from '../utils/logger';
 import type { AuthPayload } from '../middleware/auth';
 import { orderRepository } from '../repositories';
+import { tenantContext } from '../platform/bootstrap';
 
 let io: Server | null = null;
 
@@ -14,6 +15,12 @@ type SocketData = {
 
 function isStaff(user?: AuthPayload): boolean {
   return Boolean(user && (user.role === 'ADMIN' || user.role === 'STAFF'));
+}
+
+function scopedRoom(room: string): string {
+  const tenantId = tenantContext.id();
+  if (!tenantId) return room;
+  return `tenant:${tenantId}:${room}`;
 }
 
 async function verifyOrderAccess(
@@ -54,13 +61,12 @@ export function initSocket(httpServer: HttpServer): Server {
 
     socket.on('join:event', async (eventId: string, callback?: (err?: string) => void) => {
       if (!isStaff(data.user)) {
-        const msg = 'Nicht autorisiert';
-        callback?.(msg);
+        callback?.('Nicht autorisiert');
         return;
       }
-      socket.join(`event:${eventId}`);
-      socket.join(`staff:event:${eventId}`);
-      logger.info(`Socket ${socket.id} joined staff event:${eventId}`);
+      socket.join(scopedRoom(`event:${eventId}`));
+      socket.join(scopedRoom(`staff:event:${eventId}`));
+      logger.info(`Socket ${socket.id} joined ${scopedRoom(`staff:event:${eventId}`)}`);
       callback?.();
     });
 
@@ -71,8 +77,7 @@ export function initSocket(httpServer: HttpServer): Server {
         const lastName = typeof payload === 'string' ? undefined : payload.lastName;
         const ok = await verifyOrderAccess(lookupToken, lastName, data.user);
         if (!ok) {
-          const msg = 'Nicht autorisiert';
-          callback?.(msg);
+          callback?.('Nicht autorisiert');
           return;
         }
         const order = await orderRepository.findByLookupToken(lookupToken);
@@ -80,19 +85,18 @@ export function initSocket(httpServer: HttpServer): Server {
           callback?.('Nicht autorisiert');
           return;
         }
-        socket.join(`order:${order.id}`);
+        socket.join(scopedRoom(`order:${order.id}`));
         callback?.();
       }
     );
 
     socket.on('join:pickup-board', async (eventId: string, callback?: (err?: string) => void) => {
-      // Öffentliches Abholboard – nur anonyme Abholnummern, kein PII
-      socket.join(`pickup:${eventId}`);
+      socket.join(scopedRoom(`pickup:${eventId}`));
       callback?.();
     });
 
     socket.on('leave:order', (orderId: string) => {
-      socket.leave(`order:${orderId}`);
+      socket.leave(scopedRoom(`order:${orderId}`));
     });
 
     socket.on('disconnect', () => {
@@ -110,33 +114,43 @@ export function getIO(): Server {
 
 export function emitOrderUpdate(eventId: string, order: unknown): void {
   if (!io) return;
-  io.to(`staff:event:${eventId}`).emit('order:updated', order);
-  io.to(`pickup:${eventId}`).emit('order:updated', order);
+  io.to(scopedRoom(`staff:event:${eventId}`)).emit('order:updated', order);
+  io.to(scopedRoom(`pickup:${eventId}`)).emit('order:updated', order);
   const orderData = order as { id: string };
-  io.to(`order:${orderData.id}`).emit('order:updated', order);
+  io.to(scopedRoom(`order:${orderData.id}`)).emit('order:updated', order);
 }
 
 export function emitOrderCreated(eventId: string, order: unknown): void {
   if (!io) return;
-  io.to(`staff:event:${eventId}`).emit('order:created', order);
+  io.to(scopedRoom(`staff:event:${eventId}`)).emit('order:created', order);
 }
 
 export function emitEventUpdate(event: unknown): void {
   if (!io) return;
-  io.emit('event:updated', event);
+  const tenantId = tenantContext.id();
+  if (tenantId) {
+    io.to(scopedRoom('broadcast')).emit('event:updated', event);
+  } else {
+    io.emit('event:updated', event);
+  }
 }
 
 export function emitFoodItemsUpdate(eventId: string, items: unknown): void {
   if (!io) return;
-  io.to(`staff:event:${eventId}`).emit('fooditems:updated', items);
+  io.to(scopedRoom(`staff:event:${eventId}`)).emit('fooditems:updated', items);
 }
 
 export function emitClubUpdate(club: unknown): void {
   if (!io) return;
-  io.emit('club:updated', club);
+  const tenantId = tenantContext.id();
+  if (tenantId) {
+    io.to(scopedRoom('broadcast')).emit('club:updated', club);
+  } else {
+    io.emit('club:updated', club);
+  }
 }
 
 export function emitPrintJob(eventId: string, job: unknown): void {
   if (!io) return;
-  io.to(`staff:event:${eventId}`).emit('print:job', job);
+  io.to(scopedRoom(`staff:event:${eventId}`)).emit('print:job', job);
 }

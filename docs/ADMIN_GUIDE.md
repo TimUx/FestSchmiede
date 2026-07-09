@@ -778,6 +778,8 @@ Pro Veranstaltung drei Schalter:
 
 Unter **Module** (`/admin/module`) verwalten Sie optionale Erweiterungen der Plattform. Module werden **mit dem Docker-Image ausgeliefert** – es gibt keine separaten Downloads.
 
+> **Multi-Tenant (Phase 4):** Module werden plattformweit bereitgestellt, aber **pro Veranstalter (Mandant)** installiert und aktiviert. Einstellungen und Daten (z. B. Zahlungen, E-Mails, rechtliche Texte) sind vollständig mandantenisoliert. Details: [Phase-4-Report](architecture/PHASE_4_COMPLETION_REPORT.md).
+
 ![Modulverwaltung](screenshots/20-modulverwaltung.png)
 
 ### Verfügbare Module

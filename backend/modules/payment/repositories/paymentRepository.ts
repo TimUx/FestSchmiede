@@ -211,8 +211,11 @@ export const paymentRepository = {
   },
 
   async hasWebhookEvent(externalEventId: string): Promise<boolean> {
+    const tenantId = requireTenantId();
     const rows = await prisma.$queryRaw<{ id: string }[]>`
-      SELECT id FROM payment_events WHERE external_event_id = ${externalEventId} LIMIT 1
+      SELECT id FROM payment_events
+      WHERE external_event_id = ${externalEventId} AND tenant_id = ${tenantId}
+      LIMIT 1
     `;
     return rows.length > 0;
   },
@@ -223,17 +226,19 @@ export const paymentRepository = {
     externalEventId: string;
     payload?: Record<string, unknown>;
   }): Promise<boolean> {
+    const tenantId = requireTenantId();
     const id = uuidv4();
     const rows = await prisma.$queryRaw<{ id: string }[]>`
-      INSERT INTO payment_events (id, payment_id, event_type, external_event_id, payload)
+      INSERT INTO payment_events (id, tenant_id, payment_id, event_type, external_event_id, payload)
       VALUES (
         ${id}::uuid,
+        ${tenantId},
         ${data.paymentId ?? null}::uuid,
         ${data.eventType},
         ${data.externalEventId},
         ${JSON.stringify(data.payload ?? {})}::jsonb
       )
-      ON CONFLICT (external_event_id) DO NOTHING
+      ON CONFLICT (tenant_id, external_event_id) WHERE external_event_id IS NOT NULL DO NOTHING
       RETURNING id
     `;
     return rows.length > 0;

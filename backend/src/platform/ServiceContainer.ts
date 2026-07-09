@@ -57,4 +57,5 @@ export const PLATFORM_TOKENS = {
   TenantResolver: Symbol('platform.TenantResolver'),
   PlatformContext: Symbol('platform.PlatformContext'),
   PlatformSettingsService: Symbol('platform.PlatformSettingsService'),
+  TenantSettingsService: Symbol('platform.TenantSettingsService'),
 } as const;

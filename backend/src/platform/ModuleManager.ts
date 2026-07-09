@@ -106,8 +106,8 @@ export class ModuleManager {
     await this.logAvailableUpgrades();
 
     for (const mod of this.deps.moduleRegistry.getModules()) {
-      const row = await this.deps.moduleRegistry.getDbRow(mod.id);
-      if (row?.installed && row.enabled && row.lifecycleStatus !== 'FAILED') {
+      if (this.activatedIds.has(mod.id)) continue;
+      if (await tenantModuleRepository.isEnabledForAnyTenant(mod.id)) {
         await this.activateModuleInternal(mod.id, false);
       }
     }
@@ -213,8 +213,7 @@ export class ModuleManager {
   private async mountInstalledConfigRoutes(): Promise<void> {
     const { moduleRegistry } = this.deps;
     for (const mod of moduleRegistry.getModules()) {
-      const row = await moduleRegistry.getDbRow(mod.id);
-      if (row?.installed) {
+      if (await tenantModuleRepository.isInstalledForAnyTenant(mod.id)) {
         await this.mountModuleConfigRoutes(mod.id);
       }
     }
@@ -222,11 +221,18 @@ export class ModuleManager {
 
   private moduleGuard(moduleId: string): RequestHandler {
     return (_req, res, next) => {
-      if (!this.activatedIds.has(moduleId)) {
-        res.status(404).json({ error: 'Modul nicht aktiviert' });
-        return;
-      }
-      next();
+      void (async () => {
+        if (!this.activatedIds.has(moduleId)) {
+          res.status(404).json({ error: 'Modul nicht aktiviert' });
+          return;
+        }
+        const row = await tenantModuleRepository.findUnique(moduleId);
+        if (!row?.installed || !row?.enabled) {
+          res.status(404).json({ error: 'Modul für diesen Veranstalter nicht aktiviert' });
+          return;
+        }
+        next();
+      })().catch(next);
     };
   }
 
@@ -356,12 +362,13 @@ export class ModuleManager {
     const manifest = moduleRegistry.getManifest(moduleId);
     if (!mod || !manifest) throw new AppError(404, 'Modul nicht gefunden');
 
-    const row = await moduleRegistry.getDbRow(moduleId);
-    if (!row?.installed) throw new AppError(400, 'Modul muss zuerst installiert werden');
+    const row = persist ? await moduleRegistry.getDbRow(moduleId) : await tenantModuleRepository.findFirstInstalled(moduleId);
+    const installed = persist ? Boolean(row?.installed) : await tenantModuleRepository.isInstalledForAnyTenant(moduleId);
+    if (!installed) throw new AppError(400, 'Modul muss zuerst installiert werden');
 
     const deps = await dependencyResolver.checkRequiredActivated(
       manifest,
-      (id) => moduleRegistry.isActivated(id)
+      async (id) => this.activatedIds.has(id) || tenantModuleRepository.isEnabledForAnyTenant(id)
     );
     if (!deps.ok) {
       const parts: string[] = [];
@@ -370,7 +377,7 @@ export class ModuleManager {
       throw new AppError(400, `Abhängigkeiten nicht erfüllt (${parts.join('; ')})`);
     }
 
-    if (compareVersions(manifest.version, row.moduleVersion) > 0) {
+    if (row && compareVersions(manifest.version, row.moduleVersion) > 0) {
       throw new AppError(400, 'Upgrade erforderlich – bitte zuerst aktualisieren');
     }
 
