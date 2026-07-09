@@ -82,6 +82,7 @@ export interface PaymentAuditLog {
 }
 
 export type PaymentAdminTab =
+  | 'presets'
   | 'overview'
   | 'providers'
   | 'methods'
@@ -93,17 +94,26 @@ export type PaymentAdminTab =
   | 'health'
   | 'statistics';
 
-export const PAYMENT_ADMIN_TABS: { id: PaymentAdminTab; label: string; permission?: string }[] = [
+export const PAYMENT_PRIMARY_TABS: { id: PaymentAdminTab; label: string; permission?: string }[] = [
+  { id: 'presets', label: 'Zahlungsarten' },
   { id: 'overview', label: 'Übersicht' },
-  { id: 'providers', label: 'Provider', permission: 'payment.provider.configure' },
-  { id: 'methods', label: 'Zahlungsarten', permission: 'payment.manage' },
+  { id: 'providers', label: 'Anbieter', permission: 'payment.provider.configure' },
   { id: 'settings', label: 'Einstellungen', permission: 'payment.provider.configure' },
+];
+
+export const PAYMENT_ADVANCED_TABS: { id: PaymentAdminTab; label: string; permission?: string }[] = [
+  { id: 'methods', label: 'Zahlungsarten (Detail)', permission: 'payment.manage' },
   { id: 'payments', label: 'Zahlungen' },
-  { id: 'refunds', label: 'Refunds', permission: 'payment.refund' },
-  { id: 'logs', label: 'Logs', permission: 'payment.logs' },
-  { id: 'webhooks', label: 'Webhooks', permission: 'payment.webhooks' },
-  { id: 'health', label: 'Health' },
+  { id: 'refunds', label: 'Rückerstattungen', permission: 'payment.refund' },
   { id: 'statistics', label: 'Statistiken', permission: 'payment.statistics' },
+  { id: 'logs', label: 'Protokolle', permission: 'payment.logs' },
+  { id: 'webhooks', label: 'Webhooks', permission: 'payment.webhooks' },
+  { id: 'health', label: 'Systemstatus' },
+];
+
+export const PAYMENT_ADMIN_TABS: { id: PaymentAdminTab; label: string; permission?: string }[] = [
+  ...PAYMENT_PRIMARY_TABS,
+  ...PAYMENT_ADVANCED_TABS,
 ];
 
 export const PAYMENT_STATUS_LABELS: Record<string, string> = {

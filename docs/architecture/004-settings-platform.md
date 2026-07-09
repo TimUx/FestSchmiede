@@ -146,6 +146,18 @@ SMTP liegt vollständig in der Anwendung (`core.email` → `ClubSettings`). `ema
 | Modul-Settings-Zugriff | ✅ `assertModuleSettingsAccessible` (installiert, nicht nur ENABLED) |
 | SMTP in DB | ✅ |
 
+## Konsolidierungsreview (2026-07-09)
+
+Siehe [ADR-012](./012-architecture-consolidation-review.md).
+
+| Kritikpunkt | Entscheidung |
+|-------------|--------------|
+| Nur generische Settings-Formulare | Metadata First bleibt Standard |
+| Komplexe Module brauchen eigene UI | Optional: `frontend/src/admin/settingsPages.tsx` |
+| Kleine Erweiterungen (Logo, Tests) | `settingsExtensions.tsx` pro Namespace |
+| Payment | Custom Page (`PaymentAdminPage`) |
+| Notifications, Printer | Generisch + Extensions (ausreichend für 1.0) |
+
 ## Offene Punkte
 
 - [ ] Settings-Export/Import für Vereins-Migration

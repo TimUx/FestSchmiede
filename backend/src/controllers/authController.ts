@@ -7,8 +7,39 @@ export const authController = {
   async login(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { email, password } = req.body;
-      const result = await authService.login(email, password);
+      const userAgent = req.headers['user-agent'];
+      const result = await authService.login(email, password, userAgent);
       res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async logout(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { refreshToken } = req.body;
+      await authService.logout(refreshToken);
+      res.status(204).send();
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async refresh(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { refreshToken } = req.body;
+      const result = await authService.refresh(refreshToken);
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async revokeAll(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { userId } = req.body;
+      await authService.revokeAllForUser(userId);
+      res.status(204).send();
     } catch (err) {
       next(err);
     }

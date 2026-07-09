@@ -5,6 +5,14 @@ export const loginSchema = z.object({
   password: z.string().min(1, 'Passwort erforderlich'),
 });
 
+export const refreshTokenSchema = z.object({
+  refreshToken: z.string().min(1, 'Refresh-Token erforderlich'),
+});
+
+export const revokeAllSessionsSchema = z.object({
+  userId: z.string().uuid('Ungültige Benutzer-ID'),
+});
+
 export const createUserSchema = z.object({
   email: z.string().email('Ungültige E-Mail-Adresse'),
   password: z.string().min(6, 'Mindestens 6 Zeichen'),
@@ -129,4 +137,8 @@ export const updateEmailSettingsSchema = z.object({
 
 export const idParamSchema = z.object({
   id: z.string().uuid(),
+});
+
+export const tokenParamSchema = z.object({
+  token: z.string().regex(/^[a-f0-9]{64}$/, 'Ungültiger Bestell-Token'),
 });

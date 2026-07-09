@@ -1,0 +1,43 @@
+name: Funktionswunsch
+description: Idee für eine neue oder verbesserte Funktion
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Beschreiben Sie den Nutzen für einen Verein am Veranstaltungstag — nicht nur die Technik.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Welches Problem soll gelöst werden?
+      placeholder: z. B. Abholung braucht größere Schrift auf dem Tablet.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Gewünschte Lösung
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Dringlichkeit (aus Vereinssicht)
+      options:
+        - Nice to have
+        - Würde den Alltag erleichtern
+        - Blockiert unseren Einsatz
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: volunteer
+    attributes:
+      label: Mitwirkung
+      options:
+        - label: Ich kann beim Testen auf einem Vereinsfest helfen
+        - label: Ich kann bei der Dokumentation (Deutsch) mithelfen

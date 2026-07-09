@@ -102,6 +102,12 @@ export const userService = {
     }
 
     const updated = await userRepository.update(id, updateData);
+
+    if (data.active === false) {
+      const { authService } = await import('./authService');
+      await authService.revokeAllForUser(id);
+    }
+
     return mapUser(updated);
   },
 };

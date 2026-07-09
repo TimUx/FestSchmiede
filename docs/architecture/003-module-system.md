@@ -160,7 +160,18 @@ Optional: `getConfigContract()` mit Zod.
 | 2 | `ACTIVATED` → `ENABLED`, `UPGRADING`/`FAILED` | ✅ erledigt |
 | 3 | `ModuleMigrationService` + Tracking-Tabelle | ✅ erledigt |
 | 4 | Route-Unmount bei `deactivateModule()` | offen |
-| 5 | Stub-Module aus Discovery ausblenden | offen |
+| 5 | Stub-Module aus Discovery ausblenden | ✅ `productionReady` + Admin-Filter |
+
+## Konsolidierungsreview (2026-07-09)
+
+Siehe [ADR-012](./012-architecture-consolidation-review.md).
+
+| Kritikpunkt | Entscheidung |
+|-------------|--------------|
+| Lifecycle zu komplex für Admins | UX abstrahiert; Backend unverändert |
+| Stub-Module sichtbar | `productionReady: false`, nur payment/notifications/printer in UI |
+| Core-Kopplung per relativem Import | Akzeptabel für mitgelieferte Module; dokumentiert |
+| Plugin-Isolation | Bewusst nicht Ziel für 1.0 |
 
 ## Offene Punkte
 

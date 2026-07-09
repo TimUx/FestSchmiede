@@ -75,7 +75,9 @@ export function PaymentDialog({
 
       if (isPaymentSuccess(result.paymentStatus)) {
         stopPolling();
-        const updatedOrder = await api.getOrder(order.id);
+        const updatedOrder = order.lookupToken && order.customer?.lastName
+          ? await api.getOrderByToken(order.lookupToken, order.customer.lastName)
+          : order;
         onSuccess(updatedOrder);
       } else if (isPaymentFailure(result.paymentStatus)) {
         stopPolling();
@@ -83,7 +85,7 @@ export function PaymentDialog({
     } catch {
       setNetworkError(true);
     }
-  }, [sessionId, order.id, onSuccess, stopPolling]);
+  }, [sessionId, order, onSuccess, stopPolling]);
 
   useEffect(() => {
     if (!open) return;

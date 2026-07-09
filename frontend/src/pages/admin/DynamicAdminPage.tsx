@@ -6,6 +6,7 @@ import { canAccessPermission } from '@/utils/permissions';
 import { useAuth } from '@/contexts/AuthContext';
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage';
 import { GenericSettingsPage } from '@/pages/admin/GenericSettingsPage';
+import { renderSettingsPage } from '@/admin/settingsPages';
 import { renderBuiltinPage, renderDeveloperPage, renderReportPage } from '@/admin/builtinPages';
 import type { AdminPageDefinition } from '@/types/adminUi';
 
@@ -35,8 +36,11 @@ function renderPage(page: AdminPageDefinition) {
   switch (page.pageType) {
     case 'dashboard':
       return <AdminDashboardPage />;
-    case 'settings':
+    case 'settings': {
+      const custom = renderSettingsPage(page.namespace);
+      if (custom) return custom;
       return <GenericSettingsPage namespace={page.namespace} title={page.label} />;
+    }
     case 'builtin':
     case 'modules':
       return renderBuiltinPage(page.componentId) ?? <PageNotFound />;

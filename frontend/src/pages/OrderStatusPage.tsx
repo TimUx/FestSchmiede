@@ -32,14 +32,17 @@ const pulse = keyframes`
 `;
 
 export function OrderStatusPage() {
-  const { orderId } = useParams<{ orderId: string }>();
+  const { lookupToken } = useParams<{ lookupToken: string }>();
   const location = useLocation();
   const [order, setOrder] = useState<Order | null>((location.state as { order?: Order })?.order || null);
-  const [loading, setLoading] = useState(!order);
+  const [lookupMode, setLookupMode] = useState(!lookupToken);
+  const [verifyMode, setVerifyMode] = useState(Boolean(lookupToken && !(location.state as { order?: Order })?.order));
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [lookupMode, setLookupMode] = useState(!orderId);
   const [orderNumber, setOrderNumber] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [lastName, setLastName] = useState(
+    (location.state as { order?: Order })?.order?.customer?.lastName ?? ''
+  );
   const [showReadyAlert, setShowReadyAlert] = useState(false);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [cancelLastName, setCancelLastName] = useState('');
@@ -49,16 +52,21 @@ export function OrderStatusPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (!orderId || order) return;
-    api.getOrder(orderId)
+    if (!lookupToken || order || verifyMode) return;
+    if (!lastName.trim()) {
+      setVerifyMode(true);
+      setLoading(false);
+      return;
+    }
+    api.getOrderByToken(lookupToken, lastName.trim())
       .then(setOrder)
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [orderId, order]);
+  }, [lookupToken, order, verifyMode, lastName]);
 
   useEffect(() => {
-    if (!order) return;
-    joinOrder(order.id, order.customer?.lastName);
+    if (!order?.lookupToken) return;
+    joinOrder(order.lookupToken, order.customer?.lastName);
     const unsub = onOrderUpdated((updated) => {
       const updatedOrder = updated as Order;
       if (updatedOrder.id === order.id) {
@@ -90,6 +98,25 @@ export function OrderStatusPage() {
       setOrder(result);
       setLookupMode(false);
       setCancelLastName(lastName);
+      if (result.lookupToken) {
+        window.history.replaceState({ order: result }, '', `/status/${result.lookupToken}`);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Bestellung nicht gefunden');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerify = async () => {
+    if (!lookupToken || !lastName.trim()) return;
+    setLoading(true);
+    setError('');
+    try {
+      const result = await api.getOrderByToken(lookupToken, lastName.trim());
+      setOrder(result);
+      setVerifyMode(false);
+      setCancelLastName(lastName);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Bestellung nicht gefunden');
     } finally {
@@ -102,7 +129,7 @@ export function OrderStatusPage() {
     setCancelling(true);
     setCancelError('');
     try {
-      const updated = await api.cancelOrder(order.id, cancelLastName.trim());
+      const updated = await api.cancelOrder(order.lookupToken ?? lookupToken ?? '', cancelLastName.trim());
       setOrder(updated);
       setCancelDialogOpen(false);
     } catch (err) {
@@ -111,6 +138,35 @@ export function OrderStatusPage() {
       setCancelling(false);
     }
   };
+
+  if (verifyMode) {
+    return (
+      <PublicLayout>
+        <Typography variant="h4" fontWeight={800} gutterBottom>
+          Bestellstatus
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+          Bitte bestätigen Sie Ihren Nachnamen, um den Bestellstatus anzuzeigen.
+        </Typography>
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        <Paper sx={{ p: 3, maxWidth: 400 }}>
+          <Stack spacing={2}>
+            <TextField
+              label="Nachname"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              fullWidth
+              autoFocus
+              onKeyDown={(e) => e.key === 'Enter' && void handleVerify()}
+            />
+            <Button variant="contained" size="large" onClick={() => void handleVerify()} disabled={loading || !lastName.trim()}>
+              Anzeigen
+            </Button>
+          </Stack>
+        </Paper>
+      </PublicLayout>
+    );
+  }
 
   if (lookupMode) {
     return (

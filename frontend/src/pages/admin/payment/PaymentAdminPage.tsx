@@ -29,12 +29,21 @@ import {
   TextField,
   Tooltip,
   Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DownloadIcon from '@mui/icons-material/Download';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import WarningIcon from '@mui/icons-material/Warning';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { AdminLayout } from '@/components/AdminLayout';
 import { DynamicSettingsForm } from '@/components/DynamicSettingsForm';
 import { useAuth } from '@/contexts/AuthContext';
@@ -44,7 +53,8 @@ import { buildValuesPayload } from '@/types/settings';
 import type { SettingsFormDefinition, SettingsFormGroup } from '@/types/settings';
 import {
   LOG_ACTION_LABELS,
-  PAYMENT_ADMIN_TABS,
+  PAYMENT_PRIMARY_TABS,
+  PAYMENT_ADVANCED_TABS,
   PAYMENT_STATUS_LABELS,
   PROVIDER_STATUS_LABELS,
   type PaymentAdminTab,
@@ -341,6 +351,93 @@ function MethodTypesSection({ token }: { token: string }) {
       <Button variant="contained" onClick={() => void save()} disabled={saving}>
         {saving ? 'Speichern…' : 'Speichern'}
       </Button>
+    </Stack>
+  );
+}
+
+type PaymentPreset = 'cash_only' | 'cash_and_card' | 'online';
+
+const PAYMENT_PRESET_VALUES: Record<PaymentPreset, { allowCashOnSite: boolean; onlinePaymentForEvents: boolean }> = {
+  cash_only: { allowCashOnSite: true, onlinePaymentForEvents: false },
+  cash_and_card: { allowCashOnSite: true, onlinePaymentForEvents: true },
+  online: { allowCashOnSite: false, onlinePaymentForEvents: true },
+};
+
+function detectPreset(settings: Record<string, unknown>): PaymentPreset {
+  const allowCash = settings.allowCashOnSite !== false;
+  const online = settings.onlinePaymentForEvents !== false;
+  if (!allowCash && online) return 'online';
+  if (allowCash && !online) return 'cash_only';
+  return 'cash_and_card';
+}
+
+function PresetsSection({ token }: { token: string }) {
+  const [preset, setPreset] = useState<PaymentPreset>('cash_and_card');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const settings = await api.getSettings(token, 'module.payment');
+        setPreset(detectPreset(settings));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Laden fehlgeschlagen');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [token]);
+
+  const save = async (next: PaymentPreset) => {
+    setSaving(true);
+    setError('');
+    setSuccess('');
+    try {
+      await api.updateSettings(token, 'module.payment', PAYMENT_PRESET_VALUES[next]);
+      setPreset(next);
+      setSuccess('Zahlungsart gespeichert');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Speichern fehlgeschlagen');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) return <CircularProgress />;
+
+  return (
+    <Stack spacing={2} sx={{ maxWidth: 560 }}>
+      {error && <Alert severity="error">{error}</Alert>}
+      {success && <Alert severity="success">{success}</Alert>}
+      <Typography variant="body1" color="text.secondary">
+        Wählen Sie, wie Gäste bei Ihrer Veranstaltung bezahlen können.
+      </Typography>
+      <FormControl>
+        <FormLabel sx={{ mb: 1 }}>Zahlungsart</FormLabel>
+        <RadioGroup
+          value={preset}
+          onChange={(e) => void save(e.target.value as PaymentPreset)}
+        >
+          <FormControlLabel
+            value="cash_only"
+            control={<Radio disabled={saving} />}
+            label="Nur Barzahlung vor Ort"
+          />
+          <FormControlLabel
+            value="cash_and_card"
+            control={<Radio disabled={saving} />}
+            label="Bar + Karte vor Ort"
+          />
+          <FormControlLabel
+            value="online"
+            control={<Radio disabled={saving} />}
+            label="Online-Zahlung"
+          />
+        </RadioGroup>
+      </FormControl>
     </Stack>
   );
 }
@@ -774,15 +871,24 @@ function StatisticsSection({ token }: { token: string }) {
 export function PaymentAdminPage() {
   const { token, user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const tab = (searchParams.get('tab') as PaymentAdminTab) || 'overview';
+  const tab = (searchParams.get('tab') as PaymentAdminTab) || 'presets';
   const [dashboard, setDashboard] = useState<PaymentDashboard | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const visibleTabs = useMemo(
-    () => PAYMENT_ADMIN_TABS.filter((t) => canAccessPermission(user, t.permission ?? 'payment.view')),
+  const primaryTabs = useMemo(
+    () => PAYMENT_PRIMARY_TABS.filter((t) => canAccessPermission(user, t.permission ?? 'payment.view')),
     [user]
   );
+
+  const advancedTabs = useMemo(
+    () => PAYMENT_ADVANCED_TABS.filter((t) => canAccessPermission(user, t.permission ?? 'payment.view')),
+    [user]
+  );
+
+  const activeTab = [...primaryTabs, ...advancedTabs].some((t) => t.id === tab)
+    ? tab
+    : primaryTabs[0]?.id ?? 'presets';
 
   const loadDashboard = useCallback(async () => {
     if (!token) return;
@@ -798,8 +904,8 @@ export function PaymentAdminPage() {
   }, [token]);
 
   useEffect(() => {
-    if (tab === 'overview') void loadDashboard();
-  }, [tab, loadDashboard]);
+    if (activeTab === 'overview') void loadDashboard();
+  }, [activeTab, loadDashboard]);
 
   const setTab = (next: PaymentAdminTab) => {
     setSearchParams({ tab: next });
@@ -808,7 +914,8 @@ export function PaymentAdminPage() {
   if (!token) return null;
 
   const renderSection = () => {
-    switch (tab) {
+    switch (activeTab) {
+      case 'presets': return <PresetsSection token={token} />;
       case 'overview': return <OverviewSection data={dashboard} loading={loading} />;
       case 'providers': return <ProvidersSection token={token} />;
       case 'methods': return <MethodTypesSection token={token} />;
@@ -819,7 +926,7 @@ export function PaymentAdminPage() {
       case 'webhooks': return <WebhooksSection token={token} />;
       case 'health': return <HealthSection token={token} />;
       case 'statistics': return <StatisticsSection token={token} />;
-      default: return <OverviewSection data={dashboard} loading={loading} />;
+      default: return <PresetsSection token={token} />;
     }
   };
 
@@ -829,7 +936,7 @@ export function PaymentAdminPage() {
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
         <Typography variant="h5" fontWeight={800}>Online-Zahlung</Typography>
-        {tab === 'overview' && (
+        {activeTab === 'overview' && (
           <Tooltip title="Aktualisieren">
             <IconButton onClick={() => void loadDashboard()}><RefreshIcon /></IconButton>
           </Tooltip>
@@ -838,16 +945,37 @@ export function PaymentAdminPage() {
 
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3, overflowX: 'auto' }}>
         <Tabs
-          value={visibleTabs.some((t) => t.id === tab) ? tab : visibleTabs[0]?.id ?? 'overview'}
+          value={primaryTabs.some((t) => t.id === activeTab) ? activeTab : false}
           onChange={(_, v) => setTab(v as PaymentAdminTab)}
           variant="scrollable"
           scrollButtons="auto"
         >
-          {visibleTabs.map((t) => (
+          {primaryTabs.map((t) => (
             <Tab key={t.id} value={t.id} label={t.label} />
           ))}
         </Tabs>
       </Box>
+
+      {advancedTabs.length > 0 && (
+        <Accordion sx={{ mb: 3 }} defaultExpanded={advancedTabs.some((t) => t.id === activeTab)}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography fontWeight={600}>Erweitert</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Tabs
+              value={advancedTabs.some((t) => t.id === activeTab) ? activeTab : false}
+              onChange={(_, v) => setTab(v as PaymentAdminTab)}
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}
+            >
+              {advancedTabs.map((t) => (
+                <Tab key={t.id} value={t.id} label={t.label} />
+              ))}
+            </Tabs>
+          </AccordionDetails>
+        </Accordion>
+      )}
 
       {renderSection()}
     </AdminLayout>

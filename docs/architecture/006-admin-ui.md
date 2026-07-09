@@ -86,6 +86,8 @@ App.tsx
 
 **Settings-Erweiterungen:** Spezial-UI (Logo-Upload, Payment-Provider-Test) über `SETTINGS_EXTENSIONS[namespace]` – optional, nicht in jedem Modul nötig.
 
+**Optionale Custom-Settings-Seiten:** Wenn ein generisches Schema-Formular nicht ausreicht, registriert ein Modul eine eigene Seite in `frontend/src/admin/settingsPages.tsx`. `DynamicAdminPage` prüft die Registry vor `GenericSettingsPage`. Payment nutzt diese Variante.
+
 **Widgets:** `WIDGET_COMPONENTS[componentId]` – z. B. `payment.status` im Payment-Modul.
 
 ### Seitentypen
@@ -147,6 +149,12 @@ App.tsx
 | 5 | Dashboard-Widgets + Health aus Metadaten | ✅ |
 | 6 | Permission-Filter auf Nav | ✅ |
 | 7 | Reports/Developer Pages (Generic + Registry) | ✅ |
+| 8 | Funktionen-Tabelle (Status, Version, Konfigurieren) | ✅ |
+| 9 | Custom Settings Page Registry | ✅ |
+
+## Konsolidierungsreview (2026-07-09)
+
+Siehe [ADR-012](./012-architecture-consolidation-review.md). Admin-UI zeigt keine Lifecycle-Begriffe; Dashboard „Funktionsstatus“ mit deutschen Labels.
 
 ## Offene Punkte
 

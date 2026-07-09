@@ -20,8 +20,15 @@ app.use(express.json({
     }
   },
 }));
-app.use('/uploads', express.static(path.resolve(config.uploadsDir)));
+app.use('/uploads', express.static(path.resolve(config.uploadsDir), {
+  setHeaders: (res) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Content-Disposition', 'inline');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+  },
+}));
 
+app.use('/api/v1', routes);
 app.use('/api', routes);
 
 app.use(errorHandler);

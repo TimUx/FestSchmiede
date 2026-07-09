@@ -14,5 +14,6 @@
     { "key": "voucher.manage", "description": "Gutscheine verwalten" },
     { "key": "voucher.redeem", "description": "Gutscheine einlösen" }
   ],
-  "minimumCoreVersion": "1.0.0"
+  "minimumCoreVersion": "1.0.0",
+  "productionReady": false
 }

@@ -9,6 +9,8 @@ import { authenticate, requireRole, loadUser } from '../middleware/auth';
 import { validateBody, validateParams } from '../middleware/validation';
 import {
   loginSchema,
+  refreshTokenSchema,
+  revokeAllSessionsSchema,
   createEventSchema,
   updateEventSchema,
   updateClubSchema,
@@ -24,14 +26,12 @@ import {
   cancelOrderSchema,
   updateEmailSettingsSchema,
   idParamSchema,
+  tokenParamSchema,
   createUserSchema,
   updateUserSchema,
 } from '../validation/schemas';
-import multer from 'multer';
-import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
-import { config } from '../config';
-import fs from 'fs';
+
+import { uploadService } from '../services/uploadService';
 import { loginRateLimiter, publicOrderRateLimiter, lookupRateLimiter } from '../middleware/rateLimit';
 import { openApiDocument } from '../core/openapi';
 import moduleAdminRoutes from '../core/routes/modules';
@@ -39,27 +39,7 @@ import settingsRoutes from '../core/routes/settings';
 import permissionsRoutes from '../core/routes/permissions';
 import adminUiRoutes from '../core/routes/adminUi';
 
-const uploadDir = config.uploadsDir;
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadDir),
-  filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `${uuidv4()}${ext}`);
-  },
-});
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: (_req, file, cb) => {
-    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    cb(null, allowed.includes(file.mimetype));
-  },
-});
+const upload = uploadService.memory;
 
 const router = Router();
 
@@ -73,6 +53,9 @@ router.get('/openapi.json', (_req, res) => {
 
 // Auth
 router.post('/auth/login', loginRateLimiter, validateBody(loginSchema), authController.login);
+router.post('/auth/logout', validateBody(refreshTokenSchema), authController.logout);
+router.post('/auth/refresh', loginRateLimiter, validateBody(refreshTokenSchema), authController.refresh);
+router.post('/auth/revoke-all', authenticate, loadUser, requireRole('ADMIN'), validateBody(revokeAllSessionsSchema), authController.revokeAll);
 router.get('/auth/me', authenticate, loadUser, authController.me);
 
 // Public
@@ -83,8 +66,8 @@ router.get('/public/menu', foodItemController.getPublic);
 router.post('/public/orders', publicOrderRateLimiter, validateBody(createOnlineOrderSchema), orderController.createOnline);
 router.post('/public/orders/lookup', lookupRateLimiter, validateBody(lookupOrderSchema), orderController.lookup);
 router.post('/public/orders/:id/checkout', publicOrderRateLimiter, validateParams(idParamSchema), validateBody(createOrderCheckoutSchema), orderController.createCheckout);
-router.get('/public/orders/:id', validateParams(idParamSchema), orderController.getById);
-router.post('/public/orders/:id/cancel', lookupRateLimiter, validateParams(idParamSchema), validateBody(cancelOrderSchema), orderController.cancelOnline);
+router.get('/public/orders/status/:token', validateParams(tokenParamSchema), orderController.getByLookupToken);
+router.post('/public/orders/:token/cancel', lookupRateLimiter, validateParams(tokenParamSchema), validateBody(cancelOrderSchema), orderController.cancelOnline);
 router.get('/public/pickup-board', orderController.getReady);
 
 // Staff - Orders
@@ -108,7 +91,7 @@ router.post('/staff/food-items/:id/image', requireRole('ADMIN'), validateParams(
       return;
     }
     const { foodItemService } = await import('../services/foodItemService');
-    const imageUrl = `/uploads/${req.file.filename}`;
+    const { imageUrl } = await uploadService.saveProcessedImage(req.file, 'food');
     const item = await foodItemService.update(req.params.id as string, { imageUrl });
     res.json(item);
   } catch (err) {
@@ -133,8 +116,8 @@ router.post('/staff/club/logo', requireRole('ADMIN'), upload.single('image'), as
       return;
     }
     const { clubService } = await import('../services/clubService');
-    const logoUrl = `/uploads/${req.file.filename}`;
-    const club = await clubService.update({ logoUrl });
+    const { imageUrl } = await uploadService.saveProcessedImage(req.file, 'logo');
+    const club = await clubService.update({ logoUrl: imageUrl });
     res.json(club);
   } catch (err) {
     next(err);
@@ -164,8 +147,8 @@ router.post('/admin/club/logo', upload.single('image'), async (req, res, next) =
       return;
     }
     const { clubService } = await import('../services/clubService');
-    const logoUrl = `/uploads/${req.file.filename}`;
-    const club = await clubService.update({ logoUrl });
+    const { imageUrl } = await uploadService.saveProcessedImage(req.file, 'logo');
+    const club = await clubService.update({ logoUrl: imageUrl });
     res.json(club);
   } catch (err) {
     next(err);

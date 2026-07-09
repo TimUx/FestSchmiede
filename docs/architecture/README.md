@@ -11,7 +11,7 @@ Technische Architektur der Vereinsbestellplattform – Architecture Decision Rec
 | [PROJECT_ANALYSIS.md](./PROJECT_ANALYSIS.md) | Vollständige Ist-Analyse (Frontend, Backend, DB, Docker, API, Module, Risiken) |
 | [MIGRATION_PLAN.md](./MIGRATION_PLAN.md) | Phasenplan zur Zielarchitektur |
 | [PAYMENT_6.5_REPORT.md](./PAYMENT_6.5_REPORT.md) | Release-Validierung Payment-Modul (Spec 6.5) |
-| [001–011 ADRs](#architecture-decision-records) | Architekturentscheidungen und Zielbilder |
+| [001–012 ADRs](#architecture-decision-records) | Architekturentscheidungen und Zielbilder |
 
 ## Architecture Decision Records
 
@@ -28,6 +28,9 @@ Technische Architektur der Vereinsbestellplattform – Architecture Decision Rec
 | 009 | [printing-module.md](./009-printing-module.md) | Accepted | Bondruck Küche/Kasse |
 | 010 | [developer-sdk.md](./010-developer-sdk.md) | Proposed | SDK für Modul- und Integrationsentwickler |
 | 011 | [quality-assurance.md](./011-quality-assurance.md) | Accepted | Automatisierte QS- und CI-Plattform |
+| 012 | [architecture-consolidation-review.md](./012-architecture-consolidation-review.md) | Accepted | Konsolidierungsreview: UX vs. Architektur |
+
+Siehe auch: [architecture-consolidation-report.md](../audits/architecture-consolidation-report.md) – Abschlussbericht mit Bewertung aller Kritikpunkte.
 
 ## ADR-Format
 

@@ -52,6 +52,7 @@ export interface OrderItem {
 
 export interface Order {
   id: string;
+  lookupToken?: string;
   orderNumber: number;
   displayNumber: string;
   orderDate: string;
@@ -60,6 +61,7 @@ export interface Order {
   sourceLabel: string;
   status: OrderStatus;
   statusLabel: string;
+  paymentLabel?: string;
   totalPrice: number;
   createdAt: string;
   readyAt?: string;

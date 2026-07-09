@@ -1,0 +1,65 @@
+name: Fehler melden
+description: Etwas funktioniert nicht wie erwartet
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke für Ihre Meldung. Bitte keine Passwörter oder `.env`-Inhalte einfügen.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Was ist passiert?
+      description: Kurz beschreiben, was schiefging.
+      placeholder: z. B. Bestellung bleibt auf „neu“, obwohl Küche auf „in Arbeit“ gestellt hat.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Schritte zur Reproduktion
+      placeholder: |
+        1. Admin-Login
+        2. Veranstaltung aktivieren
+        3. …
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Erwartetes Verhalten
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version / Image-Tag
+      placeholder: z. B. 1.0.0 oder latest
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Bereich
+      options:
+        - Bestellseite (öffentlich)
+        - Küche / Mitarbeiter
+        - Admin
+        - Zahlung
+        - Installation / Docker
+        - Sonstiges
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs (optional)
+      description: Relevante Zeilen aus `docker compose logs backend`
+      render: shell

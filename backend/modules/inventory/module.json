@@ -11,5 +11,6 @@
     { "key": "inventory.view", "description": "Lagerbestände einsehen" },
     { "key": "inventory.edit", "description": "Lagerbestände bearbeiten" }
   ],
-  "minimumCoreVersion": "1.0.0"
+  "minimumCoreVersion": "1.0.0",
+  "productionReady": false
 }

@@ -1,5 +1,6 @@
 import { PrismaClient, RoleName, OrderSource, StatusCode } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
 const prisma = new PrismaClient();
 
@@ -140,6 +141,7 @@ export async function runQaSeed(options: { orderCount?: number; demoMode?: boole
     await prisma.order.create({
       data: {
         id: orderId,
+        lookupToken: crypto.randomBytes(32).toString('hex'),
         eventId: event.id,
         orderNumber: i,
         orderDate: eventDate,

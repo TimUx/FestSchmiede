@@ -29,6 +29,7 @@ const IPHONE_UA =
 
 const EVENT_ID = '00000000-0000-0000-0000-000000000001';
 const ORDER_ID = '00000000-0000-0000-0000-000000000042';
+const ORDER_LOOKUP_TOKEN = 'a1b2c3d4e5f6789012345678abcdef12';
 
 const MIME: Record<string, string> = {
   '.html': 'text/html',
@@ -114,10 +115,10 @@ const mockOrderBase = {
 };
 
 const mockOrders = [
-  { ...mockOrderBase, id: '00000000-0000-0000-0000-000000000041', orderNumber: 41, displayNumber: '041', status: 'NEW', statusLabel: 'Neu' },
-  { ...mockOrderBase, id: '00000000-0000-0000-0000-000000000042', orderNumber: 42, displayNumber: '042', status: 'IN_PROGRESS', statusLabel: 'In Bearbeitung' },
-  { ...mockOrderBase, id: '00000000-0000-0000-0000-000000000043', orderNumber: 43, displayNumber: '043', status: 'READY', statusLabel: 'Fertig', totalPrice: 8.5, items: [{ id: 'i3', foodItemId: mockFoodItems[2].id, name: 'Schnitzel mit Pommes', quantity: 1, unitPrice: 8.5, lineTotal: 8.5 }] },
-  { ...mockOrderBase, id: '00000000-0000-0000-0000-000000000044', orderNumber: 44, displayNumber: '044', status: 'PICKED_UP', statusLabel: 'Abgeholt', source: 'CASHIER', sourceLabel: 'Vor Ort' },
+  { ...mockOrderBase, id: '00000000-0000-0000-0000-000000000041', lookupToken: 'b1b2c3d4e5f6789012345678abcdef01', orderNumber: 41, displayNumber: '041', status: 'NEW', statusLabel: 'Neu' },
+  { ...mockOrderBase, id: '00000000-0000-0000-0000-000000000042', lookupToken: ORDER_LOOKUP_TOKEN, orderNumber: 42, displayNumber: '042', status: 'IN_PROGRESS', statusLabel: 'In Bearbeitung' },
+  { ...mockOrderBase, id: '00000000-0000-0000-0000-000000000043', lookupToken: 'c1b2c3d4e5f6789012345678abcdef03', orderNumber: 43, displayNumber: '043', status: 'READY', statusLabel: 'Fertig', totalPrice: 8.5, items: [{ id: 'i3', foodItemId: mockFoodItems[2].id, name: 'Schnitzel mit Pommes', quantity: 1, unitPrice: 8.5, lineTotal: 8.5 }] },
+  { ...mockOrderBase, id: '00000000-0000-0000-0000-000000000044', lookupToken: 'd1b2c3d4e5f6789012345678abcdef04', orderNumber: 44, displayNumber: '044', status: 'PICKED_UP', statusLabel: 'Abgeholt', source: 'CASHIER', sourceLabel: 'Vor Ort' },
 ];
 
 const mockStats = {
@@ -465,9 +466,12 @@ function mockApi(pathname: string, method: string, body?: string): unknown {
     return { event: mockEvent, items: mockFoodItems, preOrderInfo: 'Vorbestellung möglich' };
   }
   if (pathname === '/api/public/event') return mockEvent;
-  if (pathname === `/api/public/orders/${ORDER_ID}`) {
+  if (pathname.match(/^\/api\/public\/orders\/status\/[^/]+$/)) {
+    const token = decodeURIComponent(pathname.split('/').pop() ?? '');
+    const order = mockOrders.find((o) => o.lookupToken === token);
+    if (!order) return {};
     return {
-      ...mockOrders[1],
+      ...order,
       canCancel: true,
       cancellationDeadline: '2026-08-14T11:00:00.000Z',
       cancellationDeadlineLabel: 'Freitag, 14. August 2026, 11:00',
@@ -734,7 +738,11 @@ async function main() {
   }
 
   const pages: PageSpec[] = [
-    { name: '02-kundenstatus', url: `/status/${ORDER_ID}` },
+    { name: '02-kundenstatus', url: `/status/${ORDER_LOOKUP_TOKEN}`, prepare: async (page) => {
+      await page.getByLabel('Nachname').fill('Mustermann');
+      await page.getByRole('button', { name: 'Anzeigen' }).click();
+      await page.waitForSelector('text=In Bearbeitung', { timeout: 10000 });
+    } },
     {
       name: '03-status-abfrage',
       url: '/status',

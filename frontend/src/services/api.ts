@@ -1,5 +1,18 @@
 const API_URL = import.meta.env.VITE_API_URL || '';
 
+type AuthRefreshHandlers = {
+  getRefreshToken: () => string | null;
+  onTokensRefreshed: (accessToken: string, refreshToken?: string) => void;
+  onAuthFailed: () => void;
+};
+
+let authRefreshHandlers: AuthRefreshHandlers | null = null;
+let refreshInFlight: Promise<string | null> | null = null;
+
+export function configureAuthRefresh(handlers: AuthRefreshHandlers): void {
+  authRefreshHandlers = handlers;
+}
+
 class ApiError extends Error {
   constructor(public status: number, message: string) {
     super(message);
@@ -7,9 +20,37 @@ class ApiError extends Error {
   }
 }
 
+type RequestOptions = RequestInit & { _skipRefresh?: boolean };
+
+async function tryRefreshToken(): Promise<string | null> {
+  if (!authRefreshHandlers) return null;
+  const refreshToken = authRefreshHandlers.getRefreshToken();
+  if (!refreshToken) return null;
+
+  if (!refreshInFlight) {
+    refreshInFlight = (async () => {
+      try {
+        const result = await request<{ token: string; refreshToken?: string }>(
+          '/auth/refresh',
+          { method: 'POST', body: JSON.stringify({ refreshToken }), _skipRefresh: true }
+        );
+        authRefreshHandlers?.onTokensRefreshed(result.token, result.refreshToken);
+        return result.token;
+      } catch {
+        authRefreshHandlers?.onAuthFailed();
+        return null;
+      } finally {
+        refreshInFlight = null;
+      }
+    })();
+  }
+
+  return refreshInFlight;
+}
+
 async function request<T>(
   path: string,
-  options: RequestInit = {},
+  options: RequestOptions = {},
   token?: string | null
 ): Promise<T> {
   const headers: Record<string, string> = {
@@ -23,6 +64,13 @@ async function request<T>(
 
   const url = path.startsWith('http') ? path : `${API_URL}/api${path}`;
   const res = await fetch(url, { ...options, headers });
+
+  if (res.status === 401 && token && !options._skipRefresh) {
+    const newToken = await tryRefreshToken();
+    if (newToken) {
+      return request<T>(path, { ...options, _skipRefresh: true }, newToken);
+    }
+  }
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({ error: 'Unbekannter Fehler' }));
@@ -50,21 +98,31 @@ export const api = {
   }) => request<Order>('/public/orders', { method: 'POST', body: JSON.stringify(data) }),
   lookupOrder: (orderNumber: number, lastName: string) =>
     request<Order>('/public/orders/lookup', { method: 'POST', body: JSON.stringify({ orderNumber, lastName }) }),
-  getOrder: (id: string) => request<Order>(`/public/orders/${id}`),
+  getOrderByToken: (lookupToken: string, lastName: string) => {
+    const q = new URLSearchParams({ lastName });
+    return request<Order>(`/public/orders/status/${encodeURIComponent(lookupToken)}?${q}`);
+  },
   createOrderCheckout: (orderId: string, paymentMethodId: string) =>
     request<import('@/types/payment').OrderPaymentInfo>(
       `/public/orders/${orderId}/checkout`,
       { method: 'POST', body: JSON.stringify({ paymentMethodId }) }
     ),
-  cancelOrder: (id: string, lastName: string) =>
-    request<Order>(`/public/orders/${id}/cancel`, { method: 'POST', body: JSON.stringify({ lastName }) }),
+  cancelOrder: (lookupToken: string, lastName: string) =>
+    request<Order>(`/public/orders/${encodeURIComponent(lookupToken)}/cancel`, {
+      method: 'POST',
+      body: JSON.stringify({ lastName }),
+    }),
   getPickupBoard: () => request<PickupBoardOrder[]>('/public/pickup-board'),
   getClub: () => request<import('@/types/club').ClubSettings>('/public/club'),
   getOrderSettings: () => request<import('@/types/club').OrderSettings>('/public/order-settings'),
 
   // Auth
   login: (email: string, password: string) =>
-    request<{ token: string; user: User }>('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
+    request<{ token: string; refreshToken?: string; user: User }>('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
+  refresh: (refreshToken: string) =>
+    request<{ token: string; refreshToken?: string }>('/auth/refresh', { method: 'POST', body: JSON.stringify({ refreshToken }) }),
+  logout: (refreshToken: string) =>
+    request<void>('/auth/logout', { method: 'POST', body: JSON.stringify({ refreshToken }) }),
   me: (token: string) => request<User>('/auth/me', {}, token),
 
   // Staff

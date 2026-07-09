@@ -101,8 +101,13 @@ export class ModuleRegistry {
     const rows = await prisma.installedModule.findMany();
     const rowMap = new Map(rows.map((r) => [r.moduleId, r]));
 
+    const showPreview = process.env.SHOW_PREVIEW_MODULES === '1';
+    const manifests = this.getAllManifests().filter(
+      (manifest) => showPreview || manifest.productionReady
+    );
+
     return Promise.all(
-      this.getAllManifests().map(async (manifest) => {
+      manifests.map(async (manifest) => {
         const mod = this.getModule(manifest.id)!;
         const row = rowMap.get(manifest.id) ?? null;
         const status = deriveModuleStatus(row);
@@ -155,6 +160,7 @@ export class ModuleRegistry {
           lastError: row?.lastError ?? undefined,
           schemaVersion: row?.schemaVersion ?? undefined,
           upgradeAvailable,
+          productionReady: manifest.productionReady,
           dependencyStatus: {
             satisfied: depCheck.ok,
             missing: depCheck.missing,

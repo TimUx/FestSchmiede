@@ -34,6 +34,22 @@ import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
 import { User, UserRole } from '@/types';
 
+type RolePresetId = 'vorstand' | 'eventLeitung' | 'kueche' | 'kasse' | 'abholung' | 'nurLesen';
+
+const ROLE_PRESETS: {
+  id: RolePresetId;
+  label: string;
+  role: UserRole;
+  permissions: string[] | 'all';
+}[] = [
+  { id: 'vorstand', label: 'Vorstand', role: 'ADMIN', permissions: [] },
+  { id: 'eventLeitung', label: 'Event-Leitung', role: 'STAFF', permissions: 'all' },
+  { id: 'kueche', label: 'Küche', role: 'STAFF', permissions: ['orders.view', 'printer.print'] },
+  { id: 'kasse', label: 'Kasse', role: 'STAFF', permissions: ['orders.view', 'orders.manage'] },
+  { id: 'abholung', label: 'Abholung', role: 'STAFF', permissions: ['orders.view'] },
+  { id: 'nurLesen', label: 'Nur-Lesen', role: 'STAFF', permissions: [] },
+];
+
 interface UserForm {
   email: string;
   password: string;
@@ -60,6 +76,7 @@ export function UsersPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<UserForm>(emptyForm);
+  const [rolePreset, setRolePreset] = useState<RolePresetId | ''>('');
   const [saving, setSaving] = useState(false);
 
   const [availablePermissions, setAvailablePermissions] = useState<Array<{ key: string; description: string }>>([]);
@@ -98,7 +115,21 @@ export function UsersPage() {
   const openCreate = () => {
     setEditingId(null);
     setForm(emptyForm);
+    setRolePreset('');
     setDialogOpen(true);
+  };
+
+  const applyRolePreset = (presetId: RolePresetId) => {
+    const preset = ROLE_PRESETS.find((p) => p.id === presetId);
+    if (!preset) return;
+    setRolePreset(presetId);
+    setForm((prev) => ({ ...prev, role: preset.role }));
+    if (preset.role === 'STAFF') {
+      const perms = preset.permissions === 'all'
+        ? availablePermissions.map((p) => p.key)
+        : preset.permissions;
+      setStaffPermissions(perms);
+    }
   };
 
   const openEdit = (user: User) => {
@@ -136,6 +167,14 @@ export function UsersPage() {
           lastName: form.lastName,
           role: form.role,
         });
+        if (form.role === 'STAFF' && rolePreset) {
+          const preset = ROLE_PRESETS.find((p) => p.id === rolePreset);
+          if (preset && preset.permissions !== 'all' && preset.permissions.length > 0) {
+            await api.updateStaffPermissions(token, preset.permissions);
+          } else if (preset?.permissions === 'all') {
+            await api.updateStaffPermissions(token, availablePermissions.map((p) => p.key));
+          }
+        }
       }
       setDialogOpen(false);
       loadUsers();
@@ -286,6 +325,20 @@ export function UsersPage() {
         <DialogTitle>{editingId ? 'Benutzer bearbeiten' : 'Neuer Benutzer'}</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
+            {!editingId && (
+              <FormControl fullWidth>
+                <InputLabel>Rollenvorlage</InputLabel>
+                <Select
+                  label="Rollenvorlage"
+                  value={rolePreset}
+                  onChange={(e) => applyRolePreset(e.target.value as RolePresetId)}
+                >
+                  {ROLE_PRESETS.map((preset) => (
+                    <MenuItem key={preset.id} value={preset.id}>{preset.label}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
             <TextField
               label="Vorname"
               fullWidth

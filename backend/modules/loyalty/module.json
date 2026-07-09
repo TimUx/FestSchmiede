@@ -11,5 +11,6 @@
     { "key": "loyalty.manage", "description": "Treueprogramm verwalten" },
     { "key": "loyalty.view", "description": "Treuepunkte einsehen" }
   ],
-  "minimumCoreVersion": "1.0.0"
+  "minimumCoreVersion": "1.0.0",
+  "productionReady": false
 }

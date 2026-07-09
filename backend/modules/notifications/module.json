@@ -93,6 +93,7 @@
     }
   ],
   "minimumCoreVersion": "1.0.0",
+  "productionReady": true,
   "qa": {
     "participatesInScenarios": true,
     "providesSeed": true,

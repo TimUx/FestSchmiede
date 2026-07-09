@@ -1,15 +1,14 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { config } from '../config';
 import { userRepository } from '../repositories';
 import { AppError } from '../middleware/errorHandler';
 import { AuthPayload } from '../middleware/auth';
 import { parsePermissionKeys } from '../platform/permissions';
 import { hookSystem } from '../platform/bootstrap';
 import { CORE_HOOKS } from '../platform/types';
+import { sessionService } from './sessionService';
 
 export const authService = {
-  async login(email: string, password: string) {
+  async login(email: string, password: string, userAgent?: string) {
     const user = await userRepository.findByEmail(email);
     if (!user || !user.active) {
       throw new AppError(401, 'Ungültige Anmeldedaten');
@@ -20,15 +19,17 @@ export const authService = {
       throw new AppError(401, 'Ungültige Anmeldedaten');
     }
 
-    const payload: AuthPayload = {
+    const payload: Omit<AuthPayload, 'sessionId'> = {
       userId: user.id,
       email: user.email,
       role: user.role.name,
     };
 
-    const token = jwt.sign(payload, config.jwt.secret, {
-      expiresIn: config.jwt.expiresIn,
-    } as jwt.SignOptions);
+    const { accessToken, refreshToken } = await sessionService.createSession(
+      user.id,
+      payload,
+      userAgent
+    );
 
     hookSystem.emitAsync(CORE_HOOKS.USER_LOGIN, {
       userId: user.id,
@@ -37,7 +38,8 @@ export const authService = {
     });
 
     return {
-      token,
+      token: accessToken,
+      refreshToken,
       user: {
         id: user.id,
         email: user.email,
@@ -47,6 +49,23 @@ export const authService = {
         permissions: parsePermissionKeys(user.role.permissions),
       },
     };
+  },
+
+  async logout(refreshToken: string) {
+    await sessionService.revokeSession(refreshToken);
+  },
+
+  async refresh(refreshToken: string) {
+    const tokens = await sessionService.refreshSession(refreshToken);
+    return {
+      token: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      expiresAt: tokens.expiresAt.toISOString(),
+    };
+  },
+
+  async revokeAllForUser(userId: string) {
+    await sessionService.revokeAllUserSessions(userId);
   },
 
   async createUser(data: {

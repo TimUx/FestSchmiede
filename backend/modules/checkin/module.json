@@ -11,5 +11,6 @@
     { "key": "checkin.scan", "description": "QR-Codes scannen" },
     { "key": "checkin.manage", "description": "Einlasseinstellungen verwalten" }
   ],
-  "minimumCoreVersion": "1.0.0"
+  "minimumCoreVersion": "1.0.0",
+  "productionReady": false
 }

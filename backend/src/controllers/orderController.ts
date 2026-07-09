@@ -43,9 +43,13 @@ export const orderController = {
     }
   },
 
-  async getById(req: { params: { id: string } }, res: Response, next: NextFunction) {
+  async getByLookupToken(
+    req: { params: { token: string }; query: { lastName?: string } },
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      const order = await orderService.getById(req.params.id);
+      const order = await orderService.getByLookupToken(req.params.token, req.query.lastName);
       res.json(order);
     } catch (err) {
       next(err);
@@ -112,12 +116,12 @@ export const orderController = {
   },
 
   async cancelOnline(
-    req: { params: { id: string }; body: { lastName: string } },
+    req: { params: { token: string }; body: { lastName: string } },
     res: Response,
     next: NextFunction
   ) {
     try {
-      const order = await orderService.cancelOnlineOrder(req.params.id, req.body.lastName);
+      const order = await orderService.cancelOnlineOrder(req.params.token, req.body.lastName);
       res.json(order);
     } catch (err) {
       next(err);

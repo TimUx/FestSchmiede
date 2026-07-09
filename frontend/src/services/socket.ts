@@ -1,9 +1,47 @@
+import { useSyncExternalStore } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 const WS_URL = import.meta.env.VITE_WS_URL || '';
 
 let socket: Socket | null = null;
 let authToken: string | null = null;
+let lastJoinedEventId: string | null = null;
+let connected = false;
+const statusListeners = new Set<() => void>();
+
+function notifyStatusListeners(): void {
+  statusListeners.forEach((listener) => listener());
+}
+
+function subscribeSocketStatus(listener: () => void): () => void {
+  statusListeners.add(listener);
+  return () => statusListeners.delete(listener);
+}
+
+function getSocketConnectedSnapshot(): boolean {
+  return connected;
+}
+
+export function useSocketStatus(): { connected: boolean } {
+  const isConnected = useSyncExternalStore(subscribeSocketStatus, getSocketConnectedSnapshot, () => true);
+  return { connected: isConnected };
+}
+
+function attachSocketHandlers(s: Socket): void {
+  s.off('connect');
+  s.off('disconnect');
+  s.on('connect', () => {
+    connected = true;
+    notifyStatusListeners();
+    if (lastJoinedEventId) {
+      s.emit('join:event', lastJoinedEventId);
+    }
+  });
+  s.on('disconnect', () => {
+    connected = false;
+    notifyStatusListeners();
+  });
+}
 
 export function configureSocketAuth(token: string | null): void {
   authToken = token;
@@ -23,11 +61,14 @@ export function getSocket(): Socket {
       autoConnect: true,
       auth: { token: authToken ?? undefined },
     });
+    connected = socket.connected;
+    attachSocketHandlers(socket);
   }
   return socket;
 }
 
 export function joinEvent(eventId: string): void {
+  lastJoinedEventId = eventId;
   getSocket().emit('join:event', eventId);
 }
 
@@ -35,8 +76,8 @@ export function joinPickupBoard(eventId: string): void {
   getSocket().emit('join:pickup-board', eventId);
 }
 
-export function joinOrder(orderId: string, lastName?: string): void {
-  getSocket().emit('join:order', { orderId, lastName });
+export function joinOrder(lookupToken: string, lastName?: string): void {
+  getSocket().emit('join:order', { lookupToken, lastName });
 }
 
 export function leaveOrder(orderId: string): void {

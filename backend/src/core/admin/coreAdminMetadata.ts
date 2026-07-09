@@ -17,25 +17,14 @@ export const CORE_BUILTIN_PAGES: AdminPageDefinition[] = [
     source: 'core',
   },
   {
-    id: 'core-users',
-    path: '/admin/benutzer',
-    label: 'Benutzer',
-    description: 'Mitarbeiter und Administratoren',
-    icon: 'People',
-    pageType: 'builtin',
-    componentId: 'core.users',
-    sortOrder: 30,
-    source: 'core',
-  },
-  {
     id: 'core-events',
     path: '/admin/veranstaltungen',
     label: 'Veranstaltungen',
-    description: 'Events anlegen und aktivieren',
+    description: 'Veranstaltungen anlegen und aktivieren',
     icon: 'Event',
     pageType: 'builtin',
     componentId: 'core.events',
-    sortOrder: 40,
+    sortOrder: 10,
     source: 'core',
   },
   {
@@ -46,18 +35,29 @@ export const CORE_BUILTIN_PAGES: AdminPageDefinition[] = [
     icon: 'RestaurantMenu',
     pageType: 'builtin',
     componentId: 'core.food-items',
-    sortOrder: 50,
+    sortOrder: 20,
+    source: 'core',
+  },
+  {
+    id: 'core-users',
+    path: '/admin/benutzer',
+    label: 'Team',
+    description: 'Mitarbeiter und Administratoren',
+    icon: 'People',
+    pageType: 'builtin',
+    componentId: 'core.users',
+    sortOrder: 25,
     source: 'core',
   },
   {
     id: 'core-modules',
     path: '/admin/module',
-    label: 'Module',
-    description: 'Offizielle Erweiterungen verwalten',
+    label: 'Funktionen',
+    description: 'Zahlung, Benachrichtigungen und Druck',
     icon: 'Extension',
     pageType: 'modules',
     componentId: 'core.modules',
-    sortOrder: 90,
+    sortOrder: 30,
     source: 'core',
   },
 ];
@@ -68,9 +68,12 @@ export const CORE_SETTINGS_ICONS: Record<string, string> = {
 };
 
 export const CORE_SETTINGS_SORT: Record<string, number> = {
-  'core.club': 15,
-  'core.order': 55,
+  'core.club': 1,
+  'core.order': 2,
+  'module.notifications': 3,
 };
+
+export const CORE_SETTINGS_PARENT = 'settings';
 
 export const CORE_STAFF_LINK: AdminDashboardTile = {
   id: 'staff-area',

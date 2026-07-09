@@ -120,6 +120,7 @@ export const moduleManifestSchema = z.object({
   settings: settingsMetadataSchema.optional(),
   qa: qaMetadataSchema,
   minimumCoreVersion: z.string().default('1.0.0'),
+  productionReady: z.boolean().default(false),
 });
 
 export type ModuleManifest = z.infer<typeof moduleManifestSchema>;

@@ -135,6 +135,7 @@ export interface ModuleInfo {
     missing: string[];
     inactive: string[];
   };
+  productionReady?: boolean;
 }
 
 export const CORE_HOOKS = {

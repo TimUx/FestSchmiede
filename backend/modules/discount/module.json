@@ -11,5 +11,6 @@
     { "key": "discount.manage", "description": "Rabatte verwalten" },
     { "key": "discount.apply", "description": "Rabatte anwenden" }
   ],
-  "minimumCoreVersion": "1.0.0"
+  "minimumCoreVersion": "1.0.0",
+  "productionReady": false
 }

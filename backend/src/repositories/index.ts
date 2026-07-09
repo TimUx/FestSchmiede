@@ -1,5 +1,6 @@
 import { prisma } from '../config/database';
 import { Prisma, StatusCode } from '@prisma/client';
+import crypto from 'crypto';
 
 export const userRepository = {
   findByEmail: (email: string) =>
@@ -67,6 +68,17 @@ export const orderRepository = {
       },
     }),
 
+  findByLookupToken: (lookupToken: string) =>
+    prisma.order.findUnique({
+      where: { lookupToken },
+      include: {
+        customer: true,
+        event: true,
+        items: { include: { foodItem: true } },
+        statusHistory: { orderBy: { createdAt: 'asc' } },
+      },
+    }),
+
   findByEvent: (eventId: string, filters?: { status?: StatusCode[] }) =>
     prisma.order.findMany({
       where: {
@@ -107,9 +119,12 @@ export const orderRepository = {
     return counter.counter;
   },
 
-  create: (data: Prisma.OrderCreateInput) =>
+  create: (data: Omit<Prisma.OrderCreateInput, 'lookupToken'> & { lookupToken?: string }) =>
     prisma.order.create({
-      data,
+      data: {
+        ...data,
+        lookupToken: data.lookupToken ?? crypto.randomBytes(32).toString('hex'),
+      },
       include: {
         customer: true,
         items: { include: { foodItem: true } },

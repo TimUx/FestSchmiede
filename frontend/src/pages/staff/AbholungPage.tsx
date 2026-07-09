@@ -8,6 +8,7 @@ import {
   Alert,
   Stack,
   Divider,
+  Chip,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
@@ -110,7 +111,12 @@ export function AbholungPage() {
             <Typography variant="h1" fontWeight={900} color="primary" sx={{ fontSize: { xs: '4.5rem', sm: '6rem' }, lineHeight: 1.1 }}>
               {order.displayNumber}
             </Typography>
-            <Box sx={{ mt: 1 }}><StatusChip status={order.status} /></Box>
+            <Box sx={{ mt: 1, display: 'flex', gap: 1, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <StatusChip status={order.status} />
+              {order.paymentLabel && (
+                <Chip size="small" label={order.paymentLabel} variant="outlined" />
+              )}
+            </Box>
           </Box>
 
           <Divider sx={{ my: 2 }} />

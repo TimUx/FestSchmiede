@@ -11,5 +11,6 @@
     { "key": "cash-register.settings", "description": "Kassenanbindung konfigurieren" },
     { "key": "cash-register.sync", "description": "Kassendaten synchronisieren" }
   ],
-  "minimumCoreVersion": "1.0.0"
+  "minimumCoreVersion": "1.0.0",
+  "productionReady": false
 }

@@ -1,7 +1,8 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Typography, Grid, Card, CardActionArea, CardContent, Box, Alert, CircularProgress,
-  Chip, Paper, Stack,
+  Chip, Paper, Stack, Button,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
@@ -13,6 +14,7 @@ import { resolveAdminIcon } from '@/admin/iconMap';
 import { renderWidget } from '@/admin/widgetRegistry';
 import { canAccessPermission } from '@/utils/permissions';
 import { useAuth } from '@/contexts/AuthContext';
+import { api } from '@/services/api';
 
 const healthIcons = {
   healthy: <CheckCircleIcon fontSize="small" color="success" />,
@@ -22,8 +24,16 @@ const healthIcons = {
 };
 
 export function AdminDashboardPage() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { catalog, loading, error } = useAdminUi();
+  const [hasEvents, setHasEvents] = useState(true);
+
+  useEffect(() => {
+    if (!token) return;
+    api.getEvents(token)
+      .then((events) => setHasEvents(events.length > 0))
+      .catch(() => setHasEvents(true));
+  }, [token]);
 
   const tiles = (catalog?.dashboardTiles ?? []).filter((tile) => {
     const page = catalog?.pages.find((p) => p.path === tile.path);
@@ -39,8 +49,22 @@ export function AdminDashboardPage() {
         Administration
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        Verein, Benutzer und Module verwalten – Navigation und Seiten werden aus Metadaten erzeugt.
+        Verein, Team und Funktionen verwalten.
       </Typography>
+
+      {!loading && !hasEvents && (
+        <Alert
+          severity="info"
+          sx={{ mb: 3 }}
+          action={
+            <Button component={Link} to="/admin/einrichtung" color="inherit" size="small">
+              Einrichtungsassistent starten
+            </Button>
+          }
+        >
+          Noch keine Veranstaltung angelegt? Der Assistent führt Sie in wenigen Schritten durch die Ersteinrichtung.
+        </Alert>
+      )}
 
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
@@ -62,13 +86,22 @@ export function AdminDashboardPage() {
 
           {health.length > 0 && (
             <Paper sx={{ p: 2, mb: 3 }}>
-              <Typography variant="h6" fontWeight={700} gutterBottom>Modul-Gesundheit</Typography>
+              <Typography variant="h6" fontWeight={700} gutterBottom>Funktionsstatus</Typography>
               <Stack spacing={1}>
                 {health.map((item) => (
                   <Box key={item.id} sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                     {healthIcons[item.status]}
                     <Typography variant="body2" fontWeight={600}>{item.label}</Typography>
-                    <Chip size="small" label={item.status} variant="outlined" />
+                    <Chip
+                      size="small"
+                      label={
+                        item.status === 'healthy' ? 'In Ordnung'
+                          : item.status === 'degraded' ? 'Prüfen'
+                            : item.status === 'unhealthy' ? 'Fehler'
+                              : 'Unbekannt'
+                      }
+                      variant="outlined"
+                    />
                     {item.description && (
                       <Typography variant="caption" color="text.secondary">{item.description}</Typography>
                     )}

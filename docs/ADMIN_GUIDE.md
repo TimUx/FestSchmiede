@@ -55,7 +55,9 @@ docker compose exec backend npm run seed
 Standard-Images: `ghcr.io/timux/food-order/backend:latest` und `ghcr.io/timux/food-order/frontend:latest`  
 Tag ändern über `IMAGE_TAG` in `.env` (z. B. Release-Version).
 
-Das Backend synchronisiert das Datenbankschema beim Start automatisch per `prisma db push`.
+Das Backend wendet Datenbankänderungen beim Start automatisch per `prisma migrate deploy` an.
+
+Ausführliche Checklisten, Backup und Wiederherstellung: **[OPERATIONS.md](OPERATIONS.md)**.
 
 ### Prüfen, ob alles läuft
 
@@ -85,8 +87,10 @@ Auslösung: manuell über GitHub Actions oder automatisch beim Erstellen eines R
 
 ### Updates einspielen
 
+Vor jedem Update **Backup erstellen** — siehe [OPERATIONS.md — Update](OPERATIONS.md#update-durchführen).
+
 ```bash
-git pull
+./scripts/backup/postgres-backup.sh
 docker compose pull
 docker compose up -d
 ```
@@ -459,17 +463,10 @@ sudo systemctl reload caddy
 ### 1. Anmeldung (Administrationsbereich)
 
 1. Öffnen Sie `/admin/login`
-2. Melden Sie sich mit den Admin-Zugangsdaten an
+2. Melden Sie sich mit den **von Ihnen vergebenen** Admin-Zugangsdaten an (nach dem ersten Seed Passwörter ändern — Demo-Zugänge nur für Entwicklung, siehe [Developer Guide](DEVELOPER_GUIDE.md#test-zugangsdaten))
 3. Nach dem Login gelangen Sie zur Admin-Übersicht
 
-**Standard-Zugangsdaten (nach Seed):**
-
-| Rolle | E-Mail | Passwort |
-|-------|--------|----------|
-| Administrator | admin@verein.local | admin123 |
-| Mitarbeiter (Küche) | kueche@verein.local | staff123 |
-
-> **Wichtig:** Ändern Sie die Passwörter vor dem produktiven Einsatz! Mitarbeiter melden sich unter `/mitarbeiter/login` an.
+> **Wichtig:** Ändern Sie alle Standard-Passwörter vor dem produktiven Einsatz! Mitarbeiter melden sich unter `/mitarbeiter/login` an.
 
 ![Admin-Login](screenshots/15-admin-login.png)
 

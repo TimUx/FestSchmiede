@@ -34,16 +34,30 @@ model Role {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
+  id           String        @id @default(uuid())
+  email        String        @unique
   passwordHash String
   firstName    String
   lastName     String
-  active       Boolean  @default(true)
+  active       Boolean       @default(true)
   roleId       String
-  role         Role     @relation(fields: [roleId], references: [id])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  role         Role          @relation(fields: [roleId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  sessions     UserSession[]
+}
+
+model UserSession {
+  id               String    @id @default(uuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshTokenHash String    @unique
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  userAgent        String?
+  createdAt        DateTime  @default(now())
+
+  @@index([userId])
 }
 
 model Event {
@@ -111,6 +125,7 @@ model Order {
   event           Event         @relation(fields: [eventId], references: [id])
   customerId      String?
   customer        Customer?     @relation(fields: [customerId], references: [id])
+  lookupToken     String        @unique
   orderNumber     Int
   orderDate       DateTime      @db.Date
   source          OrderSource
@@ -166,6 +181,7 @@ model ClubSettings {
   orderFieldEmailRequired     Boolean  @default(false)
   orderFieldPhoneRequired     Boolean  @default(false)
   cancellationDeadlineHours   Int      @default(24)
+  dataRetentionDays           Int      @default(365)
   smtpHost                    String?
   smtpPort                    Int      @default(587)
   smtpUser                    String?

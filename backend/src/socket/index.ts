@@ -17,13 +17,13 @@ function isStaff(user?: AuthPayload): boolean {
 }
 
 async function verifyOrderAccess(
-  orderId: string,
+  lookupToken: string,
   lastName?: string,
   user?: AuthPayload
 ): Promise<boolean> {
   if (isStaff(user)) return true;
   if (!lastName?.trim()) return false;
-  const order = await orderRepository.findById(orderId);
+  const order = await orderRepository.findByLookupToken(lookupToken);
   if (!order?.customer) return false;
   return order.customer.lastName.toLowerCase() === lastName.trim().toLowerCase();
 }
@@ -66,16 +66,21 @@ export function initSocket(httpServer: HttpServer): Server {
 
     socket.on(
       'join:order',
-      async (payload: string | { orderId: string; lastName?: string }, callback?: (err?: string) => void) => {
-        const orderId = typeof payload === 'string' ? payload : payload.orderId;
+      async (payload: string | { lookupToken: string; lastName?: string }, callback?: (err?: string) => void) => {
+        const lookupToken = typeof payload === 'string' ? payload : payload.lookupToken;
         const lastName = typeof payload === 'string' ? undefined : payload.lastName;
-        const ok = await verifyOrderAccess(orderId, lastName, data.user);
+        const ok = await verifyOrderAccess(lookupToken, lastName, data.user);
         if (!ok) {
           const msg = 'Nicht autorisiert';
           callback?.(msg);
           return;
         }
-        socket.join(`order:${orderId}`);
+        const order = await orderRepository.findByLookupToken(lookupToken);
+        if (!order) {
+          callback?.('Nicht autorisiert');
+          return;
+        }
+        socket.join(`order:${order.id}`);
         callback?.();
       }
     );

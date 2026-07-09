@@ -108,7 +108,7 @@ docker compose up -d
 docker compose exec backend npm run seed
 ```
 
-Das Backend synchronisiert das Datenbankschema automatisch per `prisma db push` beim Start.
+Das Backend wendet Datenbankänderungen beim Start automatisch per `prisma migrate deploy` an. Betrieb, Backup und Updates: [OPERATIONS.md](docs/OPERATIONS.md).
 
 | Dienst | URL |
 |--------|-----|
@@ -118,13 +118,6 @@ Das Backend synchronisiert das Datenbankschema automatisch per `prisma db push` 
 | Abholboard | http://localhost:5173/abholboard |
 | Mitarbeiter-Login | http://localhost:5173/mitarbeiter/login |
 | Admin-Login | http://localhost:5173/admin/login |
-
-## Test-Zugangsdaten
-
-| Rolle | E-Mail | Passwort |
-|-------|--------|----------|
-| Administrator | admin@verein.local | admin123 |
-| Mitarbeiter (Küche) | kueche@verein.local | staff123 |
 
 ## Routen
 
@@ -169,11 +162,14 @@ Das Backend synchronisiert das Datenbankschema automatisch per `prisma db push` 
 
 | Handbuch | Zielgruppe |
 |----------|-----------|
-| [Developer Guide](docs/DEVELOPER_GUIDE.md) | Entwickler |
-| [Modul-Architektur](docs/MODULE_ARCHITECTURE.md) | Entwickler (Module, Payment, PayableResource) |
-| [Architektur & ADRs](docs/architecture/README.md) | Entwickler (ADR, Analyse, Migrationsplan) |
+| [Operations](docs/OPERATIONS.md) | Betreiber (Backup, Update, Restore) |
+| [Volunteer Guide](docs/VOLUNTEER_GUIDE.md) | Ehrenamtliche ohne IT-Hintergrund |
 | [Admin Guide](docs/ADMIN_GUIDE.md) | Administratoren |
 | [User Guide](docs/USER_GUIDE.md) | Mitarbeiter (Küche, Abholung) |
+| [Developer Guide](docs/DEVELOPER_GUIDE.md) | Entwickler |
+| [Roadmap](docs/ROADMAP.md) | Stabil vs. geplant |
+| [Modul-Architektur](docs/MODULE_ARCHITECTURE.md) | Entwickler (Module, Payment, PayableResource) |
+| [Architektur & ADRs](docs/architecture/README.md) | Entwickler (ADR, Analyse, Migrationsplan) |
 
 ## Technologie-Stack
 

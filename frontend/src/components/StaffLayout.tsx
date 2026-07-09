@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -14,6 +14,8 @@ import {
   useMediaQuery,
   useTheme,
   Avatar,
+  Alert,
+  Snackbar,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
@@ -32,7 +34,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useThemeMode } from '@/contexts/ThemeContext';
 import { Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { startPrintJobListener } from '@/modules/printer/printBridge';
-import { configureSocketAuth } from '@/services/socket';
+import { configureSocketAuth, useSocketStatus } from '@/services/socket';
 
 const DRAWER_WIDTH = 260;
 
@@ -63,6 +65,9 @@ interface StaffLayoutProps {
 export function StaffLayout({ children, title, fullWidth = false }: StaffLayoutProps) {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(true);
+  const [reconnectNotice, setReconnectNotice] = useState(false);
+  const { connected } = useSocketStatus();
+  const wasDisconnected = useRef(false);
   const { user, logout, isAdmin, token } = useAuth();
   const { mode, toggleMode } = useThemeMode();
   const location = useLocation();
@@ -80,6 +85,19 @@ export function StaffLayout({ children, title, fullWidth = false }: StaffLayoutP
   useEffect(() => {
     configureSocketAuth(token);
   }, [token]);
+
+  useEffect(() => {
+    if (!connected) {
+      wasDisconnected.current = true;
+      return;
+    }
+    if (wasDisconnected.current) {
+      setReconnectNotice(true);
+      wasDisconnected.current = false;
+    }
+  }, [connected]);
+
+  const handleReconnectClose = useCallback(() => setReconnectNotice(false), []);
 
   useEffect(() => {
     const unsubPrint = startPrintJobListener();
@@ -176,6 +194,12 @@ export function StaffLayout({ children, title, fullWidth = false }: StaffLayoutP
           </Toolbar>
         </AppBar>
 
+        {!connected && (
+          <Alert severity="warning" sx={{ borderRadius: 0 }}>
+            Verbindung unterbrochen – Bestellungen können verzögert ankommen
+          </Alert>
+        )}
+
         <Container
           maxWidth={fullWidth ? false : 'lg'}
           sx={{ flexGrow: 1, py: 3, px: { xs: 2, sm: 3 } }}
@@ -191,6 +215,14 @@ export function StaffLayout({ children, title, fullWidth = false }: StaffLayoutP
       >
         {drawerContent}
       </Drawer>
+
+      <Snackbar
+        open={reconnectNotice}
+        autoHideDuration={4000}
+        onClose={handleReconnectClose}
+        message="Verbindung wiederhergestellt"
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      />
     </Box>
   );
 }

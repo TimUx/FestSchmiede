@@ -452,7 +452,20 @@ export class ModuleManager {
     await auditService.log({ action: 'module.deactivated', moduleId });
     await hookSystem.emit(CORE_HOOKS.MODULE_DEACTIVATED, { moduleId });
     await this.refreshExtensionPoints();
+    this.rebuildModuleRouter(moduleId);
     logger.info(`Modul deaktiviert: ${moduleId}`);
+  }
+
+  /**
+   * Express cannot unmount middleware once mounted. Deactivated modules are blocked
+   * by moduleGuard (404). Clearing mount keys allows clean remount on reactivation.
+   */
+  private rebuildModuleRouter(moduleId: string): void {
+    for (const key of [...this.mountedRouteKeys]) {
+      if (key.startsWith(`${moduleId}:`)) {
+        this.mountedRouteKeys.delete(key);
+      }
+    }
   }
 
   async reinitializeModule(moduleId: string): Promise<void> {

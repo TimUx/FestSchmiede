@@ -89,7 +89,7 @@ cd backend
 cp ../.env.example .env
 # DATABASE_URL in .env anpassen
 npm install
-npx prisma db push
+npx prisma migrate deploy
 npm run seed
 npm run dev
 ```
@@ -132,14 +132,19 @@ Modul-spezifische Tabellen (z. B. `payment_sessions`) werden ausschließlich in 
 
 ### Datenbankschema
 
-Das Schema wird direkt aus `prisma/schema.prisma` synchronisiert (keine Migrationen):
+Schema-Änderungen werden über versionierte Prisma-Migrationen ausgerollt:
 
 ```bash
-# Schema in die Datenbank übernehmen
-npx prisma db push
+# Migrationen anwenden (Entwicklung & Produktion)
+npx prisma migrate deploy
 
-# Im Docker-Container startet das Backend automatisch mit prisma db push
+# Neue Migration nach Schema-Änderung (nur Entwicklung)
+npx prisma migrate dev --name beschreibung
+
+# Im Docker-Container startet das Backend automatisch mit prisma migrate deploy
 ```
+
+Betrieb (Backup vor Update): [OPERATIONS.md](OPERATIONS.md).
 
 ### Seed
 
@@ -148,6 +153,15 @@ npm run seed
 ```
 
 Erstellt Admin, Küchen-Mitarbeiter, Demo-Veranstaltung (in 14 Tagen) und 5 Gerichte.
+
+### Test-Zugangsdaten
+
+Nur für lokale Entwicklung und CI — **nicht** in Produktion belassen:
+
+| Rolle | E-Mail | Passwort |
+|-------|--------|----------|
+| Administrator | admin@verein.local | admin123 |
+| Mitarbeiter (Küche) | kueche@verein.local | staff123 |
 
 ---
 
@@ -326,6 +340,8 @@ docker compose exec backend npm run seed
 ```
 
 Verwendet Images aus der GitHub Container Registry (`GHCR_IMAGE_PREFIX`, `IMAGE_TAG` in `.env`).
+
+Produktions-Checklisten, Backup und Restore: [OPERATIONS.md](OPERATIONS.md).
 
 ### Docker Images (GitHub Container Registry)
 

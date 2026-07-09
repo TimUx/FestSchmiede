@@ -1,0 +1,21 @@
+changelog:
+  exclude:
+    labels:
+      - skip-changelog
+      - dependencies
+  categories:
+    - title: Neu
+      labels:
+        - feature
+        - enhancement
+    - title: Behoben
+      labels:
+        - bug
+        - fix
+    - title: Betrieb & Sicherheit
+      labels:
+        - security
+        - operations
+    - title: Sonstiges
+      labels:
+        - "*"

@@ -55,6 +55,11 @@ jobs:
       - name: Unit Tests & Coverage
         run: npm run qa:unit
 
+      - name: Restore script smoke test
+        run: |
+          test -x scripts/backup/postgres-restore.sh
+          grep -q 'CONFIRM=1' scripts/backup/postgres-restore.sh
+
       - name: Upload coverage
         uses: actions/upload-artifact@v4
         if: always()
@@ -86,7 +91,7 @@ jobs:
       - name: Seed QA data
         run: |
           npm ci --prefix backend
-          (cd backend && npx prisma db push && npm run seed)
+          (cd backend && npx prisma migrate deploy && npm run seed)
           npm run qa:seed
 
       - name: Module scenarios

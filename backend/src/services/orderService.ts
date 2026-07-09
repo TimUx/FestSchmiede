@@ -72,6 +72,7 @@ async function getCancellationInfo(order: OrderWithRelations): Promise<Cancellat
 function mapOrder(order: OrderWithRelations, cancellation?: CancellationInfo) {
   return {
     id: order.id,
+    lookupToken: order.lookupToken,
     eventId: order.eventId,
     orderNumber: order.orderNumber,
     displayNumber: formatOrderNumber(order.orderNumber),
@@ -153,6 +154,27 @@ export const orderService = {
     return filtered.map((o) => mapOrder(o as OrderWithRelations));
   },
 
+  async getByLookupToken(token: string, lastName?: string) {
+    const order = await orderRepository.findByLookupToken(token);
+    if (!order) throw new AppError(404, 'Bestellung nicht gefunden');
+
+    if (!lastName?.trim()) {
+      throw new AppError(400, 'Bitte geben Sie Ihren Nachnamen ein');
+    }
+    if (
+      !order.customer ||
+      order.customer.lastName.toLowerCase() !== lastName.trim().toLowerCase()
+    ) {
+      throw new AppError(404, 'Bestellung nicht gefunden');
+    }
+
+    const releasedIds = await getPaymentServiceRegistry().filterReleasedIds('order', [order.id]);
+    if (!releasedIds.includes(order.id)) {
+      throw new AppError(404, 'Bestellung nicht gefunden');
+    }
+    return mapOrderWithCancellation(order as OrderWithRelations);
+  },
+
   async getById(id: string) {
     const order = await orderRepository.findById(id);
     if (!order) throw new AppError(404, 'Bestellung nicht gefunden');
@@ -205,7 +227,7 @@ export const orderService = {
   }) {
     const event = await eventService.getActive();
     if (!event.onlineOrdersActive || event.ordersClosed) {
-      throw new AppError(403, 'Online-Bestellungen sind derzeit nicht möglich');
+      throw new AppError(403, 'Online-Bestellung ist geschlossen. Bitte bestellen Sie an der Theke.');
     }
 
     const orderSettings = await clubService.getOrderSettings();
@@ -330,7 +352,7 @@ export const orderService = {
   ) {
     const event = await eventService.getActive();
     if (!event.cashierActive || event.ordersClosed) {
-      throw new AppError(403, 'Kassenbestellungen sind derzeit nicht möglich');
+      throw new AppError(403, 'Kassenbestellung ist geschlossen. Bitte wenden Sie sich an das Personal.');
     }
 
     const paymentAvailable = await getPaymentServiceRegistry().isAvailable();
@@ -382,8 +404,8 @@ export const orderService = {
     return this.updateStatus(orderId, 'CANCELLED');
   },
 
-  async cancelOnlineOrder(id: string, lastName: string) {
-    const order = await orderRepository.findById(id);
+  async cancelOnlineOrder(lookupToken: string, lastName: string) {
+    const order = await orderRepository.findByLookupToken(lookupToken);
     if (!order) throw new AppError(404, 'Bestellung nicht gefunden');
 
     if (order.source !== 'ONLINE') {
@@ -410,7 +432,7 @@ export const orderService = {
       throw new AppError(400, 'Stornierung nicht mehr möglich – Frist abgelaufen oder Bestellung bereits bearbeitet');
     }
 
-    return this.updateStatus(id, 'CANCELLED');
+    return this.updateStatus(order.id, 'CANCELLED');
   },
 
   async _createOrder(

@@ -27,7 +27,7 @@ export default function App() {
               <Route path="/" element={<OrderPage />} />
               <Route path="/kontakt" element={<ContactPage />} />
               <Route path="/status" element={<OrderStatusPage />} />
-              <Route path="/status/:orderId" element={<OrderStatusPage />} />
+              <Route path="/status/:lookupToken" element={<OrderStatusPage />} />
               <Route path="/abholboard" element={<PickupBoardPage />} />
 
               <Route path="/mitarbeiter/login" element={<LoginPage />} />

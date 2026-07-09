@@ -11,5 +11,6 @@
     { "key": "analytics.view", "description": "Auswertungen einsehen" },
     { "key": "analytics.export", "description": "Berichte exportieren" }
   ],
-  "minimumCoreVersion": "1.0.0"
+  "minimumCoreVersion": "1.0.0",
+  "productionReady": false
 }

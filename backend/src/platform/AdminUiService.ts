@@ -2,7 +2,7 @@ import type { ModuleRegistry } from './ModuleRegistry';
 import type { MetadataRegistry } from './MetadataRegistry';
 import type { SettingsService } from './settings/SettingsService';
 import type { SettingsNamespaceInfo } from './settings/types';
-import type { ModuleInfo, ModuleMenuItem, ModuleWidget } from './types';
+import type { ModuleInfo, ModuleWidget } from './types';
 import type { CoreAdminMetadataRegistry } from './adminUi/CoreAdminMetadataRegistry';
 import type {
   AdminDeveloperPageDefinition,
@@ -13,6 +13,7 @@ import type {
   AdminUiCatalog,
   AdminWidgetDefinition,
 } from './adminUi/types';
+import { CORE_SETTINGS_PARENT } from '../core/admin/coreAdminMetadata';
 
 function sortByOrder<T extends { sortOrder?: number }>(items: T[]): T[] {
   return [...items].sort((a, b) => (a.sortOrder ?? 100) - (b.sortOrder ?? 100));
@@ -58,42 +59,35 @@ export class AdminUiService {
       ...developerPages,
     ]);
 
-    const moduleNav = aggregated.menus.map((m: ModuleMenuItem) => ({
-      id: m.id,
-      label: m.label,
-      path: m.path,
-      icon: m.icon,
-      parentId: m.parentId,
-      sortOrder: m.sortOrder,
-      requiredPermission: m.requiredPermission,
-      source: 'module' as const,
-      moduleId: m.moduleId,
-    }));
-
-    const settingsNav: AdminNavItem[] = settingsPages.map((p) => ({
-      id: p.id,
-      label: p.label,
-      path: p.path,
-      icon: p.icon,
-      sortOrder: p.sortOrder,
-      requiredPermission: p.requiredPermission,
-      source: p.source,
-      moduleId: p.moduleId,
-    }));
+    const settingsNav: AdminNavItem[] = settingsPages
+      .filter((p) => {
+        const ns = p.namespace ?? '';
+        return ['core.club', 'core.order', 'module.notifications'].includes(ns);
+      })
+      .map((p) => ({
+        id: p.id,
+        label: p.label,
+        path: p.path,
+        icon: p.icon,
+        parentId: CORE_SETTINGS_PARENT,
+        sortOrder: p.sortOrder,
+        requiredPermission: p.requiredPermission,
+        source: p.source,
+        moduleId: p.moduleId,
+      }));
 
     const navigation = uniqueByPath(
       sortByOrder([
         { id: 'admin-dashboard', label: 'Übersicht', path: '/admin', icon: 'Dashboard', sortOrder: 0, source: 'core' as const },
         ...this.coreAdminMetadata.getBuiltinNavigation(),
         ...settingsNav,
-        ...moduleNav,
       ])
     );
 
     const staffTile = this.coreAdminMetadata.getStaffDashboardTile();
     const dashboardTiles = sortByOrder([
       ...pages
-        .filter((p) => p.pageType !== 'dashboard')
+        .filter((p) => p.pageType !== 'dashboard' && p.path !== '/admin/payment')
         .map((p) => ({
           id: p.id,
           label: p.label,

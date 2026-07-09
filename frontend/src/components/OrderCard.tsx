@@ -7,6 +7,7 @@ import {
   Stack,
   Divider,
   Link,
+  Chip,
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -69,7 +70,12 @@ export function OrderCard({
               {formatTime(order.createdAt)} · {order.sourceLabel}
             </Typography>
           </Box>
-          <StatusChip status={order.status} />
+          <Stack spacing={0.5} alignItems="flex-end">
+            <StatusChip status={order.status} />
+            {order.paymentLabel && (
+              <Chip size="small" label={order.paymentLabel} variant="outlined" color="default" />
+            )}
+          </Stack>
         </Box>
 
         {!compact && order.customer && (

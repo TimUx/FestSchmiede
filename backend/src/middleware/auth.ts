@@ -10,6 +10,7 @@ export interface AuthPayload {
   email: string;
   role: string;
   permissions?: string[];
+  sessionId?: string;
 }
 
 export interface AuthRequest extends Request {
@@ -24,13 +25,23 @@ export function authenticate(req: AuthRequest, _res: Response, next: NextFunctio
   }
 
   const token = header.slice(7);
-  try {
-    const payload = jwt.verify(token, config.jwt.secret) as AuthPayload;
-    req.user = payload;
-    next();
-  } catch {
-    next(new AppError(401, 'Ungültiges oder abgelaufenes Token'));
-  }
+  void (async () => {
+    try {
+      const payload = jwt.verify(token, config.jwt.secret) as AuthPayload;
+      if (payload.sessionId) {
+        const { sessionService } = await import('../services/sessionService');
+        const valid = await sessionService.validateSession(payload.sessionId);
+        if (!valid) {
+          next(new AppError(401, 'Sitzung ungültig oder abgelaufen'));
+          return;
+        }
+      }
+      req.user = payload;
+      next();
+    } catch {
+      next(new AppError(401, 'Ungültiges oder abgelaufenes Token'));
+    }
+  })();
 }
 
 export function requireRole(...roles: string[]) {
