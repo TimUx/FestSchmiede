@@ -14,13 +14,11 @@
  */
 import http from 'k6/http';
 import { check, sleep } from 'k6';
-import { SharedArray } from 'k6/data';
 
 const API_BASE = __ENV.API_BASE || 'http://localhost:3001/api';
 const FOOD_ITEM_ID = __ENV.FOOD_ITEM_ID || '00000000-0000-0000-0001-000000000001';
 const STAFF_EMAIL = __ENV.STAFF_EMAIL || '';
 const STAFF_PASSWORD = __ENV.STAFF_PASSWORD || '';
-const EVENT_ID = __ENV.EVENT_ID || '';
 
 export const options = {
   thresholds: {
