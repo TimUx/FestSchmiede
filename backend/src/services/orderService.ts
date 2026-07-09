@@ -20,7 +20,6 @@ import {
   canCustomerCancelOrder,
 } from '../utils/helpers';
 import { emitOrderCreated, emitOrderUpdate } from '../socket';
-import { emailService } from './emailService';
 import { hookSystem } from '../platform/bootstrap';
 import { CORE_HOOKS } from '../platform/types';
 import { getPaymentServiceRegistry, getPayableResourceRegistry } from '../core/extensionPoints';
@@ -305,45 +304,10 @@ export const orderService = {
   async _releaseOrderToKitchen(
     event: { id: string; date: Date; startTime: string },
     mapped: Awaited<ReturnType<typeof mapOrderWithCancellation>>,
-    customerData?: { email?: string }
+    _customerData?: { email?: string }
   ) {
     emitOrderCreated(event.id, mapped);
     hookSystem.emitAsync(CORE_HOOKS.ORDER_CREATED, mapped);
-
-    if (customerData?.email) {
-      const club = await clubService.getPublic();
-      const settings = await clubService.getOrderSettings();
-      const deadline = getCancellationDeadline(
-        event.date,
-        event.startTime,
-        settings.cancellationDeadlineHours
-      );
-
-      emailService
-        .sendOrderConfirmation(
-          customerData.email,
-          {
-            id: mapped.id,
-            displayNumber: mapped.displayNumber,
-            totalPrice: mapped.totalPrice,
-            eventDateLabel: mapped.eventDateLabel,
-            items: mapped.items.map((i) => ({
-              name: i.name!,
-              quantity: i.quantity,
-              lineTotal: i.lineTotal!,
-            })),
-            cancellationDeadlineLabel: formatDateTimeDE(deadline),
-          },
-          {
-            clubName: club.clubName,
-            contactName: club.contactName,
-            email: club.email,
-            phone: club.phone,
-            address: club.address,
-          }
-        )
-        .catch(() => {});
-    }
   },
 
   async createCashierOrder(
@@ -538,40 +502,16 @@ export const orderService = {
     hookSystem.emitAsync(CORE_HOOKS.ORDER_STATUS_CHANGED, mapped);
 
     if (status === 'CANCELLED') {
-      hookSystem.emitAsync(CORE_HOOKS.ORDER_CANCELLED, mapped);
+      const cancelledAt = extra.cancelledAt || new Date();
+      hookSystem.emitAsync(CORE_HOOKS.ORDER_CANCELLED, {
+        ...mapped,
+        source: order.source,
+        initiatedByStaff: Boolean(changedBy),
+        cancelledAtLabel: formatDateTimeDE(cancelledAt),
+      });
     }
     if (status === 'READY') {
       hookSystem.emitAsync(CORE_HOOKS.KITCHEN_COMPLETED, mapped);
-    }
-
-    if (status === 'CANCELLED' && order.source === 'ONLINE' && order.customer?.email) {
-      const club = await clubService.getPublic();
-      const cancelledAt = extra.cancelledAt || new Date();
-      emailService
-        .sendOrderCancellation(
-          order.customer.email,
-          {
-            id: mapped.id,
-            displayNumber: mapped.displayNumber,
-            totalPrice: mapped.totalPrice,
-            eventDateLabel: mapped.eventDateLabel,
-            items: mapped.items.map((i) => ({
-              name: i.name!,
-              quantity: i.quantity,
-              lineTotal: i.lineTotal!,
-            })),
-            cancelledAtLabel: formatDateTimeDE(cancelledAt),
-          },
-          {
-            clubName: club.clubName,
-            contactName: club.contactName,
-            email: club.email,
-            phone: club.phone,
-            address: club.address,
-          },
-          { initiatedByStaff: Boolean(changedBy) }
-        )
-        .catch(() => {});
     }
 
     return mapped;

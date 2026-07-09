@@ -23,20 +23,24 @@ E-Mail lag im Core (`emailService`, `core.email`). Geplant und umgesetzt:
 ### Architektur
 
 ```
-Core (orderService, orderPayableAdapter)
-        │ emailService.send*()
+Core (orderService, orderPayableAdapter, PaymentManager, ModuleManager)
+        │ HookSystem.emitAsync()
         ▼
-notificationServiceRegistry (Extension Point)
+notifications/hooks.ts
         ▼
-NotificationServiceImpl → NotificationManager → NotificationRegistry
-        ├── SmtpChannel      (E-Mail)
-        ├── NtfyChannel
-        ├── DiscordChannel
-        ├── SlackChannel
-        └── TeamsChannel
+NotificationManager → MessageTemplateService → templates/de.ts
+        ▼
+NotificationRegistry → Kanäle
 ```
 
-Zusätzlich reagiert das Modul per Hook auf `ORDER_PAID` und `KITCHEN_COMPLETED` für Kanäle ohne direkten Core-Aufruf.
+Der Core ruft **keine** Kanäle direkt auf. Benachrichtigungen laufen ausschließlich über Hooks → `NotificationManager`.
+
+Zusätzlich reagiert das Modul per Hook auf:
+
+- `ORDER_CREATED`, `ORDER_CANCELLED` – Kunden-E-Mails
+- `ORDER_PAID`, `KITCHEN_COMPLETED` – Team-Kanäle
+- `PAYMENT_FAILED`, `PAYMENT_REFUNDED` – Zahlungs-Alerts
+- `MODULE_ACTIVATED`, `MODULE_DEACTIVATED` – optionale Admin-Hinweise
 
 ### Komponenten (`modules/notifications/`)
 
@@ -63,10 +67,15 @@ Zusätzlich reagiert das Modul per Hook auf `ORDER_PAID` und `KITCHEN_COMPLETED`
 
 | Ereignis | Standard-Kanäle | Auslöser |
 |----------|-----------------|----------|
-| `orderCreated` | E-Mail | `emailService` → Modul (Barzahlung, nach Zahlung) |
-| `orderCancelled` | E-Mail | `emailService` → Modul |
-| `orderPaid` | ntfy/Discord/Slack/Teams (E-Mail aus) | Hook |
-| `kitchenCompleted` | ntfy | Hook |
+| `orderCreated` | E-Mail | Hook `ORDER_CREATED` |
+| `orderCancelled` | E-Mail | Hook `ORDER_CANCELLED` |
+| `orderPaid` | optional Team | Hook `ORDER_PAID` |
+| `kitchenCompleted` | ntfy | Hook `KITCHEN_COMPLETED` |
+| `paymentFailed` | ntfy | Hook `PAYMENT_FAILED` |
+| `paymentRefunded` | optional | Hook `PAYMENT_REFUNDED` |
+| `moduleActivated` / `moduleDeactivated` | optional | Hook `MODULE_*` |
+
+Ablaufdetails: [notification-communication-flows.md](./notification-communication-flows.md)
 
 ### Admin-UI
 
@@ -80,7 +89,7 @@ Pfad: **Administration → Module → Notifications → SMTP → Verbindung test
 
 | Zustand | Verhalten |
 |---------|-----------|
-| Modul deaktiviert | `notificationServiceRegistry` leer → `emailService` nutzt Legacy `core.email` |
+| Modul deaktiviert | Keine Benachrichtigungen (kein Legacy-Fallback) |
 | Modul aktiviert, kein Kanal | Keine Benachrichtigungen |
 | Modul installiert | Settings editierbar; SMTP-Test-API ohne Aktivierung (`requireActivation: false`) |
 | Legacy `/admin/email` | Entfernt aus Core-Settings; API delegiert an Modul wenn installiert |
@@ -111,7 +120,7 @@ Pfad: **Administration → Module → Notifications → SMTP → Verbindung test
 
 ## Auswirkungen
 
-- `emailService` delegiert an `notificationServiceRegistry` wenn Modul aktiv
+- Core emittiert nur Hooks; `NotificationManager` im Modul versendet alle Nachrichten
 - `core.email` Schema aus Core-Admin entfernt (Legacy-Store bleibt für Migration)
 - `clubService` E-Mail-API proxyt zu `module.notifications` wenn installiert
 

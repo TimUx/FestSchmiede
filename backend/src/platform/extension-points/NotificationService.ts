@@ -18,11 +18,4 @@ export interface ClubContactData {
 
 export interface NotificationService {
   isAvailable(): Promise<boolean>;
-  sendOrderConfirmation(email: string, order: OrderEmailData, club: ClubContactData): Promise<void>;
-  sendOrderCancellation(
-    email: string,
-    order: OrderEmailData,
-    club: ClubContactData,
-    options?: { initiatedByStaff?: boolean }
-  ): Promise<void>;
 }

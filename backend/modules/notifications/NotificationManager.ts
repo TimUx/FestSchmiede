@@ -1,24 +1,56 @@
 import type { FeatureContext } from '../../src/module-system/types';
 import type { ClubContactData, OrderEmailData } from '../../src/platform/extension-points/NotificationService';
+import { orderRepository } from '../../src/repositories';
 import { CORE_CLUB_NAMESPACE } from '../../src/platform/settings/SettingsNamespaces';
+import { formatOrderNumber, formatPrice } from '../../src/utils/helpers';
 import { logger } from '../../src/utils/logger';
 import type { NotificationConfig, NotificationEventType } from './config';
 import { isChannelEnabledForEvent, type NotificationMessage } from './NotificationChannel';
 import { notificationRegistry } from './NotificationRegistry';
 import {
   buildKitchenCompletedMessage,
+  buildModuleActivatedMessage,
+  buildModuleDeactivatedMessage,
   buildOrderCancellationMessage,
   buildOrderConfirmationMessage,
   buildOrderPaidMessage,
-} from './services/EmailTemplateService';
+  buildPaymentFailedMessage,
+  buildPaymentRefundedMessage,
+} from './services/MessageTemplateService';
 
-type OrderHookPayload = {
+export type OrderHookPayload = {
   id: string;
   displayNumber: string;
   totalPrice: number;
   eventDateLabel?: string;
   items?: { name?: string; quantity: number; lineTotal?: number }[];
   customer?: { email?: string | null } | null;
+  cancellationDeadlineLabel?: string;
+  cancelledAtLabel?: string;
+  initiatedByStaff?: boolean;
+  source?: string;
+};
+
+type PaymentFailedHookPayload = {
+  resourceType: string;
+  resourceId: string;
+  reason?: string;
+  displayNumber?: string;
+};
+
+type PaymentRefundedHookPayload = {
+  transactionId: string;
+  amountCents?: number;
+};
+
+type ModuleHookPayload = {
+  moduleId: string;
+};
+
+const MODULE_LABELS: Record<string, string> = {
+  payment: 'Online-Zahlung',
+  notifications: 'Benachrichtigungen',
+  printer: 'Bondruck',
 };
 
 async function loadClubContact(context: FeatureContext): Promise<ClubContactData> {
@@ -30,6 +62,35 @@ async function loadClubContact(context: FeatureContext): Promise<ClubContactData
     phone: (values.phone as string | undefined) ?? undefined,
     address: (values.address as string | undefined) ?? undefined,
   };
+}
+
+function toOrderEmailData(payload: OrderHookPayload): OrderEmailData {
+  return {
+    id: payload.id,
+    displayNumber: payload.displayNumber,
+    totalPrice: payload.totalPrice,
+    eventDateLabel: payload.eventDateLabel,
+    cancellationDeadlineLabel: payload.cancellationDeadlineLabel,
+    cancelledAtLabel: payload.cancelledAtLabel,
+    items: (payload.items ?? []).map((i) => ({
+      name: i.name ?? 'Artikel',
+      quantity: i.quantity,
+      lineTotal: i.lineTotal ?? 0,
+    })),
+  };
+}
+
+async function resolveOrderDisplayNumber(
+  resourceType: string,
+  resourceId: string,
+  displayNumber?: string
+): Promise<string> {
+  if (displayNumber) return displayNumber;
+  if (resourceType === 'order' && resourceId) {
+    const order = await orderRepository.findById(resourceId);
+    if (order) return formatOrderNumber(order.orderNumber);
+  }
+  return resourceId.slice(0, 8);
 }
 
 class NotificationManager {
@@ -88,14 +149,17 @@ class NotificationManager {
     await Promise.allSettled(tasks);
   }
 
-  async sendOrderConfirmation(
-    context: FeatureContext,
-    email: string,
-    order: OrderEmailData,
-    club: ClubContactData
-  ): Promise<void> {
+  async handleOrderCreated(context: FeatureContext, payload: OrderHookPayload): Promise<void> {
+    const email = payload.customer?.email?.trim();
+    if (!email) return;
+
+    const club = await loadClubContact(context);
     const config = await this.loadConfig(context);
-    const template = buildOrderConfirmationMessage(order, club, config.emailCustomText);
+    const template = buildOrderConfirmationMessage(
+      toOrderEmailData(payload),
+      club,
+      config.emailCustomText
+    );
     await this.dispatch(context, 'orderCreated', {
       ...template,
       recipientEmail: email,
@@ -103,15 +167,19 @@ class NotificationManager {
     });
   }
 
-  async sendOrderCancellation(
-    context: FeatureContext,
-    email: string,
-    order: OrderEmailData,
-    club: ClubContactData,
-    options?: { initiatedByStaff?: boolean }
-  ): Promise<void> {
+  async handleOrderCancelled(context: FeatureContext, payload: OrderHookPayload): Promise<void> {
+    if (payload.source !== 'ONLINE') return;
+    const email = payload.customer?.email?.trim();
+    if (!email) return;
+
+    const club = await loadClubContact(context);
     const config = await this.loadConfig(context);
-    const template = buildOrderCancellationMessage(order, club, options, config.emailCustomText);
+    const template = buildOrderCancellationMessage(
+      toOrderEmailData(payload),
+      club,
+      { initiatedByStaff: Boolean(payload.initiatedByStaff) },
+      config.emailCustomText
+    );
     await this.dispatch(context, 'orderCancelled', {
       ...template,
       recipientEmail: email,
@@ -121,18 +189,7 @@ class NotificationManager {
 
   async handleOrderPaid(context: FeatureContext, payload: OrderHookPayload): Promise<void> {
     const club = await loadClubContact(context);
-    const order: OrderEmailData = {
-      id: payload.id,
-      displayNumber: payload.displayNumber,
-      totalPrice: payload.totalPrice,
-      eventDateLabel: payload.eventDateLabel,
-      items: (payload.items ?? []).map((i) => ({
-        name: i.name ?? 'Artikel',
-        quantity: i.quantity,
-        lineTotal: i.lineTotal ?? 0,
-      })),
-    };
-    const template = buildOrderPaidMessage(order, club);
+    const template = buildOrderPaidMessage(toOrderEmailData(payload), club);
     await this.dispatch(context, 'orderPaid', {
       ...template,
       recipientEmail: payload.customer?.email ?? undefined,
@@ -149,6 +206,56 @@ class NotificationManager {
     await this.dispatch(context, 'kitchenCompleted', {
       ...template,
       priority: 'high',
+    });
+  }
+
+  async handlePaymentFailed(context: FeatureContext, payload: PaymentFailedHookPayload): Promise<void> {
+    const displayNumber = await resolveOrderDisplayNumber(
+      payload.resourceType,
+      payload.resourceId,
+      payload.displayNumber
+    );
+    const template = buildPaymentFailedMessage({
+      displayNumber,
+      reason: payload.reason,
+    });
+    await this.dispatch(context, 'paymentFailed', {
+      ...template,
+      priority: 'high',
+    });
+  }
+
+  async handlePaymentRefunded(context: FeatureContext, payload: PaymentRefundedHookPayload): Promise<void> {
+    const club = await loadClubContact(context);
+    const displayNumber = payload.transactionId.slice(-8);
+    const template = buildPaymentRefundedMessage({
+      displayNumber,
+      amount: formatPrice((payload.amountCents ?? 0) / 100),
+      clubName: club.clubName,
+    });
+    await this.dispatch(context, 'paymentRefunded', {
+      ...template,
+      priority: 'normal',
+    });
+  }
+
+  async handleModuleActivated(context: FeatureContext, payload: ModuleHookPayload): Promise<void> {
+    const club = await loadClubContact(context);
+    const moduleLabel = MODULE_LABELS[payload.moduleId] ?? payload.moduleId;
+    const template = buildModuleActivatedMessage({ moduleLabel, clubName: club.clubName });
+    await this.dispatch(context, 'moduleActivated', {
+      ...template,
+      priority: 'low',
+    });
+  }
+
+  async handleModuleDeactivated(context: FeatureContext, payload: ModuleHookPayload): Promise<void> {
+    const club = await loadClubContact(context);
+    const moduleLabel = MODULE_LABELS[payload.moduleId] ?? payload.moduleId;
+    const template = buildModuleDeactivatedMessage({ moduleLabel, clubName: club.clubName });
+    await this.dispatch(context, 'moduleDeactivated', {
+      ...template,
+      priority: 'low',
     });
   }
 }

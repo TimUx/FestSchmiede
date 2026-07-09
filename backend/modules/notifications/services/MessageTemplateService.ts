@@ -1,0 +1,242 @@
+import { config } from '../../../src/config';
+import { formatPrice } from '../../../src/utils/helpers';
+import type { ClubContactData, OrderEmailData } from '../../../src/platform/extension-points/NotificationService';
+import { legalNotices, notificationTemplates } from '../templates/de';
+import { renderTemplate } from '../templates/render';
+import type { NotificationLocale } from '../templates/types';
+
+const DEFAULT_LOCALE: NotificationLocale = 'de';
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function formatCustomEmailBlock(text?: string | null): string {
+  const trimmed = text?.trim();
+  if (!trimmed) return '';
+  const html = escapeHtml(trimmed).replace(/\r?\n/g, '<br>');
+  return `<div style="margin: 16px 0; padding: 12px 16px; background: #f5f5f5; border-radius: 4px; line-height: 1.5;">${html}</div>`;
+}
+
+function contactLines(club: ClubContactData, asHtml: boolean): string {
+  const lines = [
+    club.contactName && `Ansprechpartner: ${club.contactName}`,
+    club.email && `E-Mail: ${club.email}`,
+    club.phone && `Telefon: ${club.phone}`,
+    club.address && `Adresse: ${club.address}`,
+  ].filter(Boolean) as string[];
+
+  if (!lines.length) return '';
+  if (asHtml) {
+    return `<p>${lines.map((l) => escapeHtml(l)).join('<br>')}</p>`;
+  }
+  return lines.join('\n');
+}
+
+function baseOrderVars(order: OrderEmailData, club: ClubContactData, emailCustomText?: string) {
+  const statusUrl = `${config.corsOrigin.replace(/\/$/, '')}/status/${order.id}`;
+  const itemsHtml = order.items
+    .map((i) => `${i.quantity}× ${escapeHtml(i.name)} – ${formatPrice(i.lineTotal)}`)
+    .join('<br>');
+  const itemsText = order.items
+    .map((i) => `${i.quantity}× ${i.name} – ${formatPrice(i.lineTotal)}`)
+    .join('\n');
+
+  const cancellationDeadlineInline = order.cancellationDeadlineLabel
+    ? ` Die Stornierungsfrist endet am ${escapeHtml(order.cancellationDeadlineLabel)}.`
+    : '';
+
+  const legalNoticeHtml = renderTemplate(legalNotices.de.orderConfirmation, {
+    clubName: escapeHtml(club.clubName),
+    cancellationDeadlineInline,
+  });
+
+  const cancellationNoteHtml = order.cancellationDeadlineLabel
+    ? `<p>Stornierungen sind bis <strong>${escapeHtml(order.cancellationDeadlineLabel)}</strong> möglich.</p>`
+    : '';
+
+  const cancellationNoteText = order.cancellationDeadlineLabel
+    ? renderTemplate(legalNotices.de.cancellationDeadline, {
+        cancellationDeadlineLabel: order.cancellationDeadlineLabel,
+      })
+    : '';
+
+  const eventDateBlockHtml = order.eventDateLabel
+    ? `<p><strong>Veranstaltungstag:</strong> ${escapeHtml(order.eventDateLabel)}</p>`
+    : '';
+
+  return {
+    clubName: club.clubName,
+    displayNumber: order.displayNumber,
+    eventDateLabel: order.eventDateLabel ?? '',
+    eventDateBlockHtml,
+    itemsHtml,
+    itemsText,
+    totalPrice: formatPrice(order.totalPrice),
+    statusUrl,
+    cancellationNoteHtml,
+    cancellationNoteText,
+    contactHtml: contactLines(club, true),
+    contactText: contactLines(club, false),
+    customBlockHtml: formatCustomEmailBlock(emailCustomText),
+    legalNoticeHtml,
+    privacyFooterHtml: '',
+    privacyFooterText: '',
+  };
+}
+
+function getTemplates(locale: NotificationLocale = DEFAULT_LOCALE) {
+  return notificationTemplates[locale];
+}
+
+export function buildOrderConfirmationMessage(
+  order: OrderEmailData,
+  club: ClubContactData,
+  emailCustomText?: string
+) {
+  const t = getTemplates();
+  const vars = baseOrderVars(order, club, emailCustomText);
+  return {
+    title: renderTemplate(t.orderCreated.emailSubject, vars),
+    body: renderTemplate(t.orderCreated.text, vars),
+    html: renderTemplate(t.orderCreated.html, vars),
+  };
+}
+
+export function buildOrderCancellationMessage(
+  order: OrderEmailData,
+  club: ClubContactData,
+  options: { initiatedByStaff?: boolean } = {},
+  emailCustomText?: string
+) {
+  const t = getTemplates();
+  const vars = baseOrderVars(order, club, emailCustomText);
+  const introHtml = options.initiatedByStaff
+    ? renderTemplate(t.orderCancelled.introStaffHtml, { clubName: escapeHtml(club.clubName) })
+    : renderTemplate(t.orderCancelled.introCustomerHtml, { clubName: escapeHtml(club.clubName) });
+  const introText = options.initiatedByStaff
+    ? renderTemplate(t.orderCancelled.introStaffText, vars)
+    : renderTemplate(t.orderCancelled.introCustomerText, vars);
+
+  const cancellationLegalHtml = renderTemplate(
+    options.initiatedByStaff
+      ? legalNotices.de.orderCancellationStaff
+      : legalNotices.de.orderCancellationCustomer,
+    { clubName: escapeHtml(club.clubName) },
+  );
+
+  const cancelledAtBlockHtml = order.cancelledAtLabel
+    ? `<p><strong>Storniert am:</strong> ${escapeHtml(order.cancelledAtLabel)}</p>`
+    : '';
+
+  const fullVars = {
+    ...vars,
+    introHtml,
+    introText,
+    cancelledAtLabel: order.cancelledAtLabel ?? '',
+    cancelledAtBlockHtml,
+    cancellationLegalHtml,
+  };
+
+  return {
+    title: renderTemplate(t.orderCancelled.emailSubject, fullVars),
+    body: renderTemplate(t.orderCancelled.text, fullVars),
+    html: renderTemplate(t.orderCancelled.html, fullVars),
+  };
+}
+
+export function buildKitchenCompletedMessage(order: {
+  displayNumber: string;
+  totalPrice: number;
+  eventDateLabel?: string;
+}) {
+  const t = getTemplates();
+  const vars = {
+    displayNumber: order.displayNumber,
+    totalPrice: formatPrice(order.totalPrice),
+    eventDateLabel: order.eventDateLabel
+      ? `Veranstaltung: ${order.eventDateLabel}`
+      : '',
+  };
+  const body = [
+    renderTemplate(t.kitchenCompleted.pushTitle, vars),
+    vars.eventDateLabel,
+    `Gesamt: ${vars.totalPrice}`,
+  ].filter(Boolean).join('\n');
+  return {
+    title: renderTemplate(t.kitchenCompleted.pushTitle, vars),
+    body,
+  };
+}
+
+export function buildOrderPaidMessage(order: OrderEmailData, club: ClubContactData) {
+  const t = getTemplates();
+  const vars = {
+    displayNumber: order.displayNumber,
+    clubName: club.clubName,
+    totalPrice: formatPrice(order.totalPrice),
+  };
+  const title = renderTemplate(t.orderPaid.pushTitle, vars);
+  const body = [
+    title,
+    `Verein: ${club.clubName}`,
+    `Betrag: ${formatPrice(order.totalPrice)}`,
+  ].join('\n');
+  return { title, body };
+}
+
+export function buildPaymentFailedMessage(payload: {
+  displayNumber: string;
+  reason?: string;
+}) {
+  const t = getTemplates();
+  const vars = {
+    displayNumber: payload.displayNumber,
+    reason: payload.reason?.trim() || 'Unbekannter Fehler',
+  };
+  return {
+    title: renderTemplate(t.paymentFailed.pushTitle, vars),
+    body: renderTemplate(t.paymentFailed.pushBody, vars),
+  };
+}
+
+export function buildPaymentRefundedMessage(payload: {
+  displayNumber: string;
+  amount: string;
+  clubName: string;
+}) {
+  const t = getTemplates();
+  return {
+    title: renderTemplate(t.paymentRefunded.pushTitle, payload),
+    body: renderTemplate(t.paymentRefunded.pushBody, payload),
+  };
+}
+
+export function buildModuleActivatedMessage(payload: { moduleLabel: string; clubName: string }) {
+  const t = getTemplates();
+  return {
+    title: renderTemplate(t.moduleActivated.pushTitle, payload),
+    body: renderTemplate(t.moduleActivated.pushBody, payload),
+  };
+}
+
+export function buildModuleDeactivatedMessage(payload: { moduleLabel: string; clubName: string }) {
+  const t = getTemplates();
+  return {
+    title: renderTemplate(t.moduleDeactivated.pushTitle, payload),
+    body: renderTemplate(t.moduleDeactivated.pushBody, payload),
+  };
+}
+
+export function buildChannelTestMessage(clubName: string) {
+  const t = getTemplates();
+  const vars = { clubName };
+  return {
+    title: renderTemplate(t.channelTest.title, vars),
+    body: renderTemplate(t.channelTest.body, vars),
+  };
+}

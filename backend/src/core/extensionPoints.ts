@@ -23,17 +23,6 @@ export interface PaymentServiceRegistryAccess {
 
 export interface NotificationServiceRegistryAccess {
   isAvailable(): Promise<boolean>;
-  sendOrderConfirmation(
-    email: string,
-    order: import('../platform/extension-points').OrderEmailData,
-    club: import('../platform/extension-points').ClubContactData
-  ): Promise<void>;
-  sendOrderCancellation(
-    email: string,
-    order: import('../platform/extension-points').OrderEmailData,
-    club: import('../platform/extension-points').ClubContactData,
-    options?: { initiatedByStaff?: boolean }
-  ): Promise<void>;
 }
 
 /** Core greift Extension Points über die Registry zu – nicht über Modul-Implementierungen. */

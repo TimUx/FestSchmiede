@@ -47,8 +47,8 @@ export class NtfyChannel implements NotificationChannel {
 
   async testConnection(config: NotificationConfig): Promise<ChannelHealthResult> {
     const result = await this.send(config, {
-      title: 'Vereinsbestellung Test',
-      body: 'ntfy-Verbindungstest erfolgreich konfiguriert.',
+      title: 'Testnachricht – Vereinsbestellung',
+      body: 'Die Benachrichtigungseinstellungen funktionieren.',
       priority: 'low',
     });
     return { ok: result.ok, message: result.ok ? 'Testnachricht gesendet' : result.error };

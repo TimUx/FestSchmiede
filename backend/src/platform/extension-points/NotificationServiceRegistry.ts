@@ -1,8 +1,4 @@
-import type {
-  ClubContactData,
-  NotificationService,
-  OrderEmailData,
-} from './NotificationService';
+import type { NotificationService } from './NotificationService';
 
 class NotificationServiceRegistryImpl {
   private service: NotificationService | null = null;
@@ -22,27 +18,6 @@ class NotificationServiceRegistryImpl {
   async isAvailable(): Promise<boolean> {
     if (!this.service) return false;
     return this.service.isAvailable();
-  }
-
-  async sendOrderConfirmation(
-    email: string,
-    order: OrderEmailData,
-    club: ClubContactData
-  ): Promise<void> {
-    if (!this.service) return;
-    if (!(await this.service.isAvailable())) return;
-    await this.service.sendOrderConfirmation(email, order, club);
-  }
-
-  async sendOrderCancellation(
-    email: string,
-    order: OrderEmailData,
-    club: ClubContactData,
-    options?: { initiatedByStaff?: boolean }
-  ): Promise<void> {
-    if (!this.service) return;
-    if (!(await this.service.isAvailable())) return;
-    await this.service.sendOrderCancellation(email, order, club, options);
   }
 }
 

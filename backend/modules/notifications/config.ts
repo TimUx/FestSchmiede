@@ -34,6 +34,34 @@ export const notificationsConfigSchema = z.object({
       slack: z.boolean().default(false),
       teams: z.boolean().default(false),
     }).default({}),
+    paymentFailed: z.object({
+      email: z.boolean().default(false),
+      ntfy: z.boolean().default(true),
+      discord: z.boolean().default(false),
+      slack: z.boolean().default(false),
+      teams: z.boolean().default(false),
+    }).default({}),
+    paymentRefunded: z.object({
+      email: z.boolean().default(false),
+      ntfy: z.boolean().default(false),
+      discord: z.boolean().default(false),
+      slack: z.boolean().default(false),
+      teams: z.boolean().default(false),
+    }).default({}),
+    moduleActivated: z.object({
+      email: z.boolean().default(false),
+      ntfy: z.boolean().default(false),
+      discord: z.boolean().default(false),
+      slack: z.boolean().default(false),
+      teams: z.boolean().default(false),
+    }).default({}),
+    moduleDeactivated: z.object({
+      email: z.boolean().default(false),
+      ntfy: z.boolean().default(false),
+      discord: z.boolean().default(false),
+      slack: z.boolean().default(false),
+      teams: z.boolean().default(false),
+    }).default({}),
   }).default({}),
   smtp: channelEnabledSchema.extend({
     host: z.string().optional(),
@@ -67,6 +95,10 @@ export const defaultNotificationConfig: NotificationConfig = {
     orderCancelled: { email: true, ntfy: false, discord: false, slack: false, teams: false },
     orderPaid: { email: false, ntfy: false, discord: false, slack: false, teams: false },
     kitchenCompleted: { email: false, ntfy: true, discord: false, slack: false, teams: false },
+    paymentFailed: { email: false, ntfy: true, discord: false, slack: false, teams: false },
+    paymentRefunded: { email: false, ntfy: false, discord: false, slack: false, teams: false },
+    moduleActivated: { email: false, ntfy: false, discord: false, slack: false, teams: false },
+    moduleDeactivated: { email: false, ntfy: false, discord: false, slack: false, teams: false },
   },
   smtp: { enabled: false, port: 587 },
   ntfy: { enabled: false, serverUrl: 'https://ntfy.sh' },
@@ -79,6 +111,10 @@ export type NotificationEventType =
   | 'orderCreated'
   | 'orderCancelled'
   | 'orderPaid'
-  | 'kitchenCompleted';
+  | 'kitchenCompleted'
+  | 'paymentFailed'
+  | 'paymentRefunded'
+  | 'moduleActivated'
+  | 'moduleDeactivated';
 
 export type NotificationChannelId = 'email' | 'ntfy' | 'discord' | 'slack' | 'teams';

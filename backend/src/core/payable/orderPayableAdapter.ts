@@ -1,9 +1,7 @@
 import { orderRepository } from '../../repositories';
-import { formatOrderNumber, formatEventDate } from '../../utils/helpers';
+import { formatOrderNumber, formatEventDate, getCancellationDeadline, formatDateTimeDE } from '../../utils/helpers';
 import { emitOrderCreated } from '../../socket';
-import { emailService } from '../../services/emailService';
 import { clubService } from '../../services/clubService';
-import { getCancellationDeadline, formatDateTimeDE } from '../../utils/helpers';
 import { hookSystem } from '../../platform/bootstrap';
 import { CORE_HOOKS } from '../../platform/types';
 import type { PayableResourceAdapter, PayableResource } from '../../module-system/extension-points';
@@ -70,44 +68,25 @@ export const orderPayableAdapter: PayableResourceAdapter = {
         : null,
     };
 
-    emitOrderCreated(order.eventId, mapped);
-    hookSystem.emitAsync(CORE_HOOKS.ORDER_CREATED, mapped);
-    hookSystem.emitAsync(CORE_HOOKS.ORDER_PAID, { orderId: id, ...mapped });
-
-    if (order.customer?.email && order.event) {
-      const club = await clubService.getPublic();
+    let cancellationDeadlineLabel: string | undefined;
+    if (order.event) {
       const settings = await clubService.getOrderSettings();
       const deadline = getCancellationDeadline(
         order.event.date,
         order.event.startTime,
         settings.cancellationDeadlineHours
       );
-
-      emailService
-        .sendOrderConfirmation(
-          order.customer.email,
-          {
-            id: mapped.id,
-            displayNumber: mapped.displayNumber,
-            totalPrice: mapped.totalPrice,
-            eventDateLabel: mapped.eventDateLabel,
-            items: mapped.items.map((i) => ({
-              name: i.name,
-              quantity: i.quantity,
-              lineTotal: i.lineTotal,
-            })),
-            cancellationDeadlineLabel: formatDateTimeDE(deadline),
-          },
-          {
-            clubName: club.clubName,
-            contactName: club.contactName,
-            email: club.email,
-            phone: club.phone,
-            address: club.address,
-          }
-        )
-        .catch(() => {});
+      cancellationDeadlineLabel = formatDateTimeDE(deadline);
     }
+
+    const hookPayload = {
+      ...mapped,
+      cancellationDeadlineLabel,
+    };
+
+    emitOrderCreated(order.eventId, hookPayload);
+    hookSystem.emitAsync(CORE_HOOKS.ORDER_CREATED, hookPayload);
+    hookSystem.emitAsync(CORE_HOOKS.ORDER_PAID, { orderId: id, ...hookPayload });
   },
 
   async onPaymentFailed(_id: string): Promise<void> {
