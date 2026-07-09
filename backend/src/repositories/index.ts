@@ -193,7 +193,9 @@ export const orderRepository = {
   },
 
   create: (
-    data: Prisma.OrderUncheckedCreateWithoutTenantInput & { lookupToken?: string }
+    data: Omit<Prisma.OrderUncheckedCreateWithoutTenantInput, 'lookupToken' | 'tenantId'> & {
+      lookupToken?: string;
+    }
   ) =>
     prisma.order.create({
       data: {
