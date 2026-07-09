@@ -1,9 +1,13 @@
 name: Docker Images
 
+# Release images are built by the Release Validation workflow after QA passes.
+# This workflow remains available for manual rebuilds.
 on:
   workflow_dispatch:
-  release:
-    types: [published]
+    inputs:
+      tag:
+        description: 'Optional git ref or tag to build (default: current branch)'
+        required: false
 
 env:
   REGISTRY: ghcr.io
@@ -15,6 +19,7 @@ permissions:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -29,6 +34,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -50,7 +57,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=sha,prefix=sha-
-            type=raw,value=latest,enable=${{ github.event_name == 'workflow_dispatch' }}
+            type=raw,value=latest
 
       - name: Build and push ${{ matrix.name }}
         uses: docker/build-push-action@v6
