@@ -55,11 +55,18 @@ export class ImpersonationService {
       },
     });
 
+    const baseDomain = config.multiTenant.baseDomain;
+    const proto = baseDomain === 'localhost' ? 'http' : 'https';
+    const redirectTo =
+      baseDomain === 'localhost'
+        ? '/admin'
+        : `${proto}://${tenant.subdomain}.${baseDomain}/admin`;
+
     return {
       token: accessToken,
-      tenant: { id: tenant.id, name: tenant.name, slug: tenant.slug },
+      tenant: { id: tenant.id, name: tenant.name, slug: tenant.slug, subdomain: tenant.subdomain },
       impersonation: payload.impersonation,
-      redirectTo: '/admin',
+      redirectTo,
     };
   }
 

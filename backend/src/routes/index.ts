@@ -72,6 +72,7 @@ router.post('/auth/revoke-all', authenticate, loadUser, requireRole('ADMIN'), va
 router.get('/auth/me', authenticate, loadUser, authController.me);
 
 // Public
+router.get('/public/routing-config', tenantController.getRoutingConfig);
 router.get('/public/tenant', tenantController.getPublic);
 router.get('/public/platform', tenantController.getPlatformPublic);
 router.get('/public/club', clubController.getPublic);

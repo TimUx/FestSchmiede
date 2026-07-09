@@ -2,53 +2,64 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { TenantPublicData, DEFAULT_TENANT } from '@/types/tenant';
 import { api } from '@/services/api';
 import { subscribeTenantUpdates } from '@/services/realtime/channels';
+import { useRouting } from '@/contexts/RoutingProvider';
+import { realtimeService } from '@/services/realtime';
 
 interface TenantContextType {
   tenant: TenantPublicData;
   loading: boolean;
+  error: string | null;
   refresh: () => Promise<void>;
 }
 
 const TenantContext = createContext<TenantContextType | null>(null);
 
 export function TenantProvider({ children }: { children: ReactNode }) {
+  const { routing } = useRouting();
   const [tenant, setTenant] = useState<TenantPublicData>(DEFAULT_TENANT);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const refresh = async () => {
+    if (routing.scope !== 'tenant') {
+      setLoading(false);
+      return;
+    }
+
+    setError(null);
     try {
       const data = await api.getTenant();
       setTenant({ ...DEFAULT_TENANT, ...data });
-    } catch {
-      try {
-        const club = await api.getClub();
-        setTenant({
-          ...DEFAULT_TENANT,
-          name: club.clubName,
-          description: club.description,
-          contactName: club.contactName,
-          email: club.email,
-          phone: club.phone,
-          address: club.address,
-          website: club.website,
-          logoUrl: club.logoUrl,
-        });
-      } catch {
-        setTenant(DEFAULT_TENANT);
-      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Veranstalter konnte nicht geladen werden');
+      setTenant(DEFAULT_TENANT);
     }
   };
 
   useEffect(() => {
-    refresh().finally(() => setLoading(false));
+    if (routing.scope !== 'tenant') {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    void refresh().finally(() => setLoading(false));
+
+    realtimeService.disconnect();
+    realtimeService.connect();
+
     const unsub = subscribeTenantUpdates((data) => {
-      setTenant({ ...DEFAULT_TENANT, ...data });
+      setTenant((prev) => ({ ...prev, ...data }));
     });
-    return unsub;
-  }, []);
+
+    return () => {
+      unsub();
+      realtimeService.disconnect();
+    };
+  }, [routing.scope, routing.tenantSlug]);
 
   return (
-    <TenantContext.Provider value={{ tenant, loading, refresh }}>
+    <TenantContext.Provider value={{ tenant, loading, error, refresh }}>
       {children}
     </TenantContext.Provider>
   );

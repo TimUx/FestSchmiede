@@ -49,6 +49,7 @@ Technische Architektur der FestManager-Plattform – Architecture Decision Recor
 | [PHASE_2_COMPLETION_REPORT.md](./PHASE_2_COMPLETION_REPORT.md) | Abschlussbericht Phase 2 (Tenant Data) |
 | [PHASE_3_COMPLETION_REPORT.md](./PHASE_3_COMPLETION_REPORT.md) | Abschlussbericht Phase 3 (Platform Admin) |
 | [PHASE_4_COMPLETION_REPORT.md](./PHASE_4_COMPLETION_REPORT.md) | Abschlussbericht Phase 4 (Tenant-Aware Modules) |
+| [PHASE_5_COMPLETION_REPORT.md](./PHASE_5_COMPLETION_REPORT.md) | Abschlussbericht Phase 5 (Frontend & Routing) |
 
 Siehe auch: [architecture-consolidation-report.md](../audits/architecture-consolidation-report.md) – Abschlussbericht mit Bewertung aller Kritikpunkte.
 
@@ -64,6 +65,7 @@ Jede ADR enthält:
 ## Verwandte Dokumentation
 
 - [MODULE_ARCHITECTURE.md](../MODULE_ARCHITECTURE.md) – operative Modul-Doku
+- [FRONTEND_GUIDE.md](../FRONTEND_GUIDE.md) – mandantenfähiges Frontend (Phase 5)
 - [DEVELOPER_GUIDE.md](../DEVELOPER_GUIDE.md) – Entwicklerhandbuch
 - [ADMIN_GUIDE.md](../ADMIN_GUIDE.md) – Administratorhandbuch
 

@@ -122,7 +122,11 @@ export const api = {
       baseDomain: data.baseDomain,
       maintenanceMode: data.maintenanceMode,
       maintenanceMessage: data.maintenanceMessage,
+      primaryColor: data.primaryColor,
+      defaultLocale: data.defaultLocale,
     })),
+  getRoutingConfig: () =>
+    request<import('@/types/routing').RoutingConfig>('/public/routing-config'),
   getOrderSettings: () => request<import('@/types/club').OrderSettings>('/public/order-settings'),
 
   // Auth

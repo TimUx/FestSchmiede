@@ -1,4 +1,5 @@
 import { Alert, Button, Box } from '@mui/material';
+import { useRouting } from '@/contexts/RoutingProvider';
 import {
   IMPERSONATION_META_KEY,
   PLATFORM_SESSION_BACKUP_KEY,
@@ -7,6 +8,7 @@ import {
 } from '@/services/platformApi';
 
 export function ImpersonationBanner() {
+  const { routing } = useRouting();
   const metaRaw = localStorage.getItem(IMPERSONATION_META_KEY);
   if (!metaRaw) return null;
 
@@ -30,7 +32,7 @@ export function ImpersonationBanner() {
       } catch { /* ignore */ }
       localStorage.removeItem(PLATFORM_SESSION_BACKUP_KEY);
     }
-    window.location.href = '/platform';
+    window.location.href = `${routing.platformUrl}/platform`;
   };
 
   return (

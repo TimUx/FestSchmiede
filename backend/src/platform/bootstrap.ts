@@ -158,7 +158,8 @@ export function bootstrapPlatform(): void {
   tenantControllerInstance = createTenantController(
     tenantServiceInstance,
     tenantContextInstance,
-    platformContextInstance
+    platformContextInstance,
+    tenantResolverInstance
   );
 
   platformDashboardServiceInstance = new PlatformDashboardService(platformContextInstance);

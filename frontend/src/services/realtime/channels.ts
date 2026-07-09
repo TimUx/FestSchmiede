@@ -111,55 +111,33 @@ export function subscribePaymentStatus(
 export function subscribeTenantUpdates(
   onData: (tenant: import('@/types/tenant').TenantPublicData) => void
 ): () => void {
+  const mapTenant = async (): Promise<import('@/types/tenant').TenantPublicData | null> => {
+    try {
+      return await api.getTenant();
+    } catch {
+      return null;
+    }
+  };
+
   return realtimeService.subscribe(
     'tenant',
     (msg) => {
-      if (msg.type === 'club:updated' && msg.payload) {
-        const club = msg.payload as ClubSettings;
-        onData({
-          name: club.clubName,
-          slug: 'default',
-          description: club.description,
-          contactName: club.contactName,
-          email: club.email,
-          phone: club.phone,
-          address: club.address,
-          website: club.website,
-          logoUrl: club.logoUrl,
-          theme: 'default',
-          locale: 'de-DE',
-          timezone: 'Europe/Berlin',
-          currency: 'EUR',
+      if (msg.type === 'club:updated') {
+        void mapTenant().then((data) => {
+          if (data) onData(data);
         });
       }
     },
     {
       wsEvents: ['club:updated'],
       activity: 'idle',
-      poll: async (etag) => {
-        const result = await api.syncClub(etag);
-        if (!result.data) return result;
-        const club = result.data;
-        return {
-          ...result,
-          data: {
-            name: club.clubName,
-            slug: 'default',
-            description: club.description,
-            contactName: club.contactName,
-            email: club.email,
-            phone: club.phone,
-            address: club.address,
-            website: club.website,
-            logoUrl: club.logoUrl,
-            theme: 'default',
-            locale: 'de-DE',
-            timezone: 'Europe/Berlin',
-            currency: 'EUR',
-          },
-        };
+      poll: async () => {
+        const data = await mapTenant();
+        return { data, etag: undefined };
       },
-      onPollData: (data) => onData(data as import('@/types/tenant').TenantPublicData),
+      onPollData: (data) => {
+        if (data) onData(data as import('@/types/tenant').TenantPublicData);
+      },
     }
   );
 }

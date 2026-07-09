@@ -5,7 +5,11 @@ import type { TenantResolver } from '../platform/tenant/TenantResolver';
 import type { TenantService } from '../platform/tenant/TenantService';
 
 const PLATFORM_ONLY_PREFIXES = ['/api/platform', '/platform'];
-const TENANT_OPTIONAL_PATHS = new Set(['/api/health', '/health']);
+const TENANT_OPTIONAL_PATHS = new Set([
+  '/api/health',
+  '/health',
+  '/api/public/routing-config',
+]);
 
 function requiresTenantContext(path: string): boolean {
   if (TENANT_OPTIONAL_PATHS.has(path)) return false;

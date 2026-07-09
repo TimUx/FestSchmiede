@@ -21,6 +21,8 @@ export interface PlatformPublicData {
   baseDomain: string;
   maintenanceMode: boolean;
   maintenanceMessage?: string | null;
+  primaryColor?: string;
+  defaultLocale?: string;
 }
 
 export const DEFAULT_TENANT: TenantPublicData = {
@@ -37,4 +39,6 @@ export const DEFAULT_PLATFORM: PlatformPublicData = {
   version: '2.0.0',
   baseDomain: 'festmanager.org',
   maintenanceMode: false,
+  primaryColor: '#1565c0',
+  defaultLocale: 'de-DE',
 };

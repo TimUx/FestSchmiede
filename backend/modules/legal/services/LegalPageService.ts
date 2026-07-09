@@ -267,7 +267,7 @@ export const legalPageService = {
         pageType: row.pageType as LegalPageType,
         title: row.title,
         slug: row.slug,
-        path: `/${row.slug}`,
+        path: `/recht/${row.slug}`,
       }));
   },
 
@@ -284,7 +284,7 @@ export const legalPageService = {
       pageType: row.pageType,
       title: row.title,
       slug: row.slug,
-      path: `/${row.slug}`,
+      path: `/recht/${row.slug}`,
       html,
       updatedAt: row.updatedAt.toISOString(),
     };
