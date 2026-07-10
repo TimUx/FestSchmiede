@@ -76,18 +76,17 @@ export class TenantResolver {
       if (prefixResult) return prefixResult;
     }
 
-    // Localhost: Pfad-basierte Unterscheidung www vs app
-    if (
-      isLocalPlatformDomain(domains.platformDomain) &&
-      (normalizedHost === 'localhost' || normalizedHost === '127.0.0.1')
-    ) {
+    // Localhost: Pfad-basierte Unterscheidung www vs app (Host ist maßgeblich)
+    if (normalizedHost === 'localhost' || normalizedHost === '127.0.0.1') {
       if (path.startsWith('/platform') || path.startsWith('/api/platform')) {
         return platformResult('app', 'app', 'localhost_path');
       }
       if (!this.config.multiTenantEnabled) {
         return this.resolveDefaultTenant('default_fallback');
       }
-      return platformResult('www', 'www', 'localhost_path');
+      if (isLocalPlatformDomain(domains.platformDomain)) {
+        return platformResult('www', 'www', 'localhost_path');
+      }
     }
 
     const subdomain = platformDomainService.extractSubdomainFromHost(normalizedHost, domains.platformDomain);
