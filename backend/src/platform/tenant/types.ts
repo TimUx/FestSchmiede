@@ -169,6 +169,7 @@ export const RESERVED_SUBDOMAINS = [
   'api',
   'docs',
   'status',
+  'platform',
 ] as const;
 
 export const DEFAULT_PLATFORM_CONTEXT: PlatformContextData = {
