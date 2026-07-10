@@ -1,8 +1,12 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 const admin = { email: 'admin@verein.local', password: 'admin123' };
 
-async function loginAsAdmin(page: import('@playwright/test').Page) {
+function drawerLink(page: Page, name: string) {
+  return page.locator('.MuiDrawer-paper').getByRole('link', { name, exact: true });
+}
+
+async function loginAsAdmin(page: Page) {
   await page.goto('/admin/login');
   await page.getByLabel('E-Mail').fill(admin.email);
   await page.getByLabel('Passwort').fill(admin.password);
@@ -14,16 +18,16 @@ test.describe('Admin-Navigation (Volunteer-first)', () => {
   test('Einstellungen zeigen Veranstalter, Bestellung und Benachrichtigungen', async ({ page }) => {
     await loginAsAdmin(page);
     await expect(page.getByText('Einstellungen').first()).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByRole('link', { name: 'Veranstalter' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Bestellung' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Benachrichtigungen' })).toBeVisible();
+    await expect(drawerLink(page, 'Veranstalter')).toBeVisible();
+    await expect(drawerLink(page, 'Bestellung')).toBeVisible();
+    await expect(drawerLink(page, 'Benachrichtigungen')).toBeVisible();
   });
 
   test('Funktionen ohne Version-Spalte, Team statt Benutzer', async ({ page }) => {
     await loginAsAdmin(page);
-    await page.getByRole('link', { name: 'Team' }).click();
+    await drawerLink(page, 'Team').click();
     await expect(page.getByRole('heading', { name: /^team$/i }).first()).toBeVisible({ timeout: 15_000 });
-    await page.getByRole('link', { name: 'Funktionen' }).click();
+    await drawerLink(page, 'Funktionen').click();
     await expect(page.getByRole('heading', { name: /funktionen/i }).first()).toBeVisible();
     await expect(page.getByRole('columnheader', { name: 'Version' })).toHaveCount(0);
     await expect(page.getByRole('columnheader', { name: 'Funktion' })).toBeVisible();

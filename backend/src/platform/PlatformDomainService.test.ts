@@ -40,6 +40,14 @@ describe('PlatformDomainService', () => {
     expect(cfg.platformDomain).toBe('localhost');
   });
 
+  it('uses CORS origin with port for local www and app URLs', () => {
+    process.env.CORS_ORIGIN = 'http://localhost:5173';
+    const cfg = loadDomainConfigFromEnv();
+    expect(buildWwwUrl(cfg, '/faq')).toBe('http://localhost:5173/faq');
+    expect(buildAppUrl(cfg, '/platform')).toBe('http://localhost:5173/platform');
+    expect(buildTenantUrl(cfg, 'default', '/bestellung')).toBe('http://localhost:5173/bestellung');
+  });
+
   it('builds www, app and tenant URLs from configured domains', () => {
     const cfg = loadDomainConfigFromEnv();
     Object.assign(cfg, {

@@ -150,12 +150,23 @@ function defaultProto(domains: PlatformDomainConfig): 'http' | 'https' {
   return isLocalPlatformDomain(domains.platformDomain) ? 'http' : 'https';
 }
 
+function buildLocalDevUrl(path = ''): string {
+  const origin = config.corsOrigin.replace(/\/$/, '');
+  return `${origin}${normalizePath(path)}`;
+}
+
 export function buildWwwUrl(domains: PlatformDomainConfig, path = '', proto?: 'http' | 'https'): string {
+  if (isLocalPlatformDomain(domains.platformDomain)) {
+    return buildLocalDevUrl(path);
+  }
   const scheme = proto ?? defaultProto(domains);
   return `${scheme}://${domains.wwwDomain}${normalizePath(path)}`;
 }
 
 export function buildAppUrl(domains: PlatformDomainConfig, path = '', proto?: 'http' | 'https'): string {
+  if (isLocalPlatformDomain(domains.platformDomain)) {
+    return buildLocalDevUrl(path);
+  }
   const scheme = proto ?? defaultProto(domains);
   return `${scheme}://${domains.appDomain}${normalizePath(path)}`;
 }
@@ -172,8 +183,7 @@ export function buildTenantUrl(
   proto?: 'http' | 'https'
 ): string {
   if (isLocalPlatformDomain(domains.platformDomain)) {
-    const origin = config.corsOrigin.replace(/\/$/, '');
-    return `${origin}${normalizePath(path)}`;
+    return buildLocalDevUrl(path);
   }
   const scheme = proto ?? defaultProto(domains);
   return `${scheme}://${tenantSubdomain}.${domains.platformDomain}${normalizePath(path)}`;
