@@ -116,7 +116,7 @@ Ausführlich: [OPERATIONS.md — Secret-Rotation](docs/OPERATIONS.md#secret-rota
 
 ## Weitere Dokumentation
 
-- [PHASE_8_COMPLETION_REPORT](docs/architecture/PHASE_8_COMPLETION_REPORT.md)
+- [PHASE_8_COMPLETION_REPORT](docs/architecture/archive/PHASE_8_COMPLETION_REPORT.md)
 - [ADR-029](docs/architecture/029-multi-tenant-security-hardening.md)
 - [ADR-039](docs/architecture/039-security-hardening-baseline.md)
 - [OPERATIONS.md](docs/OPERATIONS.md)

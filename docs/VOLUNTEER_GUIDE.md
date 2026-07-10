@@ -2,7 +2,7 @@
 
 Diese Seite richtet sich an **Vorstände und Helfer:innen ohne IT-Hintergrund**. Sie brauchen kein Programmierwissen — nur Docker auf einem Rechner und diese Schritte.
 
-Technische Details: [Betriebshandbuch](OPERATIONS.md) · [Admin Guide](ADMIN_GUIDE.md)
+Technische Details: [Dokumentation](README.md) · [Betriebshandbuch](OPERATIONS.md) · [Admin Guide](ADMIN_GUIDE.md)
 
 ---
 
@@ -15,6 +15,10 @@ Alles läuft auf **Ihrem** Server — keine Cloud-Pflicht, keine Kunden-Registri
 ---
 
 ## Einmal einrichten (ca. 30 Minuten)
+
+**Empfohlen:** [Installations-Assistent](INSTALLATION.md) (`./install.sh`) — führt durch Docker, `.env` und Start.
+
+Kurz manuell:
 
 1. **Docker installieren** auf einem PC oder kleinen Server (Linux empfohlen).
 2. Projektordner kopieren oder von GitHub klonen.

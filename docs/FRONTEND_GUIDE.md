@@ -105,5 +105,5 @@ const { tenant } = useTenant();
 ## Verwandte Dokumentation
 
 - [ADR-023: Tenant Routing](architecture/023-tenant-routing.md)
-- [Phase-5-Report](architecture/PHASE_5_COMPLETION_REPORT.md)
+- [Phase-5-Report](architecture/archive/PHASE_5_COMPLETION_REPORT.md)
 - [Developer Guide](DEVELOPER_GUIDE.md)

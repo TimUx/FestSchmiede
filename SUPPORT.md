@@ -5,11 +5,11 @@
 | Ressource | Beschreibung |
 |-----------|--------------|
 | [README](README.md) | Schnellstart und Übersicht |
-| [FAQ](docs/FAQ.md) | Häufige Fragen |
+| [Dokumentation](docs/README.md) | Zielgruppen-Index (Ehrenamt, Admin, Maintainer) |
 | [Volunteer Guide](docs/VOLUNTEER_GUIDE.md) | Für Ehrenamtliche ohne IT-Hintergrund |
 | [Admin Guide](docs/ADMIN_GUIDE.md) | Administratoren |
 | [Operations](docs/OPERATIONS.md) | Backup, Update, Restore |
-| [Deployment Guide](docs/DEPLOYMENT_GUIDE.md) | Multi-Tenant-Betrieb |
+| [Deployment](docs/DEPLOYMENT.md) | Multi-Tenant-Betrieb |
 | [GitHub Issues](https://github.com/TimUx/FestSchmiede/issues) | Fehler melden, Features vorschlagen |
 
 ## Community

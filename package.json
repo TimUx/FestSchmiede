@@ -15,6 +15,7 @@
     "qa:module-scenarios": "npx tsx scripts/qa/run-module-scenarios.ts",
     "qa:module-tests": "npx tsx scripts/qa/run-module-tests.ts",
     "qa:security": "npx tsx scripts/qa/security-audit.ts && vitest run --config tests/vitest.config.ts tests/security",
+    "qa:linkcheck": "npx tsx scripts/qa/linkcheck.ts",
     "qa:performance": "npx tsx scripts/qa/performance-baseline.ts",
     "qa:load": "k6 run scripts/qa/load-test.k6.js",
     "qa:report": "npx tsx scripts/qa/generate-report.ts",

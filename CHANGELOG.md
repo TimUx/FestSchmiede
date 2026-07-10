@@ -23,6 +23,7 @@ Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1
 - **Performance:** Order-Stats per DB-Aggregation; gebündeltes `findByIds`; Realtime-Polling-Metriken; k6 `dashboard_stats`.
 - Wizard Upgrade/Migration nutzen geführte Update-Pipeline; Installer-Fehlermeldungen.
 - **Security Hardening:** CORS/Secret-Guards, Helmet-Baseline, Upload Content-Length, Impersonation-Audit (ADR 045).
+- **Dokumentation:** Drei Ebenen (Ehrenamt/Admin/Maintainer), README gekürzt, Phase-Reports archiviert, Linkcheck in CI.
 
 ### Tests
 
