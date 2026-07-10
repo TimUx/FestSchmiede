@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config';
 import { AppError } from './errorHandler';
 import { optionalTenantId } from '../platform/tenant/tenantScope';
-import { parsePermissionKeys, userHasPermission } from '../platform/permissions';
+import { userHasPermission } from '../platform/permissions';
 import { userRepository } from '../repositories';
 import { resolveUserPermissions, hasDelegatedAdminAccess } from '../core/permissions';
 import type { AuthPayload } from './platformAuth';

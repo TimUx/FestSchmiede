@@ -108,7 +108,7 @@ export const tenantSetupService = {
 
     await prisma.tenantSettings.update({
       where: { tenantId: row.tenantId },
-      data: { extraJson: extraJson as Prisma.InputJsonValue },
+      data: { extraJson: extraJson as unknown as Prisma.InputJsonValue },
     });
 
     return merged;
@@ -224,7 +224,7 @@ export const tenantSetupService = {
 
     await prisma.tenantSettings.update({
       where: { tenantId },
-      data: { extraJson: extraJson as Prisma.InputJsonValue },
+      data: { extraJson: extraJson as unknown as Prisma.InputJsonValue },
     });
 
     const tenant = tenantContext.current();
@@ -248,7 +248,7 @@ export const tenantSetupService = {
     };
     await prisma.tenantSettings.update({
       where: { tenantId: row.tenantId },
-      data: { extraJson: extraJson as Prisma.InputJsonValue },
+      data: { extraJson: extraJson as unknown as Prisma.InputJsonValue },
     });
     return reset;
   },

@@ -9,11 +9,6 @@ const updateStaffPermissionsSchema = z.object({
   permissions: z.array(z.string().min(1)).default([]),
 });
 
-const updateUserPermissionsSchema = z.object({
-  permissions: z.array(z.string()).default([]),
-  roleTemplate: z.string().nullable().optional(),
-});
-
 const router = Router();
 
 router.use(requirePermissionKey('team.manage'));

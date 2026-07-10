@@ -55,7 +55,7 @@ export const userService = {
     if (!role) throw new AppError(500, 'Rolle nicht gefunden');
 
     let permissions: string[] = [];
-    let roleTemplate: string | null = data.roleTemplate ?? null;
+    const roleTemplate: string | null = data.roleTemplate ?? null;
     if (data.role === 'STAFF') {
       if (data.roleTemplate) {
         permissions = permissionService.resolveTemplatePermissions(data.roleTemplate);

@@ -1,5 +1,5 @@
 import { prisma } from '../config/database';
-import { Prisma, StatusCode } from '@prisma/client';
+import { Prisma, RoleName, StatusCode } from '@prisma/client';
 import crypto from 'crypto';
 import { requireTenantId, tenantWhere } from '../platform/tenant/tenantScope';
 
@@ -47,7 +47,7 @@ export const userRepository = {
 
   countActiveAdmins: () =>
     prisma.user.count({
-      where: tenantWhere({ active: true, role: { name: 'ADMIN' } }),
+      where: tenantWhere({ active: true, role: { name: RoleName.ADMIN } }),
     }),
 };
 
