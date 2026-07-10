@@ -18,6 +18,9 @@ Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1
 - ADR 039: Produktionsmigrationen.
 - `auth.ts` und `userService` nutzen `userRepository` statt direktem `prisma.user`.
 - `sessionService` prüft Mandantenzugehörigkeit via `assertTenantOwnership`.
+- **Module API v3:** Kanonische Runtime in `platform/`; `platform/module-api.ts` als einziger Modul-Import; `module-system/` nur noch deprecated Facade.
+- Preview-Module (`preview: true`) nur mit `SHOW_PREVIEW_MODULES=1`; Stub-Manifeste vereinfacht.
+- ADR 041; `MODULE_ARCHITECTURE.md` überarbeitet.
 
 ---
 

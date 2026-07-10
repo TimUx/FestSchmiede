@@ -52,6 +52,7 @@ Technische Architektur der FestSchmiede-Plattform – Architecture Decision Reco
 | 038 | [rollback-strategy.md](./038-rollback-strategy.md) | Accepted (v2.2.0) | Installer Rollback & Logging |
 | 039 | [039-production-migrations.md](./039-production-migrations.md) | Accepted (v2.2.2) | Prisma Migrate in Produktion |
 | 040 | [tenant-access-policy.md](./040-tenant-access-policy.md) | Accepted (v2.2.2) | Tenant-scoped Prisma-Zugriff |
+| 041 | [module-api-v3.md](./041-module-api-v3.md) | Accepted (v2.2.2) | Konsolidierte Modul-Runtime API |
 
 ### Version 2.0 – Multi-Tenant
 
