@@ -25,10 +25,10 @@ echo "$out" | grep -q "2.2.2" && pass "--version" || fail "--version"
 [[ -f "${ROOT}/installer/install.sh" ]] && pass "local installer exists" || fail "local installer exists"
 
 # URL-Generierung (inline test via bash)
-REF=$(FESTSCHMIEDE_VERSION=2.2.1 bash -c '
+REF=$(FESTSCHMIEDE_VERSION=2.2.2 bash -c '
   source /dev/null 2>/dev/null
   FESTSCHMIEDE_GITHUB_REPO=TimUx/FestSchmiede
-  FESTSCHMIEDE_VERSION=2.2.1
+  FESTSCHMIEDE_VERSION=2.2.2
   echo "https://github.com/${FESTSCHMIEDE_GITHUB_REPO}/archive/refs/tags/v${FESTSCHMIEDE_VERSION}.tar.gz"
 ')
 echo "$REF" | grep -q "FestSchmiede" && pass "archive URL format" || fail "archive URL format"
