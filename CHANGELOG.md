@@ -3,6 +3,18 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.2.2 - 2026-07-10
+
+### Sicherheit
+
+- **Produktions-Guards:** CORS-Validierung (`assertProductionCors`) und erweiterte Secret-Prüfung blockieren Fehlkonfigurationen beim Start.
+- **Security Headers:** Explizite Helmet-Baseline (CSP, HSTS, Frame-Options).
+- **Uploads:** Content-Length-Check vor Multer; optionaler `UPLOAD_AV_HOOK`.
+- **Impersonation:** Banner ruft `POST /impersonation/end` auf — Audit Start+Ende.
+- **ADR-039:** Security Hardening Baseline; Secret-Rotation in `OPERATIONS.md`.
+
+---
+
 ## 2.2.1 - 2026-07-10
 
 ### Neu
