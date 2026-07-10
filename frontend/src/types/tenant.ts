@@ -75,7 +75,7 @@ export interface TenantApplicationInput {
 }
 
 export const DEFAULT_TENANT: TenantPublicData = {
-  name: 'FestManager',
+  name: 'FestSchmiede',
   slug: 'default',
   theme: 'default',
   locale: 'de-DE',
@@ -84,12 +84,12 @@ export const DEFAULT_TENANT: TenantPublicData = {
 };
 
 export const DEFAULT_PLATFORM: PlatformPublicData = {
-  name: 'FestManager',
+  name: 'FestSchmiede',
   version: '2.0.0',
   baseDomain: 'localhost',
   maintenanceMode: false,
   primaryColor: '#1565c0',
   defaultLocale: 'de-DE',
   registrationEnabled: false,
-  githubUrl: 'https://github.com/TimUx/FestManager',
+  githubUrl: 'https://github.com/TimUx/FestSchmiede',
 };

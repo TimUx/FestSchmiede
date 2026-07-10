@@ -1,4 +1,4 @@
-# Performance Guide — FestManager Platform 2.0
+# Performance Guide — FestSchmiede Platform 2.0
 
 Leitfaden für Performance, Lasttests und Skalierung (Phase 9).
 

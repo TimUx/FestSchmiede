@@ -10,7 +10,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'FestManager',
+        name: 'FestSchmiede',
         short_name: 'Bestellung',
         description: 'Verkauf, Bestellung und Organisation von Veranstaltungen',
         theme_color: '#1976d2',

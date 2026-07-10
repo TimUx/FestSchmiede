@@ -10,12 +10,12 @@ export function PlatformAboutDeveloperPage() {
       <MarketingSection title="Über den Entwickler" subtitle="Aus der Praxis – für Vereine und Ehrenamt.">
         <Stack spacing={3} sx={{ maxWidth: 760, lineHeight: 1.7 }}>
           <Typography>
-            FestManager wird von Timo entwickelt – jemand, der Open Source schätzt, sich ehrenamtlich
+            FestSchmiede wird von Timo entwickelt – jemand, der Open Source schätzt, sich ehrenamtlich
             engagiert und in mehreren Vereinen aktiv ist.
           </Typography>
           <Typography>
             Die Idee zum Projekt entstand aus eigener Erfahrung: Bei Festen und Veranstaltungen fehlte
-            oft eine einfache, digitale Lösung, die zu den Abläufen im Ehrenamt passt. FestManager ist
+            oft eine einfache, digitale Lösung, die zu den Abläufen im Ehrenamt passt. FestSchmiede ist
             der Versuch, genau diese Lücke zu schließen.
           </Typography>
           <Typography>

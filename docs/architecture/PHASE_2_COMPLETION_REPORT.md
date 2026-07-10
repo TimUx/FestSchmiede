@@ -9,7 +9,7 @@
 
 ## Zusammenfassung
 
-Die FestManager-Plattform nutzt nun ein **Shared Database, Shared Schema**-Modell mit `tenant_id` auf allen mandantenbezogenen Tabellen. Bestehende Installationen werden beim App-Start automatisch in den Standard-Mandanten (`slug: default`, Name „Lokale Installation“) migriert. Repository-Abfragen filtern zentral über `tenantScope` (`tenantWhere`, `withTenantId`, `requireTenantId`).
+Die FestSchmiede-Plattform nutzt nun ein **Shared Database, Shared Schema**-Modell mit `tenant_id` auf allen mandantenbezogenen Tabellen. Bestehende Installationen werden beim App-Start automatisch in den Standard-Mandanten (`slug: default`, Name „Lokale Installation“) migriert. Repository-Abfragen filtern zentral über `tenantScope` (`tenantWhere`, `withTenantId`, `requireTenantId`).
 
 ---
 

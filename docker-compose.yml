@@ -26,7 +26,7 @@ services:
           memory: 256M
 
   backend:
-    image: ${GHCR_IMAGE_PREFIX:-ghcr.io/timux/festmanager}/backend:${IMAGE_TAG:-latest}
+    image: ${GHCR_IMAGE_PREFIX:-ghcr.io/timux/festschmiede}/backend:${IMAGE_TAG:-latest}
     container_name: vereins-backend
     restart: unless-stopped
     pull_policy: always
@@ -71,7 +71,7 @@ services:
           memory: 128M
 
   frontend:
-    image: ${GHCR_IMAGE_PREFIX:-ghcr.io/timux/festmanager}/frontend:${IMAGE_TAG:-latest}
+    image: ${GHCR_IMAGE_PREFIX:-ghcr.io/timux/festschmiede}/frontend:${IMAGE_TAG:-latest}
     container_name: vereins-frontend
     restart: unless-stopped
     pull_policy: always

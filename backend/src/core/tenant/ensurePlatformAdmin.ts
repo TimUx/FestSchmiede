@@ -3,7 +3,7 @@ import { prisma } from '../../config/database';
 import { ALL_PLATFORM_PERMISSIONS } from '../../platform/platformPermissions';
 import { config } from '../../config';
 
-const DEFAULT_PLATFORM_ADMIN_EMAIL = 'platform@festmanager.local';
+const DEFAULT_PLATFORM_ADMIN_EMAIL = 'platform@festschmiede.local';
 
 /**
  * Stellt sicher, dass mindestens ein Plattformadministrator existiert.

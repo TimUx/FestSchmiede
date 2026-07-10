@@ -4,7 +4,7 @@
 
 ## Highlights
 
-- Produkt-Rebranding: Die Plattform heisst jetzt **FestManager**.
+- Produkt-Rebranding: Die Plattform heisst jetzt **FestManager** (vorher Vereinsbestellung).
 - Klarere Terminologie: **Veranstalter** statt „Verein“, wo der Betreiber gemeint ist.
 - Zielgruppe in der Dokumentation erweitert: Vereine, Hilfsorganisationen, Firmen, Kommunen, Foodtrucks und private Feste.
 

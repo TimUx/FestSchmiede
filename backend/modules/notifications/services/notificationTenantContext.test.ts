@@ -9,7 +9,7 @@ vi.mock('../../../src/config', () => ({
   config: {
     corsOrigin: 'http://localhost:5173',
     nodeEnv: 'development',
-    multiTenant: { baseDomain: 'festmanager.test' },
+    multiTenant: { baseDomain: 'festschmiede.test' },
   },
 }));
 
@@ -24,9 +24,9 @@ describe('notificationTenantContext', () => {
 
   it('builds subdomain URL in production-like setup', () => {
     vi.mocked(tenantContext.current).mockReturnValue({ subdomain: 'feuerwehr', slug: 'feuerwehr' } as never);
-    vi.mocked(platformContext.current).mockReturnValue({ baseDomain: 'festmanager.test' } as never);
+    vi.mocked(platformContext.current).mockReturnValue({ baseDomain: 'festschmiede.test' } as never);
 
-    expect(resolveTenantPublicBaseUrl()).toBe('http://feuerwehr.festmanager.test');
+    expect(resolveTenantPublicBaseUrl()).toBe('http://feuerwehr.festschmiede.test');
   });
 
   it('builds path-prefix URL when enabled', () => {

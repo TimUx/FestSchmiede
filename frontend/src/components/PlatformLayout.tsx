@@ -49,7 +49,7 @@ export function PlatformLayout({ children }: { children: React.ReactNode }) {
     <Box sx={{ width: DRAWER_WIDTH, pt: 1 }}>
       <Box sx={{ px: 2, py: 2, borderBottom: 1, borderColor: 'divider' }}>
         <Typography variant="subtitle2" color="text.secondary">Plattform</Typography>
-        <Typography variant="h6" fontWeight={700}>{platform?.name ?? 'FestManager'}</Typography>
+        <Typography variant="h6" fontWeight={700}>{platform?.name ?? 'FestSchmiede'}</Typography>
       </Box>
       <List>
         {NAV.map((item) => (

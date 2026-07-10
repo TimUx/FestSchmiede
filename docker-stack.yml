@@ -1,9 +1,9 @@
-# Docker Swarm Stack – FestManager Multi-Tenant (Phase 6)
-# Nutzung: docker stack deploy -c docker-stack.yml festmanager
+# Docker Swarm Stack – FestSchmiede Multi-Tenant (Phase 6)
+# Nutzung: docker stack deploy -c docker-stack.yml festschmiede
 #
 # Secrets vorher anlegen:
-#   echo "..." | docker secret create festmanager_jwt_secret -
-#   echo "..." | docker secret create festmanager_db_password -
+#   echo "..." | docker secret create festschmiede_jwt_secret -
+#   echo "..." | docker secret create festschmiede_db_password -
 
 version: "3.8"
 
@@ -34,7 +34,7 @@ services:
       retries: 5
 
   backend:
-    image: ${GHCR_IMAGE_PREFIX:-ghcr.io/timux/festmanager}/backend:${IMAGE_TAG:-latest}
+    image: ${GHCR_IMAGE_PREFIX:-ghcr.io/timux/festschmiede}/backend:${IMAGE_TAG:-latest}
     environment:
       NODE_ENV: production
       PORT: 3001
@@ -71,7 +71,7 @@ services:
       start_period: 40s
 
   frontend:
-    image: ${GHCR_IMAGE_PREFIX:-ghcr.io/timux/festmanager}/frontend:${IMAGE_TAG:-latest}
+    image: ${GHCR_IMAGE_PREFIX:-ghcr.io/timux/festschmiede}/frontend:${IMAGE_TAG:-latest}
     networks:
       - internal
       - public
@@ -81,10 +81,10 @@ services:
         condition: on-failure
       labels:
         - traefik.enable=true
-        - traefik.http.routers.festmanager.rule=Host(`${PLATFORM_DOMAIN:-${PLATFORM_BASE_DOMAIN:-localhost}}`) || HostRegexp(`^[a-z0-9-]+\\.${PLATFORM_DOMAIN:-${PLATFORM_BASE_DOMAIN:-localhost}}$$`)
-        - traefik.http.routers.festmanager.entrypoints=websecure
-        - traefik.http.routers.festmanager.tls.certresolver=letsencrypt
-        - traefik.http.services.festmanager.loadbalancer.server.port=80
+        - traefik.http.routers.festschmiede.rule=Host(`${PLATFORM_DOMAIN:-${PLATFORM_BASE_DOMAIN:-localhost}}`) || HostRegexp(`^[a-z0-9-]+\\.${PLATFORM_DOMAIN:-${PLATFORM_BASE_DOMAIN:-localhost}}$$`)
+        - traefik.http.routers.festschmiede.entrypoints=websecure
+        - traefik.http.routers.festschmiede.tls.certresolver=letsencrypt
+        - traefik.http.services.festschmiede.loadbalancer.server.port=80
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:80"]
       interval: 15s
@@ -132,7 +132,7 @@ volumes:
 secrets:
   jwt_secret:
     external: true
-    name: festmanager_jwt_secret
+    name: festschmiede_jwt_secret
   db_password:
     external: true
-    name: festmanager_db_password
+    name: festschmiede_db_password

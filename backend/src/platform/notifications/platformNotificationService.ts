@@ -102,26 +102,26 @@ export const platformNotificationService = {
   async notifyApplicantConfirmation(application: TenantApplication): Promise<void> {
     await this.notify({
       event: 'tenant.application.confirmed',
-      title: 'Vielen Dank für Ihren Mandantenantrag bei FestManager',
+      title: 'Vielen Dank für Ihren Mandantenantrag bei FestSchmiede',
       recipientEmail: application.email,
       body: [
         `Hallo ${application.contactName},`,
         '',
-        'vielen Dank für Ihre Bewerbung als FestManager-Mandant.',
+        'vielen Dank für Ihre Bewerbung als FestSchmiede-Mandant.',
         `Wir haben Ihren Antrag für „${application.organization}" erhalten`,
         `(Subdomain: ${application.requestedSubdomain}).`,
         '',
         'Unser Team prüft Ihre Angaben und meldet sich bei Ihnen.',
         '',
         'Mit freundlichen Grüßen',
-        'Ihr FestManager-Team',
+        'Ihr FestSchmiede-Team',
       ].join('\n'),
       html: `<p>Hallo ${application.contactName},</p>
-        <p>vielen Dank für Ihre Bewerbung als FestManager-Mandant.</p>
+        <p>vielen Dank für Ihre Bewerbung als FestSchmiede-Mandant.</p>
         <p>Wir haben Ihren Antrag für <strong>${application.organization}</strong> erhalten
         (Subdomain: <strong>${application.requestedSubdomain}</strong>).</p>
         <p>Unser Team prüft Ihre Angaben und meldet sich bei Ihnen.</p>
-        <p>Mit freundlichen Grüßen<br/>Ihr FestManager-Team</p>`,
+        <p>Mit freundlichen Grüßen<br/>Ihr FestSchmiede-Team</p>`,
     });
   },
 };

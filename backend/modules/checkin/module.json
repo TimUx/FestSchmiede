@@ -3,7 +3,7 @@
   "name": "QR-Code Einlass",
   "description": "Einlasskontrolle per QR-Code",
   "version": "0.1.0",
-  "author": "FestManager",
+  "author": "FestSchmiede",
   "license": "MIT",
   "entry": "index",
   "dependencies": { "required": [], "optional": [] },

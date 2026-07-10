@@ -25,7 +25,7 @@ Internet
     ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  Traefik (Reverse Proxy)                                     │
-│  - Wildcard TLS (*.festmanager.org)                          │
+│  - Wildcard TLS (*.example.org)                          │
 │  - HTTP → HTTPS Redirect                                     │
 │  - Forwarded Headers (X-Forwarded-Host, Proto, For)          │
 │  - Rate Limiting (optional)                                  │
@@ -53,8 +53,8 @@ Volumes:
 
 | Eintrag | Typ | Ziel |
 |---------|-----|------|
-| `festmanager.org` | A/AAAA | Server-IP |
-| `*.festmanager.org` | A/AAAA | Server-IP (Wildcard) |
+| `example.org` | A/AAAA | Server-IP |
+| `*.example.org` | A/AAAA | Server-IP (Wildcard) |
 
 ### Traefik-Konfiguration (Konzept)
 
@@ -79,14 +79,14 @@ services:
 
   frontend:
     labels:
-      - traefik.http.routers.frontend.rule=Host(`festmanager.org`) || HostRegexp(`{subdomain:[a-z0-9-]+}.festmanager.org`)
+      - traefik.http.routers.frontend.rule=Host(`example.org`) || HostRegexp(`{subdomain:[a-z0-9-]+}.example.org`)
       - traefik.http.routers.frontend.tls.certresolver=letsencrypt
-      - traefik.http.routers.frontend.tls.domains[0].main=festmanager.org
-      - traefik.http.routers.frontend.tls.domains[0].sans=*.festmanager.org
+      - traefik.http.routers.frontend.tls.domains[0].main=example.org
+      - traefik.http.routers.frontend.tls.domains[0].sans=*.example.org
 
   backend:
     labels:
-      - traefik.http.routers.backend.rule=(Host(`festmanager.org`) || HostRegexp(`{subdomain:[a-z0-9-]+}.festmanager.org`)) && PathPrefix(`/api`, `/socket.io`)
+      - traefik.http.routers.backend.rule=(Host(`example.org`) || HostRegexp(`{subdomain:[a-z0-9-]+}.example.org`)) && PathPrefix(`/api`, `/socket.io`)
 ```
 
 ### Wildcard TLS
@@ -94,7 +94,7 @@ services:
 | Aspekt | Strategie |
 |--------|-----------|
 | Zertifikat | Let's Encrypt mit DNS-01 oder TLS-ALPN Challenge |
-| Wildcard | `*.festmanager.org` + `festmanager.org` in einem Zertifikat |
+| Wildcard | `*.example.org` + `example.org` in einem Zertifikat |
 | Renewal | Traefik automatisch |
 | Entwicklung | mkcert oder selbstsigniert für `*.localhost` |
 

@@ -36,9 +36,9 @@ Der Plattformbetreiber muss zentrale Parameter konfigurieren können, die für a
 
 | Schlüssel | Typ | Beschreibung | Default |
 |-----------|-----|--------------|---------|
-| `platform.name` | string | Anzeigename der Plattform | FestManager |
-| `platform.baseDomain` | string | Basis-Domain | festmanager.org |
-| `platform.wildcardDomain` | string | Wildcard-Pattern | *.festmanager.org |
+| `platform.name` | string | Anzeigename der Plattform | FestSchmiede |
+| `platform.baseDomain` | string | Basis-Domain | example.org |
+| `platform.wildcardDomain` | string | Wildcard-Pattern | *.example.org |
 | `platform.allowedDomains` | string[] | Erlaubte Host-Header | [baseDomain, wildcard] |
 | `platform.cors.allowedOrigins` | string[] | CORS-Origins (dynamisch erweiterbar) | [] |
 | `platform.cors.allowCredentials` | boolean | Cookies erlauben | true |

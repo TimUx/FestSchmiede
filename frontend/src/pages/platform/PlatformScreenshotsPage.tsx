@@ -7,7 +7,7 @@ import { SCREENSHOTS } from '@/content/platformMarketing';
 export function PlatformScreenshotsPage() {
   return (
     <PlatformPublicLayout>
-      <BrandingHead titleSuffix="Screenshots" description="Screenshots der FestManager Plattform – Dashboard, Bestellung, Küche, Zahlungen und mehr." path="/screenshots" />
+      <BrandingHead titleSuffix="Screenshots" description="Screenshots der FestSchmiede Plattform – Dashboard, Bestellung, Küche, Zahlungen und mehr." path="/screenshots" />
       <MarketingSection title="Screenshots" subtitle="Einblicke in Dashboard, Bestellung, Küche, Zahlungen, Administration und Module.">
         <Grid container spacing={3}>
           {SCREENSHOTS.map((s) => (

@@ -1,7 +1,7 @@
 {
-  "name": "festmanager-backend",
-  "version": "2.0.0",
-  "description": "Backend für die FestManager-Plattform",
+  "name": "festschmiede-backend",
+  "version": "2.0.1",
+  "description": "Backend für die FestSchmiede-Plattform",
   "main": "dist/src/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",

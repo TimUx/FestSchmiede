@@ -12,11 +12,11 @@ export function PlatformHomePage() {
   return (
     <PlatformPublicLayout>
       <BrandingHead
-        description="FestManager ist eine moderne Open-Source-Plattform zur Organisation von Veranstaltungen für Vereine und gemeinnützige Organisationen."
+        description="FestSchmiede ist eine moderne Open-Source-Plattform zur Organisation von Veranstaltungen für Vereine und gemeinnützige Organisationen."
       />
       <MarketingHero
         title="Veranstaltungen organisieren – einfach, digital, gemeinschaftlich"
-        subtitle="FestManager ist eine moderne Open-Source-Plattform zur Organisation von Veranstaltungen. Sie unterstützt Veranstalter bei Bestellungen, Küche, Abholung, Online-Zahlungen, Benachrichtigungen, Auswertungen und Veranstaltungsorganisation."
+        subtitle="FestSchmiede ist eine moderne Open-Source-Plattform zur Organisation von Veranstaltungen. Sie unterstützt Veranstalter bei Bestellungen, Küche, Abholung, Online-Zahlungen, Benachrichtigungen, Auswertungen und Veranstaltungsorganisation."
       >
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
           <Button component={Link} to="/funktionen" variant="contained" size="large">
@@ -35,11 +35,11 @@ export function PlatformHomePage() {
       </MarketingHero>
 
       <MarketingSection
-        title="Was ist FestManager?"
-        subtitle="FestManager wurde insbesondere für Vereine und gemeinnützige Organisationen entwickelt, eignet sich jedoch ebenso für Schulen, Feuerwehren, Hilfsorganisationen, Kommunen und kleinere Veranstaltungen."
+        title="Was ist FestSchmiede?"
+        subtitle="FestSchmiede wurde insbesondere für Vereine und gemeinnützige Organisationen entwickelt, eignet sich jedoch ebenso für Schulen, Feuerwehren, Hilfsorganisationen, Kommunen und kleinere Veranstaltungen."
       >
         <Typography sx={{ maxWidth: 800, lineHeight: 1.7 }}>
-          Ob Schützenfest, Vereinsabend oder Spendenaktion – FestManager bündelt Bestellungen, Küchenabläufe,
+          Ob Schützenfest, Vereinsabend oder Spendenaktion – FestSchmiede bündelt Bestellungen, Küchenabläufe,
           Abholung und Auswertungen in einer übersichtlichen Plattform. Jede Organisation kann als eigener Mandant
           arbeiten und nur die Module nutzen, die wirklich gebraucht werden.
         </Typography>
@@ -60,7 +60,7 @@ export function PlatformHomePage() {
         </Grid>
       </MarketingSection>
 
-      <MarketingSection title="Einblicke in die Plattform" subtitle="Aktuelle Screenshots aus FestManager.">
+      <MarketingSection title="Einblicke in die Plattform" subtitle="Aktuelle Screenshots aus FestSchmiede.">
         <Grid container spacing={2}>
           {SCREENSHOTS.slice(0, 3).map((s) => (
             <Grid key={s.src} size={{ xs: 12, md: 4 }}>
@@ -84,7 +84,7 @@ export function PlatformHomePage() {
         </Button>
       </MarketingSection>
 
-      <MarketingSection title="Vorteile" subtitle="Warum FestManager für ehrenamtliche Veranstaltungen passt.">
+      <MarketingSection title="Vorteile" subtitle="Warum FestSchmiede für ehrenamtliche Veranstaltungen passt.">
         <Grid container spacing={1}>
           {PLATFORM_BENEFITS.map((b) => (
             <Grid key={b} size={{ xs: 12, md: 6 }}>
@@ -104,12 +104,12 @@ export function PlatformHomePage() {
 
       <MarketingSection title="Open Source" subtitle="Transparent, erweiterbar und unabhängig.">
         <Typography sx={{ maxWidth: 760, mb: 2, lineHeight: 1.7 }}>
-          FestManager ist Open Source. Der Quellcode ist einsehbar, Mitarbeit ist willkommen und Organisationen
+          FestSchmiede ist Open Source. Der Quellcode ist einsehbar, Mitarbeit ist willkommen und Organisationen
           bleiben unabhängig von einzelnen Anbietern.
         </Typography>
         <Button
           component="a"
-          href={platform.githubUrl ?? 'https://github.com/TimUx/FestManager'}
+          href={platform.githubUrl ?? 'https://github.com/TimUx/FestSchmiede'}
           target="_blank"
           rel="noopener noreferrer"
           variant="outlined"

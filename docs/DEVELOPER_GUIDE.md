@@ -1,6 +1,6 @@
 # Entwicklerhandbuch (Developer Guide)
 
-Technische Dokumentation für Entwickler, die an der FestManager-Plattform mitarbeiten oder sie erweitern.
+Technische Dokumentation für Entwickler, die an der FestSchmiede-Plattform mitarbeiten oder sie erweitern.
 
 > **Version 2.0:** Multi-Tenant-Unterstützung wird mit v2.0 eingeführt. Phase 0 definiert die Architektur (ADRs 020–027). Module und Services müssen künftig ausschließlich über `TenantContext` arbeiten – niemals Hostname, URL oder `tenant_id`-Parameter selbst auswerten. Details: [Architektur-Dokumentation](architecture/README.md).
 
@@ -149,7 +149,7 @@ const id = tenantContext.require().id;
 ## Projektstruktur
 
 ```
-FestManager/
+FestSchmiede/
 ├── backend/
 │   ├── modules/          # Offizielle Feature-Module (payment, inventory, …)
 │   ├── plugins/          # Community-Plugins (Zukunft)
@@ -423,7 +423,7 @@ Umgebungsvariablen für die Screenshot-Pipeline:
 | `START_FROM` | Ab einem Screenshot-Namen fortsetzen (z. B. `START_FROM=16-admin-uebersicht`) |
 | `SKIP_DEVICES` | `1` = Geräte-Mockups der Bestellseite (01-*) überspringen |
 
-Die Rohdaten für Geräte-Mockups landen in `$TMPDIR/festmanager-screenshots-raw` (nicht mehr unter `docs/screenshots/_raw`).
+Die Rohdaten für Geräte-Mockups landen in `$TMPDIR/festschmiede-screenshots-raw` (nicht mehr unter `docs/screenshots/_raw`).
 
 ---
 
@@ -455,8 +455,8 @@ Produktions-Checklisten, Backup und Restore: [OPERATIONS.md](OPERATIONS.md).
 
 Der Workflow `.github/workflows/docker-publish.yml` baut und veröffentlicht Images unter:
 
-- `ghcr.io/<owner>/FestManager/backend`
-- `ghcr.io/<owner>/FestManager/frontend`
+- `ghcr.io/<owner>/FestSchmiede/backend`
+- `ghcr.io/<owner>/FestSchmiede/frontend`
 
 **Auslöser:**
 

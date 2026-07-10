@@ -59,7 +59,7 @@ export const DEFAULT_ORDER_SETTINGS: OrderSettings = {
 };
 
 export const DEFAULT_CLUB: ClubSettings = {
-  clubName: 'FestManager',
+  clubName: 'FestSchmiede',
   description: 'Essensbestellungen für unsere Veranstaltungen',
   contactName: 'Verwaltung',
   email: 'kontakt@verein.local',

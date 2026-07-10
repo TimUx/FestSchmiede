@@ -172,8 +172,8 @@ export const RESERVED_SUBDOMAINS = [
 ] as const;
 
 export const DEFAULT_PLATFORM_CONTEXT: PlatformContextData = {
-  platformName: 'FestManager',
-  platformVersion: '2.0.0',
+  platformName: 'FestSchmiede',
+  platformVersion: '2.0.1',
   baseDomain: 'localhost',
   wwwSubdomain: 'www',
   wwwDomain: 'localhost',

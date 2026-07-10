@@ -1,6 +1,6 @@
 # Frontend Guide – Multi-Tenant Routing & UX
 
-Technische Dokumentation für das mandantenfähige FestManager-Frontend (Phase 5).
+Technische Dokumentation für das mandantenfähige FestSchmiede-Frontend (Phase 5).
 
 ## Kernprinzip
 
@@ -35,9 +35,9 @@ RoutingProvider          ← scope, basename, tenantSlug (von API)
 
 | Modus | Beispiel | `basename` |
 |-------|----------|------------|
-| Subdomain (primär) | `asv-libelle.festmanager.org/admin` | `""` |
-| URL-Prefix (optional) | `festmanager.org/asv-libelle/admin` | `/asv-libelle` |
-| Plattform | `festmanager.org/platform` | `""` |
+| Subdomain (primär) | `asv-libelle.example.org/admin` | `""` |
+| URL-Prefix (optional) | `example.org/asv-libelle/admin` | `/asv-libelle` |
+| Plattform | `example.org/platform` | `""` |
 | Lokal | `localhost:5173` | `""` (Default-Mandant) |
 
 ## Routen

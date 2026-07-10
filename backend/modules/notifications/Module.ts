@@ -17,7 +17,7 @@ class NotificationsModule extends BaseModule {
   readonly name = 'Benachrichtigungen';
   readonly version = '1.0.0';
   readonly description = 'E-Mail, ntfy, Discord, Slack und Microsoft Teams';
-  readonly author = 'FestManager';
+  readonly author = 'FestSchmiede';
 
   async install(_context: FeatureContext): Promise<void> {}
 

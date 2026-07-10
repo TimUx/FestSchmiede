@@ -38,7 +38,7 @@ export const platformPublicController = {
         contactAddress: readString('platform.contact.address'),
         website: readString('platform.contact.website'),
         footerText: readString('platform.branding.footerText'),
-        githubUrl: readString('platform.links.github') ?? 'https://github.com/TimUx/FestManager',
+        githubUrl: readString('platform.links.github') ?? 'https://github.com/TimUx/FestSchmiede',
       });
     } catch (error) {
       next(error);

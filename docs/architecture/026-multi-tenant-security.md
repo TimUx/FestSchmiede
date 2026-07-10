@@ -72,8 +72,8 @@ Bevor Mandantendaten in einer gemeinsamen Datenbank liegen, muss ein **umfassend
 | Aspekt | Strategie |
 |--------|-----------|
 | Wildcard Subdomains | Dynamische Validierung: Origin muss `*.baseDomain` oder in `allowedOrigins` sein |
-| Platform Domain | `https://festmanager.org` explizit erlaubt |
-| Mandanten-Subdomains | `https://{subdomain}.festmanager.org` per Callback |
+| Platform Domain | `https://example.org` explizit erlaubt |
+| Mandanten-Subdomains | `https://{subdomain}.example.org` per Callback |
 | Custom Domains (Phase 3) | Pro Mandant in `tenant.customDomains` registriert |
 | Credentials | `credentials: true` – erfordert explizite Origin (kein `*`) |
 | Preflight | Cache-Control für OPTIONS-Responses |
@@ -101,9 +101,9 @@ Socket.IO CORS folgt derselben Policy.
 |--------|-------|-----------|
 | `fm_tenant_token` | Mandanten-Subdomain | `HttpOnly`, `Secure`, `SameSite=Lax` |
 | `fm_platform_token` | Basis-Domain `/platform` | `HttpOnly`, `Secure`, `SameSite=Strict` |
-| Refresh Token | Mandanten-Scope | `Path=/api/auth`, nicht `Domain=.festmanager.org` (Cross-Tenant-Risiko) |
+| Refresh Token | Mandanten-Scope | `Path=/api/auth`, nicht `Domain=.example.org` (Cross-Tenant-Risiko) |
 
-**Entscheidung:** Kein Cookie mit `Domain=.festmanager.org` für Auth-Tokens – verhindert Cross-Tenant-Session-Leak. Jeder Mandant hat isolierte Session auf seiner Subdomain.
+**Entscheidung:** Kein Cookie mit `Domain=.example.org` für Auth-Tokens – verhindert Cross-Tenant-Session-Leak. Jeder Mandant hat isolierte Session auf seiner Subdomain.
 
 ### CSRF
 
@@ -121,7 +121,7 @@ Socket.IO CORS folgt derselben Policy.
 | **Sessions** | `UserSession` erhält `tenantId` und `scope` |
 | **JWT** | Claims: `{ sub, tenantId?, scope, role }` – `tenantId` nur bei `scope=tenant` |
 | **Refresh Tokens** | Mandanten-gebunden; Rotation bei Refresh |
-| **Hostwechsel** | Login auf `asv-libelle.festmanager.org` gilt nicht auf `other.festmanager.org` |
+| **Hostwechsel** | Login auf `asv-libelle.example.org` gilt nicht auf `other.example.org` |
 | **Subdomains** | Kein SSO über Subdomains ohne explizites OAuth (Phase 3) |
 | **Plattform-Login** | Separater JWT-Scope; eigene Session-Tabelle optional |
 
@@ -161,7 +161,7 @@ Bestehende `rateLimit.ts` wird um `tenantId` aus `TenantContext` erweitert.
 
 | Alternative | Bewertung |
 |-------------|-----------|
-| `Domain=.festmanager.org` Cookie | Einfaches SSO, aber Cross-Tenant-Leak → abgelehnt |
+| `Domain=.example.org` Cookie | Einfaches SSO, aber Cross-Tenant-Leak → abgelehnt |
 | `tenant_id` im JWT allein | Öffentliche Routen ohne JWT nicht abgedeckt → nur ergänzend |
 | CORS `*` | Mit Credentials unmöglich; unsicher → abgelehnt |
 | Nur Application-Level-Isolation | Ausreichend für Phase 1; RLS optional Phase 3 |

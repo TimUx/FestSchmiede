@@ -46,7 +46,7 @@ Bitte melden Sie Sicherheitslücken **nicht** öffentlich als Issue.
 | `JWT_SECRET` | min. 32 Zeichen, keine Defaults |
 | `APP_ENCRYPTION_KEY` | min. 32 Zeichen, keine Defaults |
 | `PLATFORM_ADMIN_PASSWORD` | min. 16 Zeichen, keine Defaults |
-| `POSTGRES_PASSWORD` | Stark, nicht `festmanager` |
+| `POSTGRES_PASSWORD` | Stark, nicht `festschmiede` |
 | `TURNSTILE_SECRET_KEY` | Empfohlen für öffentliche Bestellungen |
 
 `assertProductionSecrets()` blockiert Start ohne gültige JWT/Encryption/Platform-Admin-Passwörter.

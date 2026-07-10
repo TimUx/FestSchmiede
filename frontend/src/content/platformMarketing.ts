@@ -27,24 +27,24 @@ export const TARGET_GROUPS = [
 
 export const FAQ_ITEMS = [
   {
-    q: 'Was kostet FestManager?',
-    a: 'FestManager ist Open Source. Der Betrieb kann selbst gehostet oder über einen Plattform-Mandanten erfolgen. Für gemeinnützige Organisationen kann ein kostenloser Mandant beantragt werden.',
+    q: 'Was kostet FestSchmiede?',
+    a: 'FestSchmiede ist Open Source. Der Betrieb kann selbst gehostet oder über einen Plattform-Mandanten erfolgen. Für gemeinnützige Organisationen kann ein kostenloser Mandant beantragt werden.',
   },
   {
-    q: 'Ist FestManager Open Source?',
+    q: 'Ist FestSchmiede Open Source?',
     a: 'Ja. Der Quellcode ist auf GitHub verfügbar. Sie können mitlesen, Verbesserungen vorschlagen und selbst hosten.',
   },
   {
     q: 'Wer darf einen Mandanten beantragen?',
-    a: 'Vereine, gemeinnützige Organisationen, Schulen, Hilfsorganisationen und ähnliche Gruppen, die FestManager für ihre Veranstaltungen nutzen möchten.',
+    a: 'Vereine, gemeinnützige Organisationen, Schulen, Hilfsorganisationen und ähnliche Gruppen, die FestSchmiede für ihre Veranstaltungen nutzen möchten.',
   },
   {
-    q: 'Kann ich FestManager selbst hosten?',
+    q: 'Kann ich FestSchmiede selbst hosten?',
     a: 'Ja. Die Plattform kann eigenständig betrieben werden. Dokumentation und Quellcode unterstützen Sie beim Setup.',
   },
   {
     q: 'Welche Zahlungsanbieter werden unterstützt?',
-    a: 'FestManager unterstützt modulare Zahlungsintegrationen. Konkrete Anbieter hängen von der Mandanten-Konfiguration ab.',
+    a: 'FestSchmiede unterstützt modulare Zahlungsintegrationen. Konkrete Anbieter hängen von der Mandanten-Konfiguration ab.',
   },
   {
     q: 'Brauche ich technisches Know-how?',
@@ -53,7 +53,7 @@ export const FAQ_ITEMS = [
 ];
 
 export const SCREENSHOTS = [
-  { src: '/screenshots/06-dashboard.png', title: 'Dashboard', alt: 'FestManager Dashboard mit Statistiken' },
+  { src: '/screenshots/06-dashboard.png', title: 'Dashboard', alt: 'FestSchmiede Dashboard mit Statistiken' },
   { src: '/screenshots/09-bestellung.png', title: 'Bestellung', alt: 'Öffentliche Bestellseite' },
   { src: '/screenshots/07-kuechenansicht-tablet.png', title: 'Küche', alt: 'Küchenansicht auf dem Tablet' },
   { src: '/screenshots/21-payment-admin.png', title: 'Zahlungen', alt: 'Zahlungseinstellungen in der Administration' },

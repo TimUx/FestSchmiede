@@ -10,10 +10,10 @@ export function PlatformOpenSourcePage() {
   return (
     <PlatformPublicLayout>
       <BrandingHead titleSuffix="Open Source" path="/open-source" />
-      <MarketingSection title="Open Source" subtitle="FestManager lebt von Transparenz, Gemeinschaft und offenem Quellcode.">
+      <MarketingSection title="Open Source" subtitle="FestSchmiede lebt von Transparenz, Gemeinschaft und offenem Quellcode.">
         <Stack spacing={3} sx={{ maxWidth: 760 }}>
           <Typography>
-            Als Open-Source-Projekt ist FestManager für alle einsehbar. Das schafft Vertrauen,
+            Als Open-Source-Projekt ist FestSchmiede für alle einsehbar. Das schafft Vertrauen,
             ermöglicht Anpassungen und verhindert Abhängigkeit von einzelnen Anbietern.
           </Typography>
           <Typography>
@@ -21,7 +21,7 @@ export function PlatformOpenSourcePage() {
             Organisationen wissen, was die Plattform tut – und was nicht.
           </Typography>
           <Typography>
-            <strong>Community:</strong> Feedback, Ideen und Beiträge aus der Praxis verbessern FestManager
+            <strong>Community:</strong> Feedback, Ideen und Beiträge aus der Praxis verbessern FestSchmiede
             kontinuierlich. Mitarbeit ist ausdrücklich willkommen.
           </Typography>
           <Typography>
@@ -29,7 +29,7 @@ export function PlatformOpenSourcePage() {
           </Typography>
           <Button
             component="a"
-            href={platform.githubUrl ?? 'https://github.com/TimUx/FestManager'}
+            href={platform.githubUrl ?? 'https://github.com/TimUx/FestSchmiede'}
             target="_blank"
             rel="noopener noreferrer"
             variant="contained"

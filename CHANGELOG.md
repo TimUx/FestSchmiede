@@ -1,9 +1,23 @@
 # Changelog
 
-Alle wesentlichen Aenderungen an **FestManager** werden hier dokumentiert.
+Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
-## 2.0.0 - 2026-07-09
+## 2.0.1 - 2026-07-10
+
+### Geaendert (Rebranding)
+
+- Produktname von **FestManager** auf **FestSchmiede** vereinheitlicht (UI, Dokumentation, Benachrichtigungen, OpenAPI, Docker-Images, Paketnamen).
+- Repository: `TimUx/FestSchmiede`, Container-Images: `ghcr.io/timux/festschmiede/*`.
+- Passend zur bestehenden App **KochSchmiede** in der Produktfamilie „Schmiede“.
+
+### Hinweis
+
+- Keine funktionalen Breaking Changes; APIs, Datenbankschema und Konfigurationspfade bleiben kompatibel.
+- Nach dem Update ggf. `GHCR_IMAGE_PREFIX=ghcr.io/timux/festschmiede` in der `.env` setzen.
+
+---
+
 
 ### Neu — Multi-Tenant-Plattform
 
@@ -173,14 +187,14 @@ Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1
 
 ## 1.0.0 - 2026-07-08
 
-Erste stabile Version der FestManager-Plattform.
+Erste stabile Version der FestSchmiede-Plattform.
 
 ### Neu
 
 - **Oeffentlicher Bereich:** touch-optimierte Bestellseite, Vorausbestellungen, Kundenstatus per WebSocket, Kontaktseite, Abholboard, Bot-Schutz (Honeypot, Zeitpruefung, optional Turnstile).
 - **Mitarbeiterbereich:** Dashboard mit Live-Statistiken, Kuechenansicht, Abholung, Bestellung vor Ort, Bestelluebersicht.
 - **Administration:** Verein & Kontakt, Benutzerverwaltung, Veranstaltungs- und Speisenverwaltung mit Bild-Upload.
-- **Betrieb:** Docker Compose, PostgreSQL, PWA, automatischer Build der Images in `ghcr.io/timux/festmanager/`.
+- **Betrieb:** Docker Compose, PostgreSQL, PWA, automatischer Build der Images in `ghcr.io/timux/festschmiede/`.
 
 ### Dokumentation
 

@@ -1,11 +1,11 @@
-# Independent Architecture & Product Review — FestManager Platform
+# Independent Architecture & Product Review — FestSchmiede Platform
 
 Date: 2026-07-09  
 Reviewer stance: external architecture, product, UX, security, DevOps, QA, and open-source audit before first public release.
 
 ## Executive Summary
 
-FestManager is a promising single-tenant modular monolith for association event food ordering, but it is not yet ready for a low-risk public 1.0 release. The core product idea is strong: public no-login ordering, staff kitchen and pickup flows, admin configuration, Docker deployment, screenshots, and a serious QA pipeline. The repository also shows unusual discipline for a young open-source project: architecture decision records, module lifecycle documentation, tests, CI, security scripts, and release validation exist.
+FestSchmiede is a promising single-tenant modular monolith for association event food ordering, but it is not yet ready for a low-risk public 1.0 release. The core product idea is strong: public no-login ordering, staff kitchen and pickup flows, admin configuration, Docker deployment, screenshots, and a serious QA pipeline. The repository also shows unusual discipline for a young open-source project: architecture decision records, module lifecycle documentation, tests, CI, security scripts, and release validation exist.
 
 The main problem is strategic over-engineering. The architecture has a platform kernel, module registry, service container, extension points, metadata registries, settings platform, permissions, lifecycle states, migrations, health checks, admin metadata, and placeholder modules. This is a lot of moving parts for the first public version of software aimed at volunteer-run clubs. Some of that complexity is valid internally, but it is starting to leak into admin concepts such as module installation, activation, configuration, health, provider setup, and advanced settings. The guiding product principle should be: if a club volunteer cannot understand it under event-day pressure, it should not be visible in the primary UI.
 

@@ -1,6 +1,6 @@
-# Deployment Guide – FestManager Multi-Tenant
+# Deployment Guide – FestSchmiede Multi-Tenant
 
-Anleitung für den produktiven Betrieb der mandantenfähigen FestManager-Plattform.
+Anleitung für den produktiven Betrieb der mandantenfähigen FestSchmiede-Plattform.
 
 > Siehe auch: [DOCKER.md](DOCKER.md), [ADR-027](architecture/027-multi-tenant-deployment.md), [Phase-6-Report](architecture/PHASE_6_COMPLETION_REPORT.md)
 
@@ -50,7 +50,7 @@ TRUSTED_PROXY_HOPS=2
 LOG_FORMAT=json
 ```
 
-> **Hinweis:** In älteren Dokumenten und ADRs erscheint `festmanager.org` als **Beispieldomain**. Die Plattform verwendet ausschließlich die konfigurierte `PLATFORM_DOMAIN`.
+> **Hinweis:** In älteren Dokumenten und ADRs erscheint `example.org` als **Beispieldomain**. Die Plattform verwendet ausschließlich die konfigurierte `PLATFORM_DOMAIN`.
 
 Start:
 
@@ -77,9 +77,9 @@ Entwicklung: `CORS_ORIGIN=http://localhost:5173` als Fallback.
 ## Docker Swarm
 
 ```bash
-echo "$JWT_SECRET" | docker secret create festmanager_jwt_secret -
-echo "$POSTGRES_PASSWORD" | docker secret create festmanager_db_password -
-docker stack deploy -c docker-stack.yml festmanager
+echo "$JWT_SECRET" | docker secret create festschmiede_jwt_secret -
+echo "$POSTGRES_PASSWORD" | docker secret create festschmiede_db_password -
+docker stack deploy -c docker-stack.yml festschmiede
 ```
 
 ## Health Checks

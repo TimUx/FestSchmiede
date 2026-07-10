@@ -9,7 +9,7 @@
 
 ## Zusammenfassung
 
-Das FestManager-Frontend ist vollständig mandantenfähig. Subdomain- und URL-Prefix-Routing werden serverseitig aufgelöst und über `GET /api/public/routing-config` an das Frontend übergeben. Plattform- und Mandantenbereiche sind getrennt; Branding, Navigation und Auth arbeiten scope-bewusst.
+Das FestSchmiede-Frontend ist vollständig mandantenfähig. Subdomain- und URL-Prefix-Routing werden serverseitig aufgelöst und über `GET /api/public/routing-config` an das Frontend übergeben. Plattform- und Mandantenbereiche sind getrennt; Branding, Navigation und Auth arbeiten scope-bewusst.
 
 ---
 
@@ -48,10 +48,10 @@ PlatformRoutes         TenantRoutes
 
 | URL | Ergebnis |
 |-----|----------|
-| `asv-libelle.festmanager.org/` | Mandant: Bestellseite |
-| `festmanager.org/asv-libelle/` | Mandant (Prefix): Bestellseite |
-| `festmanager.org/` | Plattform: Landing |
-| `festmanager.org/platform` | Plattform-Admin |
+| `asv-libelle.example.org/` | Mandant: Bestellseite |
+| `example.org/asv-libelle/` | Mandant (Prefix): Bestellseite |
+| `example.org/` | Plattform: Landing |
+| `example.org/platform` | Plattform-Admin |
 | Unbekannter Mandant | TenantNotFoundPage |
 
 ---
@@ -117,7 +117,7 @@ Plattform- und Mandanten-Branding sind strikt getrennt. `BrandingHead` setzt doc
 Phase 6 kann Produktions-Deployment fokussieren:
 
 - Traefik Wildcard-TLS
-- DNS `*.festmanager.org`
+- DNS `*.example.org`
 - Staging mit echten Subdomains
 - E2E-Regression in CI
 

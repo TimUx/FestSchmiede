@@ -12,7 +12,7 @@
 
 ## Zusammenfassung der Architektur
 
-FestManager wird von einer Single-Tenant-Anwendung (ein Veranstalter pro Installation) zu einer **mandantenfähigen Plattform** weiterentwickelt:
+FestSchmiede wird von einer Single-Tenant-Anwendung (ein Veranstalter pro Installation) zu einer **mandantenfähigen Plattform** weiterentwickelt:
 
 ```
 Eine Installation → beliebig viele Veranstalter → beliebig viele Veranstaltungen → beliebig viele Benutzer
@@ -28,7 +28,7 @@ Phase 0 definiert ausschließlich das Zielbild und die Architekturentscheidungen
 | `PlatformContext` | Plattformweite Konfiguration ohne Mandantendaten |
 | `TenantResolver` | Einzige Stelle für Host-/Subdomain-/Prefix-Auflösung |
 | Shared Database + `tenant_id` | Datenisolation in einer PostgreSQL-Instanz |
-| Plattform-Administration | Getrennte Verwaltung unter `festmanager.org/platform` |
+| Plattform-Administration | Getrennte Verwaltung unter `example.org/platform` |
 | `TenantProvider` (Frontend) | Ersetzt `ClubContext`; kein Host-Parsing in React |
 
 ### ADRs erstellt
@@ -53,10 +53,10 @@ Phase 0 definiert ausschließlich das Zielbild und die Architekturentscheidungen
 | **Shared Database, Shared Schema** | Einfacher Betrieb, ein Backup, eine Migration – ausreichend für Vereins-SaaS |
 | **`tenant_id` auf allen Mandantentabellen** | Application-Level-Isolation; optional RLS in Phase 3 |
 | **Kein `tenant_id` in API-Requests** | Schutz vor Cross-Tenant-Angriffen |
-| **Subdomain primär, URL-Prefix optional** | Beste UX (`asv-libelle.festmanager.org`); Prefix für Nutzer ohne DNS |
+| **Subdomain primär, URL-Prefix optional** | Beste UX (`asv-libelle.example.org`); Prefix für Nutzer ohne DNS |
 | **Getrennte Plattform-Administration** | Klare Verantwortlichkeiten; keine Vermischung mit Mandanten-Admin |
 | **TenantResolver als einzige Auflösungsstelle** | Wartbarkeit; Module bleiben mandantenagnostisch |
-| **Kein `Domain=.festmanager.org` Auth-Cookie** | Verhindert Cross-Tenant-Session-Leak |
+| **Kein `Domain=.example.org` Auth-Cookie** | Verhindert Cross-Tenant-Session-Leak |
 | **Traefik mit Wildcard-TLS** | Docker-native; Let's Encrypt für `*.domain` |
 | **Standard-Mandant bei Migration** | Kein Datenverlust; Abwärtskompatibilität |
 | **UI-Begriff „Veranstalter“** | Keine Verwirrung für Endnutzer; „Mandant“ nur intern |

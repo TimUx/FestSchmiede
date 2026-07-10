@@ -2,7 +2,7 @@
 
 ## Ziel
 
-Die Plattform darf an keiner Stelle fest auf `festmanager.org` implementiert sein. Alle Domains sind zentral über ENV/Docker konfigurierbar.
+Die Plattform darf an keiner Stelle fest auf `example.org` implementiert sein. Alle Domains sind zentral über ENV/Docker konfigurierbar.
 
 ## Neue Domain-Architektur
 
@@ -34,7 +34,7 @@ Die Plattform darf an keiner Stelle fest auf `festmanager.org` implementiert sei
 
 | Bereich | Änderung |
 |---------|----------|
-| `backend/src/config/index.ts` | Default `localhost` statt `festmanager.org` |
+| `backend/src/config/index.ts` | Default `localhost` statt `example.org` |
 | `DEFAULT_PLATFORM_CONTEXT` | `localhost` / `*.localhost` |
 | `TenantResolver` | WWW-Domain als Plattform-Host |
 | `tenantController` | `platformUrl`, `wwwUrl`, `apiUrl`, `domains` in Routing-API |
@@ -64,7 +64,7 @@ Die Plattform darf an keiner Stelle fest auf `festmanager.org` implementiert sei
 
 Aktualisiert: `README.md`, `DEPLOYMENT.md`, `DOCKER.md`, `ADMIN_GUIDE.md`, `DEVELOPER_GUIDE.md`
 
-Hinweis: `festmanager.org` in älteren ADRs/Phase-Reports ist ein **Beispiel-Platzhalter**.
+Hinweis: `example.org` in älteren ADRs/Phase-Reports ist ein **Beispiel-Platzhalter**.
 
 ## Tests
 

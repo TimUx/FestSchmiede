@@ -1,7 +1,7 @@
 /**
  * Consent-Management-Vorbereitung.
  *
- * Aktuell verwendet FestManager ausschließlich technisch notwendige Cookies
+ * Aktuell verwendet FestSchmiede ausschließlich technisch notwendige Cookies
  * (Session/Auth). Ein Cookie-Banner ist daher nicht erforderlich.
  *
  * Sollten künftig Analyse- oder Marketingdienste integriert werden,

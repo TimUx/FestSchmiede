@@ -8,14 +8,14 @@
 services:
   traefik:
     image: traefik:v3.3
-    container_name: festmanager-traefik
+    container_name: festschmiede-traefik
     restart: unless-stopped
     command:
       - --api.dashboard=false
       - --ping=true
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
-      - --providers.docker.network=festmanager_public
+      - --providers.docker.network=festschmiede_public
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
@@ -81,20 +81,20 @@ services:
       retries: 5
     labels:
       - traefik.enable=true
-      - traefik.docker.network=festmanager_public
-      - traefik.http.routers.festmanager.rule=Host(`${PLATFORM_DOMAIN:-${PLATFORM_BASE_DOMAIN:-localhost}}`) || HostRegexp(`^[a-z0-9-]+\\.${PLATFORM_DOMAIN:-${PLATFORM_BASE_DOMAIN:-localhost}}$$`)
-      - traefik.http.routers.festmanager.entrypoints=websecure
-      - traefik.http.routers.festmanager.tls.certresolver=letsencrypt
-      - traefik.http.routers.festmanager.tls.domains[0].main=${PLATFORM_DOMAIN:-${PLATFORM_BASE_DOMAIN:-localhost}}
-      - traefik.http.routers.festmanager.tls.domains[0].sans=*.${PLATFORM_DOMAIN:-${PLATFORM_BASE_DOMAIN:-localhost}}
-      - traefik.http.services.festmanager.loadbalancer.server.port=80
-      - traefik.http.middlewares.festmanager-headers.headers.sslredirect=true
-      - traefik.http.middlewares.festmanager-headers.headers.stsSeconds=31536000
-      - traefik.http.routers.festmanager.middlewares=festmanager-headers
+      - traefik.docker.network=festschmiede_public
+      - traefik.http.routers.festschmiede.rule=Host(`${PLATFORM_DOMAIN:-${PLATFORM_BASE_DOMAIN:-localhost}}`) || HostRegexp(`^[a-z0-9-]+\\.${PLATFORM_DOMAIN:-${PLATFORM_BASE_DOMAIN:-localhost}}$$`)
+      - traefik.http.routers.festschmiede.entrypoints=websecure
+      - traefik.http.routers.festschmiede.tls.certresolver=letsencrypt
+      - traefik.http.routers.festschmiede.tls.domains[0].main=${PLATFORM_DOMAIN:-${PLATFORM_BASE_DOMAIN:-localhost}}
+      - traefik.http.routers.festschmiede.tls.domains[0].sans=*.${PLATFORM_DOMAIN:-${PLATFORM_BASE_DOMAIN:-localhost}}
+      - traefik.http.services.festschmiede.loadbalancer.server.port=80
+      - traefik.http.middlewares.festschmiede-headers.headers.sslredirect=true
+      - traefik.http.middlewares.festschmiede-headers.headers.stsSeconds=31536000
+      - traefik.http.routers.festschmiede.middlewares=festschmiede-headers
 
   redis:
     image: redis:7-alpine
-    container_name: festmanager-redis
+    container_name: festschmiede-redis
     restart: unless-stopped
     profiles:
       - redis
@@ -111,9 +111,9 @@ services:
 
 networks:
   public:
-    name: festmanager_public
+    name: festschmiede_public
   internal:
-    name: festmanager_internal
+    name: festschmiede_internal
     internal: true
 
 volumes:

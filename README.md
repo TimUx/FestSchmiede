@@ -1,8 +1,8 @@
-# FestManager
+# FestSchmiede
 
 Moderne Open-Source-Plattform für Verkauf, Bestellung und Organisation von Veranstaltungen – mit Vorausbestellungen, Branding des Veranstalters, Echtzeit-Updates und PWA-Unterstützung.
 
-> **Version 2.0.0** — FestManager ist eine **mandantenfähige Multi-Tenant-Plattform**. Mehrere Veranstalter (Mandanten) teilen sich eine Installation; jeder Mandant hat eigenes Branding, eigene Daten und optionale Module. Plattformadministration unter `/platform`. Architektur: [Multi-Tenant ADRs](docs/architecture/README.md#version-20--multi-tenant).
+> **Version 2.0.0** — FestSchmiede ist eine **mandantenfähige Multi-Tenant-Plattform**. Mehrere Veranstalter (Mandanten) teilen sich eine Installation; jeder Mandant hat eigenes Branding, eigene Daten und optionale Module. Plattformadministration unter `/platform`. Architektur: [Multi-Tenant ADRs](docs/architecture/README.md#version-20--multi-tenant).
 
 Ursprünglich für Vereine entwickelt, geeignet für Feuerwehren, Hilfsorganisationen, Sport- und Musikvereine, Schulen, Firmen, Kommunen, Foodtrucks und private Feste.
 
@@ -136,8 +136,8 @@ Technische Details: [Modul-Architektur](docs/MODULE_ARCHITECTURE.md) · Admin-An
 ## Schnellstart
 
 ```bash
-git clone https://github.com/TimUx/FestManager.git
-cd FestManager
+git clone https://github.com/TimUx/FestSchmiede.git
+cd FestSchmiede
 cp .env.example .env
 docker compose pull
 docker compose up -d
@@ -220,8 +220,8 @@ React · TypeScript · Vite · Material UI · Node.js · Express · Prisma · Po
 
 Fertige Images werden per GitHub Actions in die GitHub Container Registry veröffentlicht:
 
-- `ghcr.io/timux/festmanager/backend`
-- `ghcr.io/timux/festmanager/frontend`
+- `ghcr.io/timux/festschmiede/backend`
+- `ghcr.io/timux/festschmiede/frontend`
 
 Ausführung: manuell über Actions oder automatisch beim Erstellen eines Releases.
 

@@ -10,7 +10,7 @@
 
 ## Problem
 
-FestManager wird heute als **Single-Tenant-Anwendung** betrieben: Eine Docker-Installation entspricht genau einem Veranstalter. `ClubSettings` mit fester ID `default`, globale Benutzer-Tabelle und fehlende Mandantentrennung verhindern den Betrieb als zentrale Plattform für beliebig viele Veranstalter.
+FestSchmiede wird heute als **Single-Tenant-Anwendung** betrieben: Eine Docker-Installation entspricht genau einem Veranstalter. `ClubSettings` mit fester ID `default`, globale Benutzer-Tabelle und fehlende Mandantentrennung verhindern den Betrieb als zentrale Plattform für beliebig viele Veranstalter.
 
 Mehrere Vereine auf einer Instanz würden ohne Architekturänderung zu Datenvermischung, Sicherheitslücken und unübersichtlicher Verwaltung führen.
 
@@ -34,7 +34,7 @@ Phase 0 definiert das Zielbild und die Architektur. **Keine produktiven Multi-Te
 
 ## Entscheidung
 
-FestManager 2.0 wird eine **mandantenfähige Plattform** mit folgenden zentralen Bausteinen:
+FestSchmiede 2.0 wird eine **mandantenfähige Plattform** mit folgenden zentralen Bausteinen:
 
 | Baustein | Verantwortung | ADR |
 |----------|---------------|-----|
@@ -52,13 +52,13 @@ FestManager 2.0 wird eine **mandantenfähige Plattform** mit folgenden zentralen
 ```
                     ┌─────────────────────────────────────────┐
                     │           Reverse Proxy (Traefik)        │
-                    │  *.festmanager.org  |  festmanager.org   │
+                    │  *.example.org  |  example.org   │
                     └──────────────┬──────────────────────────┘
                                    │
               ┌────────────────────┼────────────────────┐
               │                    │                    │
      Plattform-Routing      TenantResolver        Forwarded Headers
-     (festmanager.org)     (Subdomain/Prefix)     (Host, X-Forwarded-*)
+     (example.org)     (Subdomain/Prefix)     (Host, X-Forwarded-*)
               │                    │                    │
               └────────────────────┼────────────────────┘
                                    ▼

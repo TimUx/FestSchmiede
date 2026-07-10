@@ -11,7 +11,7 @@ export function PlatformContactPage() {
   return (
     <PlatformPublicLayout>
       <BrandingHead titleSuffix="Kontakt" path="/kontakt" />
-      <MarketingSection title="Kontakt" subtitle="So erreichen Sie die FestManager-Plattform.">
+      <MarketingSection title="Kontakt" subtitle="So erreichen Sie die FestSchmiede-Plattform.">
         {hasContact ? (
           <Stack spacing={2} sx={{ maxWidth: 560 }}>
             {platform.contactName && <Typography><strong>Ansprechpartner:</strong> {platform.contactName}</Typography>}

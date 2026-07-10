@@ -1,6 +1,6 @@
 # Modul-Architektur – Entwicklerdokumentation
 
-Technische Dokumentation für das Feature-Modulsystem und die Modulverwaltung der FestManager-Plattform.
+Technische Dokumentation für das Feature-Modulsystem und die Modulverwaltung der FestSchmiede-Plattform.
 
 > **Version 2.0:** Module müssen künftig ausschließlich über `TenantContext` arbeiten. Kein Hostname-Parsing, keine `tenant_id`-Requestparameter. Modul-Tabellen und `InstalledModule` werden mandantenscharf. Analyse der erforderlichen Änderungen: [ADR-020](architecture/020-multi-tenant-platform.md#modulanalyse-erforderliche-änderungen).
 
@@ -58,7 +58,7 @@ Bei jedem Image-Upgrade erhält jeder Verein die neuesten Modulversionen. Der `M
 ## Verzeichnisstruktur
 
 ```
-FestManager/
+FestSchmiede/
 ├── backend/
 │   ├── modules/              # Offizielle Module (→ /app/modules im Container)
 │   │   ├── payment/          # Online-Zahlung (vollständig)
@@ -159,8 +159,8 @@ Jedes Modul in `/modules/{id}/module.json`:
   "name": "Online-Zahlung",
   "description": "Online-Zahlungen über verschiedene Anbieter",
   "version": "1.0.0",
-  "author": "FestManager",
-  "homepage": "https://github.com/TimUx/FestManager",
+  "author": "FestSchmiede",
+  "homepage": "https://github.com/TimUx/FestSchmiede",
   "license": "MIT",
   "entry": "index",
   "dependencies": {

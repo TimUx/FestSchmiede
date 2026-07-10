@@ -54,7 +54,7 @@ export async function migrateNotificationTenantSchema(): Promise<void> {
     { key: 'platform.smtp.user', value: '' },
     { key: 'platform.smtp.pass', value: '', encrypted: true },
     { key: 'platform.smtp.from', value: 'noreply@localhost' },
-    { key: 'platform.smtp.senderName', value: 'FestManager' },
+    { key: 'platform.smtp.senderName', value: 'FestSchmiede' },
     { key: 'platform.smtp.replyTo', value: '' },
     { key: 'platform.smtp.secure', value: false },
     { key: 'platform.smtp.useTls', value: true },

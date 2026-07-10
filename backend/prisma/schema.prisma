@@ -317,7 +317,7 @@ model ClubSettings {
   id                          String   @id @default("default")
   tenantId                    String?  @unique @map("tenant_id")
   tenant                      Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  clubName                    String   @default("FestManager")
+  clubName                    String   @default("FestSchmiede")
   description                 String?
   contactName                 String?
   email                       String?

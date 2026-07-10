@@ -11,8 +11,8 @@ function createResolver(trustProxyHops = 0) {
 
   const platformContext = {
     current: () => ({
-      baseDomain: 'festmanager.test',
-      allowedDomains: ['festmanager.test'],
+      baseDomain: 'festschmiede.test',
+      allowedDomains: ['festschmiede.test'],
       pathPrefixRoutingEnabled: false,
     }),
   } as never;
@@ -36,15 +36,15 @@ function fakeReq(host: string, forwardedHost?: string): Request {
 describe('TenantResolver security', () => {
   it('ignores spoofed X-Forwarded-Host without trusted proxy', () => {
     const resolver = createResolver(0);
-    expect(resolver.extractHost(fakeReq('festmanager.test', 'evil-tenant.festmanager.test'))).toBe(
-      'festmanager.test'
+    expect(resolver.extractHost(fakeReq('festschmiede.test', 'evil-tenant.festschmiede.test'))).toBe(
+      'festschmiede.test'
     );
   });
 
   it('uses X-Forwarded-Host when trust proxy is enabled', () => {
     const resolver = createResolver(1);
-    expect(resolver.extractHost(fakeReq('localhost', 'tenant.festmanager.test'))).toBe(
-      'tenant.festmanager.test'
+    expect(resolver.extractHost(fakeReq('localhost', 'tenant.festschmiede.test'))).toBe(
+      'tenant.festschmiede.test'
     );
   });
 

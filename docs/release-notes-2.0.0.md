@@ -1,4 +1,4 @@
-# Release Notes — FestManager 2.0.0
+# Release Notes — FestSchmiede 2.0.0
 
 **Datum:** 2026-07-09  
 **Codename:** Multi-Tenant Platform

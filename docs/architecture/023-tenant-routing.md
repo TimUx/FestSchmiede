@@ -43,16 +43,16 @@ Der Resolver ist die **einzige** Stelle, die folgende Request-Eigenschaften ausw
 
 | Priorität | Variante | Beispiel | TenantContext |
 |-----------|----------|----------|---------------|
-| 1 | **Subdomain** (primär) | `https://asv-libelle.festmanager.org` | Ja (`asv-libelle`) |
-| 2 | **URL-Prefix** (optional) | `https://festmanager.org/asv-libelle` | Ja (`asv-libelle`) |
+| 1 | **Subdomain** (primär) | `https://asv-libelle.example.org` | Ja (`asv-libelle`) |
+| 2 | **URL-Prefix** (optional) | `https://example.org/asv-libelle` | Ja (`asv-libelle`) |
 | 3 | **Custom Domain** (Phase 3) | `https://bestellung.feuerwehr-xy.de` | Ja (Mapping-Tabelle) |
-| – | **Plattform** | `https://festmanager.org` | Nein |
-| – | **Plattform-Admin** | `https://festmanager.org/platform` | Nein |
+| – | **Plattform** | `https://example.org` | Nein |
+| – | **Plattform-Admin** | `https://example.org/platform` | Nein |
 
 ### Subdomain-Auflösung (primär)
 
 ```
-Request: Host = asv-libelle.festmanager.org
+Request: Host = asv-libelle.example.org
   1. Extrahiere Subdomain: "asv-libelle"
   2. Validiere gegen PlatformSettings.baseDomain (Suffix-Match)
   3. Lookup tenants.subdomain = "asv-libelle" AND status = ACTIVE
@@ -68,7 +68,7 @@ Request: Host = asv-libelle.festmanager.org
 Aktivierbar über `PlatformSettings.pathPrefixRoutingEnabled`.
 
 ```
-Request: Host = festmanager.org, Path = /asv-libelle/bestellung
+Request: Host = example.org, Path = /asv-libelle/bestellung
   1. Erster Pfadsegment = "asv-libelle"
   2. Lookup tenants.slug = "asv-libelle"
   3. Strip Prefix für Frontend-Router: /bestellung
@@ -124,23 +124,23 @@ Der Resolver validiert den Host **vor** dem Lookup:
 
 ```
 Mandant (Subdomain):
-  asv-libelle.festmanager.org/           → Bestellseite
-  asv-libelle.festmanager.org/admin      → Mandanten-Admin
+  asv-libelle.example.org/           → Bestellseite
+  asv-libelle.example.org/admin      → Mandanten-Admin
 
 Mandant (Prefix, optional):
-  festmanager.org/asv-libelle/           → Bestellseite
-  festmanager.org/asv-libelle/admin      → Mandanten-Admin
+  example.org/asv-libelle/           → Bestellseite
+  example.org/asv-libelle/admin      → Mandanten-Admin
 
 Plattform:
-  festmanager.org/                       → Landing
-  festmanager.org/platform               → Plattform-Admin
+  example.org/                       → Landing
+  example.org/platform               → Plattform-Admin
 ```
 
 ### WebSocket-Routing
 
 Socket.IO-Verbindungen nutzen denselben Host wie HTTP:
 
-- Subdomain: `asv-libelle.festmanager.org` → Mandanten-Rooms
+- Subdomain: `asv-libelle.example.org` → Mandanten-Rooms
 - Namespace-Empfehlung: `/tenant` mit Auth; Rooms `tenant:{id}:orders`
 - Plattform-Monitoring (optional): separater Namespace `/platform`
 
@@ -156,7 +156,7 @@ Socket.IO-Verbindungen nutzen denselben Host wie HTTP:
 ## Auswirkungen
 
 - Traefik/nginx muss Wildcard-Subdomain und Forwarded Headers konfigurieren (ADR-027)
-- DNS: `*.festmanager.org` → Plattform-IP
+- DNS: `*.example.org` → Plattform-IP
 - Frontend-Build bleibt einheitlich (kein Build pro Mandant)
 - API-Tests: Default-Mandant oder expliziter `Host`-Header in supertest
 - Bestehende Single-Tenant-URLs (`localhost:5173`) funktionieren über Default-Mandant-Fallback in Entwicklung

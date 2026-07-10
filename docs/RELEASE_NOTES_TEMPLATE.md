@@ -1,4 +1,4 @@
-# Release Notes — FestManager {{VERSION}}
+# Release Notes — FestSchmiede {{VERSION}}
 
 **Veröffentlichungsdatum:** {{DATE}}
 

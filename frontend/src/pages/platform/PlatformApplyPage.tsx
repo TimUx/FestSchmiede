@@ -112,7 +112,7 @@ export function PlatformApplyPage() {
   return (
     <PlatformPublicLayout>
       <BrandingHead titleSuffix="Mandant beantragen" path="/mandant-beantragen" />
-      <MarketingSection title="Mandant beantragen" subtitle="Stellen Sie eine Bewerbung für einen FestManager-Mandanten.">
+      <MarketingSection title="Mandant beantragen" subtitle="Stellen Sie eine Bewerbung für einen FestSchmiede-Mandanten.">
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         <Box component="form" onSubmit={handleSubmit}>
           <Grid container spacing={2}>
@@ -142,7 +142,7 @@ export function PlatformApplyPage() {
                 onChange={(e) => update('requestedSubdomain', e.target.value)}
               />
             </Grid>
-            <Grid size={12}><TextField required fullWidth multiline minRows={3} label="Warum wird FestManager benötigt?" value={form.reason} onChange={(e) => update('reason', e.target.value)} /></Grid>
+            <Grid size={12}><TextField required fullWidth multiline minRows={3} label="Warum wird FestSchmiede benötigt?" value={form.reason} onChange={(e) => update('reason', e.target.value)} /></Grid>
             <Grid size={12}><TextField required fullWidth multiline minRows={2} label="Welche Funktionen sollen genutzt werden?" value={form.desiredFeatures} onChange={(e) => update('desiredFeatures', e.target.value)} /></Grid>
             <Grid size={12}><TextField required fullWidth multiline minRows={2} label="Warum sollte ein kostenloser Mandant bereitgestellt werden?" value={form.freeTierJustification} onChange={(e) => update('freeTierJustification', e.target.value)} /></Grid>
             <Grid size={12}><TextField required fullWidth multiline minRows={2} label="Geplante Nutzung" value={form.plannedUsage} onChange={(e) => update('plannedUsage', e.target.value)} /></Grid>

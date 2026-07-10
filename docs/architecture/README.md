@@ -1,6 +1,6 @@
 # Architektur-Dokumentation
 
-Technische Architektur der FestManager-Plattform – Architecture Decision Records (ADRs), Projektanalyse und Migrationsplan.
+Technische Architektur der FestSchmiede-Plattform – Architecture Decision Records (ADRs), Projektanalyse und Migrationsplan.
 
 > **Stand:** Plattform **v2.0.0** — Multi-Tenant produktionsbereit (Phasen 0–10 abgeschlossen). v1.4.0 – Payment, Notifications, Legal, metadata-first Admin-UI.
 

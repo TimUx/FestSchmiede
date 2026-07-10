@@ -7,6 +7,6 @@ describe('routing types', () => {
     expect(DEFAULT_ROUTING.basename).toBe('');
     expect(DEFAULT_ROUTING.baseDomain).toBe('localhost');
     expect(DEFAULT_ROUTING.domains.source).toBe('infrastructure');
-    expect(DEFAULT_ROUTING.platformUrl).not.toContain('festmanager.org');
+    expect(DEFAULT_ROUTING.platformUrl).not.toContain('example.org');
   });
 });

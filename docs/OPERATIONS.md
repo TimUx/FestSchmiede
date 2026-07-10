@@ -1,4 +1,4 @@
-# Betriebshandbuch — FestManager
+# Betriebshandbuch — FestSchmiede
 
 Kurze Anleitung für ehrenamtliche Betreuer:innen. Kein Entwickler-Jargon — nur das, was vor, während und nach einer Veranstaltung wichtig ist.
 

@@ -88,8 +88,8 @@ Request-scoped Kontext für **ausschließlich plattformweite** Informationen. En
 ```typescript
 interface PlatformContextData {
   platformName: string;
-  baseDomain: string;           // z. B. festmanager.org
-  wildcardDomain: string;       // z. B. *.festmanager.org
+  baseDomain: string;           // z. B. example.org
+  wildcardDomain: string;       // z. B. *.example.org
   platformVersion: string;      // aus package.json / IMAGE_TAG
   maintenanceMode: boolean;
   maintenanceMessage?: string;
@@ -143,7 +143,7 @@ export function useTenant(): { tenant: TenantPublicData; loading: boolean; refre
 |-------|--------------|
 | Kein `window.location.hostname`-Parsing | Mandantendaten kommen vom Backend |
 | `useTenant()` statt `useClub()` | UI-Texte bleiben „Veranstalter“ |
-| `PlatformProvider` für Plattformseiten | Name, Logo, Wartungsmodus auf `festmanager.org` |
+| `PlatformProvider` für Plattformseiten | Name, Logo, Wartungsmodus auf `example.org` |
 
 **API-Aufruf:**
 
@@ -156,7 +156,7 @@ Das Frontend sendet **keinen** Mandanten-Identifier. Der Resolver bestimmt den M
 | Gültigkeit | Nur mandantenbezogene Requests | Alle Requests |
 | Datenquelle | `tenants`-Tabelle via Resolver | `platform_settings`-Tabelle |
 | Enthält Mandantendaten | Ja | Nein |
-| Beispiel-Routen | `asv-libelle.festmanager.org/*` | `festmanager.org`, `/api/platform/*` |
+| Beispiel-Routen | `asv-libelle.example.org/*` | `example.org`, `/api/platform/*` |
 | Fehler bei fehlendem Context | `TenantNotResolvedError` (404) | Nicht anwendbar (immer gesetzt) |
 
 ## Alternativen

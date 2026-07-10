@@ -10,7 +10,7 @@
 
 ## Zusammenfassung
 
-FestManager Platform 2.0 ist abgeschlossen und produktionsbereit. Die mandantenfähige Multi-Tenant-Plattform (Phasen 0–9) wurde einer abschließenden Qualitätssicherung unterzogen: Architektur- und Code-Review, Dokumentationsaktualisierung, Versionsbump auf 2.0.0, statische Analyse, Tests und Release-Vorbereitung.
+FestSchmiede Platform 2.0 ist abgeschlossen und produktionsbereit. Die mandantenfähige Multi-Tenant-Plattform (Phasen 0–9) wurde einer abschließenden Qualitätssicherung unterzogen: Architektur- und Code-Review, Dokumentationsaktualisierung, Versionsbump auf 2.0.0, statische Analyse, Tests und Release-Vorbereitung.
 
 ---
 
@@ -198,4 +198,4 @@ GitHub Actions Workflow `quality-assurance.yml`:
 
 ## Fazit
 
-FestManager Platform 2.0 ist produktionsbereit. Die Multi-Tenant-Architektur ist vollständig implementiert, gehärtet und dokumentiert. Der Branch `feature/v2-multi-tenant-platform` kann nach dem Merge gelöscht werden.
+FestSchmiede Platform 2.0 ist produktionsbereit. Die Multi-Tenant-Architektur ist vollständig implementiert, gehärtet und dokumentiert. Der Branch `feature/v2-multi-tenant-platform` kann nach dem Merge gelöscht werden.

@@ -1,4 +1,4 @@
-# Projektanalyse – FestManager-Plattform
+# Projektanalyse – FestSchmiede-Plattform
 
 Vollständige Ist-Analyse auf Basis des Codestands nach Release **v1.2.0** (Modulare Plattform & Payment-Modul).
 

@@ -9,7 +9,7 @@
 
 ## Zusammenfassung
 
-Die FestManager-Plattform verfügt nun über eine **vollständig getrennte Plattform-Administration** unter `/platform` mit eigener API unter `/api/platform/*`. Plattformadministratoren sind von Mandantenbenutzern getrennt und verwalten Mandanten, Einstellungen, Monitoring und Logs zentral.
+Die FestSchmiede-Plattform verfügt nun über eine **vollständig getrennte Plattform-Administration** unter `/platform` mit eigener API unter `/api/platform/*`. Plattformadministratoren sind von Mandantenbenutzern getrennt und verwalten Mandanten, Einstellungen, Monitoring und Logs zentral.
 
 ---
 

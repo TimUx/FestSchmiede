@@ -13,7 +13,7 @@ import { tmpdir } from 'os';
 
 const PORT = 4173;
 const OUT_DIR = join(process.cwd(), 'docs', 'screenshots');
-const RAW_DIR = join(tmpdir(), 'festmanager-screenshots-raw');
+const RAW_DIR = join(tmpdir(), 'festschmiede-screenshots-raw');
 const DIST = process.env.FRONTEND_DIST ?? join(process.cwd(), 'frontend', 'dist');
 const FULL_HD = { width: 1920, height: 1080 };
 
@@ -149,7 +149,7 @@ const mockModules = [
   {
     id: 'payment', name: 'Online-Zahlung', version: '1.0.0', imageVersion: '1.0.0',
     description: 'Online-Zahlungen über Stripe und weitere Anbieter',
-    author: 'FestManager', license: 'MIT', status: 'ENABLED', installed: true, enabled: true,
+    author: 'FestSchmiede', license: 'MIT', status: 'ENABLED', installed: true, enabled: true,
     productionReady: true,
     flags: { enabled: true, disabled: false, configurable: true, visible: true, health: 'healthy' },
     permissions: [
@@ -167,7 +167,7 @@ const mockModules = [
   {
     id: 'notifications', name: 'Benachrichtigungen', version: '1.0.0', imageVersion: '1.0.0',
     description: 'E-Mail, Push und ntfy Benachrichtigungen',
-    author: 'FestManager', license: 'MIT', status: 'ENABLED', installed: true, enabled: true,
+    author: 'FestSchmiede', license: 'MIT', status: 'ENABLED', installed: true, enabled: true,
     productionReady: true,
     flags: { enabled: true, disabled: false, configurable: true, visible: true, health: 'healthy' },
     permissions: [], menuItems: [], widgets: [], hasConfig: true,
@@ -178,7 +178,7 @@ const mockModules = [
   {
     id: 'legal', name: 'Rechtliche Informationen', version: '1.4.0', imageVersion: '1.4.0',
     description: 'Impressum, Datenschutz, AGB und Widerruf',
-    author: 'FestManager', license: 'MIT', status: 'ENABLED', installed: true, enabled: true,
+    author: 'FestSchmiede', license: 'MIT', status: 'ENABLED', installed: true, enabled: true,
     productionReady: true,
     flags: { enabled: true, disabled: false, configurable: true, visible: true, health: 'healthy' },
     permissions: [
@@ -195,7 +195,7 @@ const mockModules = [
   {
     id: 'printer', name: 'Bondruck', version: '1.0.0', imageVersion: '1.0.0',
     description: 'Automatischer Bondruck für Küche und Kasse',
-    author: 'FestManager', license: 'MIT', status: 'DISABLED', installed: true, enabled: false,
+    author: 'FestSchmiede', license: 'MIT', status: 'DISABLED', installed: true, enabled: false,
     productionReady: true,
     flags: { enabled: false, disabled: true, configurable: true, visible: true, health: 'unknown' },
     permissions: [], menuItems: [], widgets: [], hasConfig: true,

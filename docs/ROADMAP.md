@@ -1,12 +1,12 @@
-# Roadmap — FestManager
+# Roadmap — FestSchmiede
 
 Überblick: Was **heute stabil** ist und was **geplant** ist. Keine versteckten Experimente in der Hauptoberfläche.
 
-Stand: Release **2.0.0** — Multi-Tenant-Plattform
+Stand: Release **2.0.1** — FestSchmiede (Multi-Tenant-Plattform)
 
 ---
 
-## Stabil (2.0.0)
+## Stabil (2.0.1)
 
 | Bereich | Funktion |
 |---------|----------|
@@ -55,6 +55,7 @@ Details und Begründung: [Maßnahmenplan](audits/massnahmenplan-architektur-prod
 | **1.4.0** | Rechtliche Informationen, UX-Vereinfachung, sichere Status-URLs |
 | **1.5.0** | Rebranding FestManager |
 | **2.0.0** | Multi-Tenant-Plattform, Plattformadministration, Security & Performance |
+| **2.0.1** | Rebranding FestSchmiede |
 | 2.1+ | Lagerverwaltung, Redis-Skalierung nach Bedarf |
 
-Release-Notizen: [CHANGELOG.md](../CHANGELOG.md) · [release-notes-2.0.0.md](release-notes-2.0.0.md)
+Release-Notizen: [CHANGELOG.md](../CHANGELOG.md) · [release-notes-2.0.1.md](release-notes-2.0.1.md)

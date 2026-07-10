@@ -1,12 +1,12 @@
 # Administratorhandbuch (Admin Guide)
 
-Anleitung für Administratoren der FestManager-Plattform mit Vollzugriff auf alle Funktionen – von der Installation bis zum Veranstaltungstag.
+Anleitung für Administratoren der FestSchmiede-Plattform mit Vollzugriff auf alle Funktionen – von der Installation bis zum Veranstaltungstag.
 
-> **Version 2.0:** FestManager ist mandantenfähig. Es gibt zwei Verwaltungsebenen:
+> **Version 2.0:** FestSchmiede ist mandantenfähig. Es gibt zwei Verwaltungsebenen:
 > - **Plattform-Administration** unter `/platform` – Mandanten verwalten, System konfigurieren (nur Plattformadministratoren)
 > - **Veranstalter-Administration** unter `/admin` – mandantenspezifisch (normale Administratoren)
 >
-> Standard-Plattformlogin: `platform@festmanager.local` (Passwort via `PLATFORM_ADMIN_PASSWORD` in `.env`). Details: [ADR-022](architecture/022-platform-administration.md), [Phase-3-Report](architecture/PHASE_3_COMPLETION_REPORT.md).
+> Standard-Plattformlogin: `platform@festschmiede.local` (Passwort via `PLATFORM_ADMIN_PASSWORD` in `.env`). Details: [ADR-022](architecture/022-platform-administration.md), [Phase-3-Report](architecture/PHASE_3_COMPLETION_REPORT.md).
 
 ## Plattform-Administration (Phase 3)
 
@@ -81,15 +81,15 @@ Die Marketing-Homepage ist unter `www.<platform-domain>` erreichbar. Die Plattfo
 Die Anwendung nutzt fertige Images aus der GitHub Container Registry (kein lokaler Build nötig):
 
 ```bash
-git clone https://github.com/TimUx/FestManager.git
-cd FestManager
+git clone https://github.com/TimUx/FestSchmiede.git
+cd FestSchmiede
 cp .env.example .env
 docker compose pull
 docker compose up -d
 docker compose exec backend npm run seed
 ```
 
-Standard-Images: `ghcr.io/timux/festmanager/backend:latest` und `ghcr.io/timux/festmanager/frontend:latest`  
+Standard-Images: `ghcr.io/timux/festschmiede/backend:latest` und `ghcr.io/timux/festschmiede/frontend:latest`  
 Tag ändern über `IMAGE_TAG` in `.env` (z. B. Release-Version).
 
 Das Backend synchronisiert das Datenbankschema beim Start automatisch per `prisma db push`.
@@ -117,8 +117,8 @@ Alle drei Dienste (`postgres`, `backend`, `frontend`) sollten den Status **runni
 
 Fertige Images werden per GitHub Actions veröffentlicht:
 
-- `ghcr.io/timux/festmanager/backend`
-- `ghcr.io/timux/festmanager/frontend`
+- `ghcr.io/timux/festschmiede/backend`
+- `ghcr.io/timux/festschmiede/frontend`
 
 Auslösung: manuell über GitHub Actions oder automatisch beim Erstellen eines Releases.
 
@@ -309,7 +309,7 @@ Traefik muss im selben Docker-Netzwerk wie die Anwendung laufen. Beispiel mit Le
 # docker-compose.yml – Ergänzung am frontend-Service
 services:
   frontend:
-    image: ghcr.io/timux/festmanager/frontend:latest
+    image: ghcr.io/timux/festschmiede/frontend:latest
     container_name: vereins-frontend
     restart: unless-stopped
     networks:

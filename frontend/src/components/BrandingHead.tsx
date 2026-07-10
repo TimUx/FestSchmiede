@@ -6,7 +6,7 @@ import { usePlatform } from '@/contexts/PlatformProvider';
 import { getImageUrl } from '@/services/api';
 
 const DEFAULT_DESCRIPTION =
-  'FestManager ist eine moderne Open-Source-Plattform zur Organisation von Veranstaltungen – für Vereine, Schulen und gemeinnützige Organisationen.';
+  'FestSchmiede ist eine moderne Open-Source-Plattform zur Organisation von Veranstaltungen – für Vereine, Schulen und gemeinnützige Organisationen.';
 
 interface BrandingHeadProps {
   titleSuffix?: string;
@@ -49,7 +49,7 @@ export function BrandingHead({ titleSuffix, description, path }: BrandingHeadPro
       title = tenant.name;
       favicon = tenant.logoUrl ? getImageUrl(tenant.logoUrl) : undefined;
     } else {
-      title = 'FestManager';
+      title = 'FestSchmiede';
     }
 
     document.title = titleSuffix ? `${titleSuffix} · ${title}` : title;

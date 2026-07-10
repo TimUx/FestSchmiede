@@ -10,7 +10,7 @@
 | [Admin Guide](docs/ADMIN_GUIDE.md) | Administratoren |
 | [Operations](docs/OPERATIONS.md) | Backup, Update, Restore |
 | [Deployment Guide](docs/DEPLOYMENT_GUIDE.md) | Multi-Tenant-Betrieb |
-| [GitHub Issues](https://github.com/TimUx/FestManager/issues) | Fehler melden, Features vorschlagen |
+| [GitHub Issues](https://github.com/TimUx/FestSchmiede/issues) | Fehler melden, Features vorschlagen |
 
 ## Community
 
@@ -24,7 +24,7 @@ Sicherheitslücken bitte **nicht** als öffentliches Issue melden. Siehe [SECURI
 
 ## Kommerzieller Support
 
-FestManager ist Open Source (MIT). Kommerzieller Support, Hosting und individuelle Anpassungen können über den Repository-Maintainer angefragt werden.
+FestSchmiede ist Open Source (MIT). Kommerzieller Support, Hosting und individuelle Anpassungen können über den Repository-Maintainer angefragt werden.
 
 ## Versionen
 

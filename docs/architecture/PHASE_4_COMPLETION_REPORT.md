@@ -9,7 +9,7 @@
 
 ## Zusammenfassung
 
-Alle offiziellen FestManager-Module arbeiten nun ausschließlich innerhalb des aktiven `TenantContext`. Cross-Tenant-Datenzugriffe werden auf Repository-, Cache-, Socket-, Hook- und API-Ebene verhindert. Plattform- und Mandanteneinstellungen sind klar getrennt.
+Alle offiziellen FestSchmiede-Module arbeiten nun ausschließlich innerhalb des aktiven `TenantContext`. Cross-Tenant-Datenzugriffe werden auf Repository-, Cache-, Socket-, Hook- und API-Ebene verhindert. Plattform- und Mandanteneinstellungen sind klar getrennt.
 
 ---
 

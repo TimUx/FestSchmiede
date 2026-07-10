@@ -1,4 +1,4 @@
-# Docker Guide – FestManager
+# Docker Guide – FestSchmiede
 
 ## Compose-Dateien
 
@@ -30,8 +30,8 @@
 
 ## Netzwerke (Produktion)
 
-- `festmanager_public` – Traefik + Frontend
-- `festmanager_internal` – Backend, Postgres (nicht routbar)
+- `festschmiede_public` – Traefik + Frontend
+- `festschmiede_internal` – Backend, Postgres (nicht routbar)
 
 ## Build
 

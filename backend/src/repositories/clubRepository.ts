@@ -2,7 +2,7 @@ import { prisma } from '../config/database';
 import { requireTenantId } from '../platform/tenant/tenantScope';
 
 export const DEFAULT_CLUB = {
-  clubName: 'FestManager',
+  clubName: 'FestSchmiede',
   description: 'Essensbestellungen für unsere Veranstaltungen',
   contactName: 'Verwaltung',
   email: 'kontakt@verein.local',

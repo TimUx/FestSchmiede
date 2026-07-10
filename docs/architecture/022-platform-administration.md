@@ -25,10 +25,10 @@ Eine **vollständig getrennte Plattform-Administration** wird unter der Basis-Do
 
 | URL | Bereich | TenantContext |
 |-----|---------|---------------|
-| `https://festmanager.org` | Plattform-Landing, Info | Nein |
-| `https://festmanager.org/platform` | Plattform-Administration (SPA) | Nein |
-| `https://festmanager.org/api/platform/*` | Plattform-API | Nein |
-| `https://{slug}.festmanager.org/admin/*` | Mandanten-Administration | Ja |
+| `https://example.org` | Plattform-Landing, Info | Nein |
+| `https://example.org/platform` | Plattform-Administration (SPA) | Nein |
+| `https://example.org/api/platform/*` | Plattform-API | Nein |
+| `https://{slug}.example.org/admin/*` | Mandanten-Administration | Ja |
 
 ### Plattform-Administrationsbereiche
 
@@ -58,7 +58,7 @@ Eine **vollständig getrennte Plattform-Administration** wird unter der Basis-Do
 | Aspekt | Entscheidung |
 |--------|--------------|
 | Rollen | `PLATFORM_ADMIN` (neu), getrennt von `ADMIN`/`STAFF` |
-| Login | `https://festmanager.org/platform/login` |
+| Login | `https://example.org/platform/login` |
 | JWT-Scope | `scope: "platform"` – nicht gültig für Mandanten-APIs |
 | Mandanten-Admin-JWT | `scope: "tenant"` + `tenantId` – nicht gültig für Plattform-APIs |
 | Session-Trennung | Separate Cookie-Namen (`fm_platform_token` vs. `fm_tenant_token`) |

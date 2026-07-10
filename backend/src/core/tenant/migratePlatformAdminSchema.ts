@@ -69,7 +69,7 @@ export async function migratePlatformAdminSchema(): Promise<void> {
     { key: 'platform.network.corsOrigins', value: ['http://localhost:5173'] },
     { key: 'platform.network.trustedProxies', value: ['127.0.0.1', '::1'] },
     { key: 'platform.branding.primaryColor', value: '#1565c0' },
-    { key: 'platform.branding.footerText', value: 'FestManager Platform' },
+    { key: 'platform.branding.footerText', value: 'FestSchmiede Platform' },
   ];
 
   for (const item of defaults) {

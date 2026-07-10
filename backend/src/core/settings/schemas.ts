@@ -22,7 +22,7 @@ export const clubSettingsSchema: SettingsSchemaDefinition = {
       label: 'Name des Veranstalters',
       type: 'string',
       required: true,
-      default: 'FestManager',
+      default: 'FestSchmiede',
       helpText: 'Wird auf der Bestellseite und in E-Mails angezeigt',
     },
     {

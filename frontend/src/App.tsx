@@ -37,7 +37,7 @@ function AppBootstrap() {
     return (
       <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="100dvh" gap={2}>
         <CircularProgress />
-        <Typography color="text.secondary">FestManager wird geladen…</Typography>
+        <Typography color="text.secondary">FestSchmiede wird geladen…</Typography>
       </Box>
     );
   }

@@ -45,7 +45,7 @@ describe('API platform public', () => {
     expect(res.body.platformUrl).toBeDefined();
     expect(['www', 'tenant', 'app']).toContain(res.body.scope);
     expect(res.body.domains?.baseDomain).toBeDefined();
-    expect(res.body.domains.baseDomain).not.toBe('festmanager.org');
+    expect(res.body.domains.baseDomain).not.toBe('example.org');
     expect(res.body.domains.reservedSubdomains).toContain('www');
     expect(res.body.domains.reservedSubdomains).toContain('app');
   });

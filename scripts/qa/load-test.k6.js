@@ -1,5 +1,5 @@
 /**
- * k6 Lasttests — FestManager Phase 9
+ * k6 Lasttests — FestSchmiede Phase 9
  *
  * Szenarien: Health, öffentliche APIs, Bestellungen, Login, Realtime, Küche
  *
