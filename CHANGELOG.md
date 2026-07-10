@@ -18,6 +18,7 @@ Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1
 - **Volunteer-first Admin:** Dashboard/Navigation fokussiert Alltagsaufgaben (ADR 042).
 - Team-UI mit Rollenvorlagen; `auth.ts`/`userService` über Repositories.
 - Preview-Module nur mit `SHOW_PREVIEW_MODULES=1`.
+- **Performance:** Order-Stats per DB-Aggregation; gebündeltes `findByIds`; Realtime-Polling-Metriken; k6 `dashboard_stats`.
 
 ### Tests
 
