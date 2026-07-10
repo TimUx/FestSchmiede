@@ -3,6 +3,20 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.2.2 - 2026-07-10
+
+### Neu
+
+- **Tenant Guardrails:** CI-Script blockiert ungescopte `prisma.<tenantModel>`-Zugriffe außerhalb erlaubter Repository-/Platform-Schichten.
+- ADR 040: Tenant Access Policy; Developer Guide Tenant-Regeln.
+
+### Geändert
+
+- `auth.ts` und `userService` nutzen `userRepository` statt direktem `prisma.user`.
+- `sessionService` prüft Mandantenzugehörigkeit via `assertTenantOwnership`.
+
+---
+
 ## 2.2.1 - 2026-07-10
 
 ### Neu
