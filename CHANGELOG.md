@@ -3,6 +3,18 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.2.3 - 2026-07-10
+
+### Behoben
+
+- **CI/QA vollständig grün:** Docker-Stack, Migrationen, API-Tests, E2E, Performance-Baseline und Release-Validation.
+- **Multi-Tenant CI:** Mandanten-Routing über `default.localhost`, Plattform-Marketing auf `localhost`, API same-origin via Nginx.
+- **E2E:** Admin-Drawer-Locators, Nginx `/screenshots`-SPA-Route, lokale Canonical-URLs mit Port.
+- **API/Routing:** Resolver-Cache, `platform`-Slug, Supertest-Host-Helper, Tenant-Prisma-Guard, QA-Seed.
+- **Lint/TypeScript:** Korrekturen nach v2.2.2-Merge.
+
+---
+
 ## 2.2.2 - 2026-07-10
 
 ### Neu

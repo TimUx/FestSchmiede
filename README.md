@@ -7,7 +7,7 @@ Open-Source-Plattform für Veranstaltungs-Bestellungen: Vorausbestellung, Küche
 ## Schnellstart
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.2.2/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.2.3/install.sh | bash
 ```
 
 Oder nach Git-Clone: `./install.sh` · Details: [Installation](docs/INSTALLATION.md)

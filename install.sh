@@ -2,19 +2,19 @@
 # FestSchmiede – Installations-Bootstrap
 # Funktioniert lokal (Git-Clone) und online ohne Repository:
 #
-#   curl -fsSL https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.2.2/install.sh | bash
-#   wget -qO- https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.2.2/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.2.3/install.sh | bash
+#   wget -qO- https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.2.3/install.sh | bash
 #
 # Umgebungsvariablen:
 #   FESTSCHMIEDE_INSTALL_DIR  – Zielverzeichnis
-#   FESTSCHMIEDE_VERSION      – Release-Tag (Standard: 2.2.2)
+#   FESTSCHMIEDE_VERSION      – Release-Tag (Standard: 2.2.3)
 #   FESTSCHMIEDE_GITHUB_REPO  – GitHub Repo (Standard: TimUx/FestSchmiede)
 #   FESTSCHMIEDE_REF          – Git-Ref statt Version (z.B. main)
 #   FESTSCHMIEDE_BOOTSTRAP_ONLY=1 – Nur Dateien herunterladen
 
 set -euo pipefail
 
-FESTSCHMIEDE_VERSION="${FESTSCHMIEDE_VERSION:-2.2.2}"
+FESTSCHMIEDE_VERSION="${FESTSCHMIEDE_VERSION:-2.2.3}"
 FESTSCHMIEDE_GITHUB_REPO="${FESTSCHMIEDE_GITHUB_REPO:-TimUx/FestSchmiede}"
 FESTSCHMIEDE_REF="${FESTSCHMIEDE_REF:-}"
 FESTSCHMIEDE_INSTALL_DIR="${FESTSCHMIEDE_INSTALL_DIR:-}"
