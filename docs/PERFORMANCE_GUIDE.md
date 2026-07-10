@@ -160,4 +160,4 @@ Vorbereitet, nicht vollständig implementiert:
 - [ADR-030](./architecture/030-performance-scalability.md)
 - [ADR-013](./architecture/013-realtime-communication.md)
 - [DEPLOYMENT.md](./DEPLOYMENT.md)
-- [PHASE_9_COMPLETION_REPORT](./architecture/PHASE_9_COMPLETION_REPORT.md)
+- [PHASE_9_COMPLETION_REPORT](./architecture/archive/PHASE_9_COMPLETION_REPORT.md)

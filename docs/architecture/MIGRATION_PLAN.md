@@ -217,7 +217,7 @@ graph TD
 
 > **Branch:** `feature/v2-multi-tenant-platform`  
 > **ADRs:** [020](./020-multi-tenant-platform.md) – [027](./027-multi-tenant-deployment.md)  
-> **Abschlussbericht:** [PHASE_0_COMPLETION_REPORT.md](./PHASE_0_COMPLETION_REPORT.md)
+> **Abschlussbericht:** [PHASE_0_COMPLETION_REPORT.md](./archive/PHASE_0_COMPLETION_REPORT.md)
 
 ### Zielbild v2.0
 
@@ -263,7 +263,7 @@ Eine Installation → beliebig viele Veranstalter → beliebig viele Veranstaltu
 
 ## Nächster empfohlener Schritt
 
-**v2.0 Phase 1 starten** – TenantContext, Datenmodell und Standard-Mandant-Migration. Siehe [PHASE_0_COMPLETION_REPORT.md](./PHASE_0_COMPLETION_REPORT.md).
+**v2.0 Phase 1 starten** – TenantContext, Datenmodell und Standard-Mandant-Migration. Siehe [PHASE_0_COMPLETION_REPORT.md](./archive/PHASE_0_COMPLETION_REPORT.md).
 
 ---
 

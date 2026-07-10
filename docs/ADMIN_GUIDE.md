@@ -6,7 +6,7 @@ Anleitung für Administratoren der FestSchmiede-Plattform mit Vollzugriff auf al
 > - **Plattform-Administration** unter `/platform` – Mandanten verwalten, System konfigurieren (nur Plattformadministratoren)
 > - **Veranstalter-Administration** unter `/admin` – mandantenspezifisch (normale Administratoren)
 >
-> Standard-Plattformlogin: `platform@festschmiede.local` (Passwort via `PLATFORM_ADMIN_PASSWORD` in `.env`). Details: [ADR-022](architecture/022-platform-administration.md), [Phase-3-Report](architecture/PHASE_3_COMPLETION_REPORT.md).
+> Standard-Plattformlogin: `platform@festschmiede.local` (Passwort via `PLATFORM_ADMIN_PASSWORD` in `.env`). Details: [ADR-022](architecture/022-platform-administration.md).
 
 ## Plattform-Administration (Phase 3)
 
@@ -835,7 +835,7 @@ Pro Veranstaltung drei Schalter:
 
 Unter **Module** (`/admin/module`) verwalten Sie optionale Erweiterungen der Plattform. Module werden **mit dem Docker-Image ausgeliefert** – es gibt keine separaten Downloads.
 
-> **Multi-Tenant (Phase 4):** Module werden plattformweit bereitgestellt, aber **pro Veranstalter (Mandant)** installiert und aktiviert. Einstellungen und Daten (z. B. Zahlungen, E-Mails, rechtliche Texte) sind vollständig mandantenisoliert. Details: [Phase-4-Report](architecture/PHASE_4_COMPLETION_REPORT.md).
+> **Multi-Tenant (Phase 4):** Module werden plattformweit bereitgestellt, aber **pro Veranstalter (Mandant)** installiert und aktiviert. Einstellungen und Daten (z. B. Zahlungen, E-Mails, rechtliche Texte) sind vollständig mandantenisoliert. Details: [ADR-003](architecture/003-module-system.md).
 
 ![Modulverwaltung](screenshots/20-modulverwaltung.png)
 
@@ -1180,7 +1180,10 @@ docker compose exec backend npm run seed
 
 ## Support & Dokumentation
 
+- [Dokumentations-Index](README.md) — Ehrenamt, Admin, Maintainer
 - [Benutzerhandbuch (Mitarbeiter)](USER_GUIDE.md)
+- [Volunteer Guide](VOLUNTEER_GUIDE.md)
+- [Betriebshandbuch](OPERATIONS.md)
 - [Entwicklerhandbuch](DEVELOPER_GUIDE.md)
 - [Modul-Architektur](MODULE_ARCHITECTURE.md)
 - [README](../README.md)

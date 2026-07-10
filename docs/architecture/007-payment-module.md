@@ -398,7 +398,7 @@ Administratoren aktivieren **Zahlungsarten**, nicht Provider direkt. Konfigurati
 
 ## Release Validation (Spec 6.5)
 
-Vollständiger Abschlussbericht: [`PAYMENT_6.5_REPORT.md`](./PAYMENT_6.5_REPORT.md)
+Vollständiger Abschlussbericht: [`PAYMENT_6.5_REPORT.md`](./archive/PAYMENT_6.5_REPORT.md)
 
 **Empfehlung: Produktionsreif (Stripe-Einsatz)**
 

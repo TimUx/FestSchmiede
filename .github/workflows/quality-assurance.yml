@@ -52,6 +52,9 @@ jobs:
       - name: Depcheck
         run: npm run qa:depcheck
 
+      - name: Documentation linkcheck
+        run: npm run qa:linkcheck
+
       - name: Unit Tests & Coverage
         run: npm run qa:unit
 

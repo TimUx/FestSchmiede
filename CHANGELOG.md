@@ -3,6 +3,16 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.2.2 - 2026-07-10
+
+### Dokumentation
+
+- **Drei Ebenen:** Ehrenamt, Admin, Maintainer — Einstieg über [docs/README.md](docs/README.md).
+- **README** gekürzt; Phase-Reports nach `docs/architecture/archive/`.
+- **Linkcheck** in CI (`npm run qa:linkcheck`).
+
+---
+
 ## 2.2.1 - 2026-07-10
 
 ### Neu

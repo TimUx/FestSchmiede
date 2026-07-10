@@ -93,7 +93,7 @@ Zentrale Verwaltung: `backend/src/platform/PlatformDomainService.ts` · Anzeige 
 | `COOKIE_DOMAIN` / `SESSION_DOMAIN` | Cookie-/Session-Domain |
 | `ALLOWED_ORIGINS` / `PLATFORM_ALLOWED_ORIGINS` | CORS |
 
-Linkgenerierung (QR, E-Mails, Routing, SEO) nutzt ausschließlich `PlatformDomainService`. Details: [Canonical Domain Report](architecture/CANONICAL_DOMAIN_COMPLETION_REPORT.md).
+Linkgenerierung (QR, E-Mails, Routing, SEO) nutzt ausschließlich `PlatformDomainService`. Details: [Canonical Domain Report](architecture/archive/CANONICAL_DOMAIN_COMPLETION_REPORT.md).
 
 Plattform-APIs erfordern JWT mit `scope: "platform"`. Mandanten-APIs lehnen Plattform-Tokens ab.
 

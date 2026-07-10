@@ -102,7 +102,7 @@ Bitte melden Sie Sicherheitslücken **nicht** öffentlich als Issue.
 
 ## Weitere Dokumentation
 
-- [PHASE_8_COMPLETION_REPORT](docs/architecture/PHASE_8_COMPLETION_REPORT.md)
+- [PHASE_8_COMPLETION_REPORT](docs/architecture/archive/PHASE_8_COMPLETION_REPORT.md)
 - [ADR-029](docs/architecture/029-multi-tenant-security-hardening.md)
 - [OPERATIONS.md](docs/OPERATIONS.md)
 - [NOTIFICATION_GUIDE](docs/NOTIFICATION_GUIDE.md)

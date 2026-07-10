@@ -2,7 +2,7 @@
 
 Anleitung für den produktiven Betrieb der mandantenfähigen FestSchmiede-Plattform.
 
-> Siehe auch: [DOCKER.md](DOCKER.md), [ADR-027](architecture/027-multi-tenant-deployment.md), [Phase-6-Report](architecture/PHASE_6_COMPLETION_REPORT.md)
+> Siehe auch: [DOCKER.md](DOCKER.md), [ADR-027](architecture/027-multi-tenant-deployment.md), [Phase-6-Report](architecture/archive/PHASE_6_COMPLETION_REPORT.md)
 
 ## Übersicht
 
