@@ -50,7 +50,11 @@ Technische Architektur der FestSchmiede-Plattform – Architecture Decision Reco
 | 036 | [environment-detection.md](./036-environment-detection.md) | Accepted (v2.2.0) | Automatische Infrastruktur-Erkennung |
 | 037 | [configuration-generation.md](./037-configuration-generation.md) | Accepted (v2.2.0) | .env & Compose-Generierung |
 | 038 | [rollback-strategy.md](./038-rollback-strategy.md) | Accepted (v2.2.0) | Installer Rollback & Logging |
+<<<<<<< HEAD
 | 040 | [tenant-access-policy.md](./040-tenant-access-policy.md) | Accepted (v2.2.2) | Tenant-scoped Prisma-Zugriff |
+=======
+| 039 | [production-migrations.md](./039-production-migrations.md) | Accepted (v2.2.2) | Prisma Migrate in Produktion |
+>>>>>>> origin/main
 
 ### Version 2.0 – Multi-Tenant
 

@@ -12,6 +12,10 @@ Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1
 
 ### Geändert
 
+- **Produktionsmigrationen:** `prisma migrate deploy` statt `db push` beim Backend-Start; Pre-Migration-Backup per Entrypoint und Installer.
+- Init-Migration unter `backend/prisma/migrations/`; Baseline für bestehende Installationen.
+- CI-Tests für frische DB und Upgrade von `db push`.
+- ADR 039: Produktionsmigrationen.
 - `auth.ts` und `userService` nutzen `userRepository` statt direktem `prisma.user`.
 - `sessionService` prüft Mandantenzugehörigkeit via `assertTenantOwnership`.
 
