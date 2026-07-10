@@ -25,6 +25,7 @@ export async function runQaSeed(options: { orderCount?: number; demoMode?: boole
   });
 
   const adminHash = await bcrypt.hash('admin123', 12);
+  const staffHash = await bcrypt.hash('staff123', 12);
   await prisma.user.upsert({
     where: { tenantId_email: { tenantId: DEFAULT_TENANT_ID, email: 'admin@verein.local' } },
     update: {},
@@ -71,7 +72,7 @@ export async function runQaSeed(options: { orderCount?: number; demoMode?: boole
     },
   });
 
-  const verkaufHash = await bcrypt.hash('staff123', 12);
+  const verkaufHash = staffHash;
   await prisma.user.upsert({
     where: { tenantId_email: { tenantId: DEFAULT_TENANT_ID, email: 'verkauf@verein.local' } },
     update: { permissions: kassePermissions, roleTemplate: 'kasse' },
