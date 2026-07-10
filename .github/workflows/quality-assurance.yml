@@ -17,6 +17,7 @@ env:
   CORS_ORIGIN: http://localhost:5173
   QA_API_BASE: http://localhost:3001/api
   QA_FRONTEND_BASE: http://localhost:5173
+  QA_TENANT_HOST: default.localhost
 
 jobs:
   quality:

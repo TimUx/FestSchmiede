@@ -7,6 +7,7 @@ import path from 'path';
 
 const artifactsDir = path.resolve(__dirname, '../../artifacts');
 const apiBase = process.env.QA_API_BASE || 'http://localhost:3001/api';
+const tenantHost = process.env.QA_TENANT_HOST || 'default.localhost';
 const eventId = process.env.QA_EVENT_ID || '00000000-0000-0000-0000-000000000001';
 const staffEmail = process.env.STAFF_EMAIL || 'admin@verein.local';
 const staffPassword = process.env.STAFF_PASSWORD || 'admin123';
@@ -16,6 +17,14 @@ interface MeasureResult {
   ms: number;
   status: number;
   bytes?: number;
+}
+
+function tenantHeaders(extra?: Record<string, string>): Record<string, string> {
+  return {
+    Host: tenantHost,
+    'X-Forwarded-Host': tenantHost,
+    ...extra,
+  };
 }
 
 async function measure(label: string, url: string, init?: RequestInit): Promise<MeasureResult> {
@@ -32,7 +41,7 @@ async function measure(label: string, url: string, init?: RequestInit): Promise<
 async function loginStaff(): Promise<string> {
   const res = await fetch(`${apiBase}/auth/login`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: tenantHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ email: staffEmail, password: staffPassword }),
   });
   if (!res.ok) throw new Error(`staff login failed: ${res.status}`);
@@ -50,34 +59,37 @@ async function main(): Promise<void> {
   const health = await measure('health', `${apiBase}/health`);
   results.healthMs = health.ms;
 
-  const menu = await measure('menu', `${apiBase}/public/menu`);
+  const menu = await measure('menu', `${apiBase}/public/menu`, { headers: tenantHeaders() });
   results.publicMenuMs = menu.ms;
   results.publicMenuBytes = menu.bytes ?? 0;
 
-  const club = await measure('club', `${apiBase}/public/club`);
+  const club = await measure('club', `${apiBase}/public/club`, { headers: tenantHeaders() });
   results.publicClubMs = club.ms;
 
-  const event = await measure('event', `${apiBase}/public/event`);
+  const event = await measure('event', `${apiBase}/public/event`, { headers: tenantHeaders() });
   results.publicEventMs = event.ms;
 
   const routing = await measure('routing', `${apiBase}/public/routing-config`);
   results.routingConfigMs = routing.ms;
 
-  const realtime1 = await measure('realtime-pickup', `${apiBase}/realtime/pickup-board`);
+  const realtime1 = await measure('realtime-pickup', `${apiBase}/realtime/pickup-board`, {
+    headers: tenantHeaders(),
+  });
   results.realtimePickupColdMs = realtime1.ms;
-  const etagRes = await fetch(`${apiBase}/realtime/pickup-board`);
+  const etagRes = await fetch(`${apiBase}/realtime/pickup-board`, { headers: tenantHeaders() });
   const etag = etagRes.headers.get('etag') ?? '';
   if (etag) {
     const realtime2 = await measure(
       'realtime-pickup-etag',
-      `${apiBase}/realtime/pickup-board?etag=${encodeURIComponent(etag)}`
+      `${apiBase}/realtime/pickup-board?etag=${encodeURIComponent(etag)}`,
+      { headers: tenantHeaders() }
     );
     results.realtimePickupEtagMs = realtime2.ms;
   }
 
   try {
     const token = await loginStaff();
-    const authHeaders = { Authorization: `Bearer ${token}` };
+    const authHeaders = tenantHeaders({ Authorization: `Bearer ${token}` });
 
     const statsCold = await measure(
       'event-stats-cold',

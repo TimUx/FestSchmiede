@@ -3,3 +3,5 @@ export const PLATFORM_BASE = process.env.QA_FRONTEND_BASE || 'http://localhost:5
 
 /** Default-Mandant aus Seed (subdomain „default“). */
 export const TENANT_BASE = process.env.QA_TENANT_FRONTEND_BASE || 'http://default.localhost:5173';
+
+export const TENANT_HOST = process.env.QA_TENANT_HOST || 'default.localhost';
