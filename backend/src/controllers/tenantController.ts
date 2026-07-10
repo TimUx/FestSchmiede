@@ -3,7 +3,8 @@ import type { TenantService } from '../platform/tenant/TenantService';
 import type { TenantContext } from '../platform/tenant/TenantContext';
 import type { PlatformContext } from '../platform/tenant/PlatformContext';
 import type { TenantResolver } from '../platform/tenant/TenantResolver';
-import type { ResolveResult } from '../platform/tenant/types';
+import type { ResolveResult, PlatformContextData } from '../platform/tenant/types';
+import { DEFAULT_PLATFORM_CONTEXT } from '../platform/tenant/types';
 import { TenantNotFoundError } from '../platform/tenant/errors';
 import { platformDomainService } from '../platform/PlatformDomainService';
 
@@ -13,9 +14,13 @@ export function createTenantController(
   platformContext: PlatformContext,
   tenantResolver: TenantResolver
 ) {
+  function currentPlatform(): PlatformContextData {
+    return platformContext.current() ?? DEFAULT_PLATFORM_CONTEXT;
+  }
+
   function buildRoutingUrls(
     req: Request,
-    platform: ReturnType<PlatformContext['current']>,
+    platform: PlatformContextData,
     result: ResolveResult | null
   ) {
     const host = tenantResolver.extractHost(req) ?? 'localhost';
@@ -82,7 +87,7 @@ export function createTenantController(
 
     async getPlatformPublic(_req: unknown, res: Response, next: NextFunction) {
       try {
-        const platform = platformContext.current();
+        const platform = currentPlatform();
         const domains = platformDomainService.getPublicView(platform);
         res.json({
           name: platform.platformName,
@@ -103,7 +108,7 @@ export function createTenantController(
 
     async getRoutingConfig(req: Request, res: Response, next: NextFunction) {
       try {
-        const platform = platformContext.current();
+        const platform = currentPlatform();
         const frontendPath =
           typeof req.query.frontendPath === 'string' && req.query.frontendPath.startsWith('/')
             ? req.query.frontendPath
