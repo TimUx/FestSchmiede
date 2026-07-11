@@ -1,13 +1,13 @@
 # FestSchmiede – Installationsanleitung
 
-> **Version 2.3.2** – Professioneller interaktiver Installations-Assistent (TUI)
+> **Version 2.3.3** – Professioneller interaktiver Installations-Assistent (TUI)
 
 ## Schnellstart
 
 ### Online (ohne Git-Clone)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.3.2/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.3.3/install.sh | bash
 ```
 
 **Installationspfad angeben** (Priorität: `--dir` > `FESTSCHMIEDE_INSTALL_DIR` > Default):
@@ -65,16 +65,15 @@ flowchart TD
     A[Willkommen] --> B[Systemanalyse]
     B --> C[Installationsmodus]
     C --> D[Docker]
-    D --> E[Netzwerk]
-    E --> F[Reverse Proxy]
-    F --> G[Domain]
+    D --> F[Reverse Proxy]
+    F --> E[Proxy-Netzwerk]
+    E --> G[Domain]
     G --> H[Plattform]
     H --> I[Datenbank]
     I --> J[Redis]
     J --> K[Mail]
     K --> L[Sicherheit]
-    L --> M[Module]
-    M --> N[Zusammenfassung]
+    L --> N[Zusammenfassung]
     N --> O[Installation]
     O --> P[Abschluss]
 ```
@@ -92,8 +91,9 @@ flowchart TD
 9. **Redis** – Intern, extern oder keiner
 10. **Mail** – SMTP-Konfiguration (optional, kann später in `/platform/email` erfolgen)
 11. **Sicherheit** – Automatisch generierte Secrets (JWT, Encryption, Admin-Passwort, …)
-12. **Module** – Payment, Legal, Notifications, …
-13. **Zusammenfassung** – Bestätigung vor Installation
+12. **Zusammenfassung** – Bestätigung vor Installation
+
+Module aktivieren Sie nach der Installation unter **Administration → Module**.
 
 ### Navigation
 

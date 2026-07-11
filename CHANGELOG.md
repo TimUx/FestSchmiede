@@ -3,6 +3,14 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.3.3 - 2026-07-11
+
+### Geändert
+
+- **Installer:** Modul-Auswahl-Schritt entfernt (war nur Dokumentation in `.env`, ohne funktionale Wirkung). Module werden nach der Installation unter Administration → Module aktiviert.
+
+---
+
 ## 2.3.2 - 2026-07-11
 
 ### Behoben

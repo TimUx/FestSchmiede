@@ -274,7 +274,6 @@ PROXY_MODE=${CFG[PROXY_MODE]:-none}
 
 # Installer-Metadaten
 INSTALLER_VERSION=${INSTALLER_VERSION}
-INSTALL_MODULES=${CFG[INSTALL_MODULES]:-payment,legal,notifications}
 INSTALL_PROFILE=${CFG[INSTALL_PROFILE]:-local}
 EOF
 
@@ -297,7 +296,6 @@ format_config_summary() {
     s+=$'\n'"Proxy-Netz:        ${CFG[DOCKER_PROXY_NETWORK]:-festschmiede_public} (nur Frontend)"
   fi
   s+=$'\n'"SMTP:              ${CFG[SMTP_ENABLED]:-no}"
-  s+=$'\n'"Module:            ${CFG[INSTALL_MODULES]:-payment,legal,notifications}"
   s+=$'\n\n'"$(format_secrets_summary)"
   printf '%s' "$s"
 }

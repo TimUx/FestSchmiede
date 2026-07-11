@@ -272,23 +272,6 @@ Sichere Zufallswerte wurden generiert."
   return 0
 }
 
-wizard_step_modules() {
-  local selected
-  selected=$(tui_checklist "Schritt 12: Module" "Module aktivieren:" \
-    "payment" "Online-Zahlung (Stripe)" "on" \
-    "legal" "Rechtliche Seiten" "on" \
-    "notifications" "Benachrichtigungen" "on" \
-    "analytics" "Analytics (geplant)" "off" \
-    "reports" "Berichte (geplant)" "off" \
-  ) || return 1
-
-  # dialog checklist returns quoted items
-  selected=$(echo "$selected" | tr -d '"')
-  CFG[INSTALL_MODULES]="${selected// /,}"
-  [[ -z "${CFG[INSTALL_MODULES]}" ]] && CFG[INSTALL_MODULES]="payment,legal,notifications"
-  return 0
-}
-
 wizard_step_summary() {
   apply_defaults
   local summary
@@ -366,7 +349,6 @@ run_wizard() {
     wizard_step_redis
     wizard_step_mail
     wizard_step_security
-    wizard_step_modules
     wizard_step_summary
   )
 
