@@ -46,39 +46,40 @@ compose_down() {
   (cd "$INSTALL_DIR" && "${COMPOSE_CMD[@]}" "${COMPOSE_FILES[@]}" down) >>"$LOG_FILE" 2>&1 || true
 }
 
+container_health_ok() {
+  local name="$1"
+  local status
+  status=$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "$name" 2>/dev/null || echo "")
+  [[ "$status" == "healthy" ]]
+}
+
 wait_for_health() {
   local timeout="${1:-180}"
-  log_info "Warte auf Dienste (max. ${timeout}s)..."
-
-  local api_url="http://localhost:3001/api/health"
-  local frontend_url="http://localhost:5173"
-
-  if [[ "${CFG[INSTALL_PROFILE]}" == "production" ]]; then
-    api_url="https://${CFG[API_SUBDOMAIN]:-api}.${CFG[PLATFORM_DOMAIN]}/api/health"
-    frontend_url="https://${CFG[PLATFORM_DOMAIN]}"
-  fi
+  local backend_container="${CFG[BACKEND_CONTAINER]:-festschmiede-backend}"
+  local frontend_container="${CFG[FRONTEND_CONTAINER]:-festschmiede-frontend}"
+  log_info "Warte auf Container-Health (max. ${timeout}s)..."
 
   local i
   for ((i=1; i<=timeout; i++)); do
     tui_gauge "Installation" $((i * 50 / timeout)) "Warte auf Backend... (${i}s)"
-    if curl -kfsS "$api_url" >/dev/null 2>&1; then
-      log_info "Backend bereit nach ${i}s"
+    if container_health_ok "$backend_container"; then
+      log_info "Backend bereit nach ${i}s (Container: ${backend_container})"
       break
     fi
-    [[ $i -eq $timeout ]] && { log_error "Backend-Timeout"; return 1; }
+    [[ $i -eq $timeout ]] && { log_error "Backend-Timeout (Container: ${backend_container})"; return 1; }
     sleep 1
   done
 
   for ((i=1; i<=60; i++)); do
     tui_gauge "Installation" $((50 + i * 50 / 60)) "Warte auf Frontend... (${i}s)"
-    if curl -kfsS "$frontend_url" >/dev/null 2>&1; then
-      log_info "Frontend bereit nach ${i}s"
+    if container_health_ok "$frontend_container"; then
+      log_info "Frontend bereit nach ${i}s (Container: ${frontend_container})"
       return 0
     fi
     sleep 1
   done
 
-  log_warn "Frontend nicht erreichbar – Installation möglicherweise trotzdem erfolgreich"
+  log_warn "Frontend-Container nicht healthy (${frontend_container}) — prüfen Sie Traefik/DNS falls Reverse Proxy aktiv"
   return 0
 }
 

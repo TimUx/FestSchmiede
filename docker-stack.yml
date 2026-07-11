@@ -64,7 +64,7 @@ services:
         parallelism: 1
         delay: 10s
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/api/health"]
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3001/api/health"]
       interval: 15s
       timeout: 5s
       retries: 5
@@ -86,7 +86,7 @@ services:
         - traefik.http.routers.festschmiede.tls.certresolver=letsencrypt
         - traefik.http.services.festschmiede.loadbalancer.server.port=80
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80"]
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:80"]
       interval: 15s
       timeout: 5s
       retries: 5

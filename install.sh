@@ -2,20 +2,22 @@
 # FestSchmiede – Installations-Bootstrap
 # Funktioniert lokal (Git-Clone) und online ohne Repository:
 #
-#   curl -fsSL https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.3.4/install.sh | bash
-#   wget -qO- https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.3.4/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.3.5/install.sh | bash
+#   wget -qO- https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.3.5/install.sh | bash
+#
+# Online werden nur Plattform-Dateien (Compose, Installer, Backup-Skripte) heruntergeladen.
 #
 # Umgebungsvariablen:
 #   FESTSCHMIEDE_INSTALL_DIR          – Zielverzeichnis (höchste Priorität)
 #   FESTSCHMIEDE_DEFAULT_INSTALL_DIR  – Standard-Zielverzeichnis (wenn INSTALL_DIR leer)
-#   FESTSCHMIEDE_VERSION              – Release-Tag (Standard: 2.3.4)
+#   FESTSCHMIEDE_VERSION              – Release-Tag (Standard: 2.3.5)
 #   FESTSCHMIEDE_GITHUB_REPO          – GitHub Repo (Standard: TimUx/FestSchmiede)
 #   FESTSCHMIEDE_REF                  – Git-Ref statt Version (z.B. main)
 #   FESTSCHMIEDE_BOOTSTRAP_ONLY=1     – Nur Dateien herunterladen
 
 set -euo pipefail
 
-FESTSCHMIEDE_VERSION="${FESTSCHMIEDE_VERSION:-2.3.4}"
+FESTSCHMIEDE_VERSION="${FESTSCHMIEDE_VERSION:-2.3.5}"
 FESTSCHMIEDE_GITHUB_REPO="${FESTSCHMIEDE_GITHUB_REPO:-TimUx/FestSchmiede}"
 FESTSCHMIEDE_REF="${FESTSCHMIEDE_REF:-}"
 FESTSCHMIEDE_INSTALL_DIR="${FESTSCHMIEDE_INSTALL_DIR:-}"
@@ -146,67 +148,118 @@ _github_ref() {
   fi
 }
 
-_download_archive_url() {
-  echo "https://github.com/${FESTSCHMIEDE_GITHUB_REPO}/archive/refs/tags/$(_github_ref).tar.gz"
+_github_raw_base() {
+  echo "https://raw.githubusercontent.com/${FESTSCHMIEDE_GITHUB_REPO}/$(_github_ref)"
 }
 
-_download_archive_url_codeload() {
-  echo "https://codeload.github.com/${FESTSCHMIEDE_GITHUB_REPO}/tar.gz/$(_github_ref)"
+_bootstrap_manifest_path() {
+  local root="${1:-}"
+  echo "${root}/installer/bootstrap-files.txt"
 }
 
-_sync_tree() {
+_read_bootstrap_manifest() {
+  local manifest="$1"
+  [[ -f "$manifest" ]] || { _err "Bootstrap-Manifest fehlt: $manifest"; return 1; }
+  grep -vE '^\s*(#|$)' "$manifest"
+}
+
+_bootstrap_executable_paths() {
+  cat <<'EOF'
+install.sh
+installer/install.sh
+scripts/backup/postgres-backup.sh
+scripts/backup/postgres-restore.sh
+EOF
+}
+
+_sync_deployment_file() {
+  local src_root="$1" dest_root="$2" rel_path="$3"
+  local src="${src_root}/${rel_path}"
+  local dest="${dest_root}/${rel_path}"
+  mkdir -p "$(dirname "$dest")"
+  cp -a "$src" "$dest"
+}
+
+_sync_deployment_tree() {
   local src="$1"
   local dest="$2"
-  mkdir -p "$dest"
-  if command -v rsync >/dev/null 2>&1; then
-    rsync -a "${src}/" "${dest}/"
-  else
-    cp -a "${src}/." "${dest}/"
-  fi
+  local manifest rel_path
+
+  manifest="$(_bootstrap_manifest_path "$src")"
+  while IFS= read -r rel_path; do
+    [[ -n "$rel_path" ]] || continue
+    [[ -f "${src}/${rel_path}" ]] || { _err "Fehlende Bootstrap-Datei: ${rel_path}"; return 1; }
+    _sync_deployment_file "$src" "$dest" "$rel_path"
+  done < <(_read_bootstrap_manifest "$manifest")
+
+  while IFS= read -r rel_path; do
+    [[ -n "$rel_path" ]] || continue
+    chmod +x "${dest}/${rel_path}" 2>/dev/null || true
+  done < <(_bootstrap_executable_paths)
+
+  mkdir -p "${dest}/installer/generated" "${dest}/installer/logs"
+  _log "Plattform-Dateien installiert in: ${dest}"
+}
+
+_download_bootstrap_file() {
+  local install_dir="$1" rel_path="$2"
+  local url dest
+
+  url="$(_github_raw_base)/${rel_path}"
+  dest="${install_dir}/${rel_path}"
+  mkdir -p "$(dirname "$dest")"
+  curl -fsSL "$url" -o "$dest"
 }
 
 _bootstrap_download() {
   local install_dir="$1"
-  local url tmp archive top_dir
+  local manifest rel_path
 
   _need_cmd curl
-  _need_cmd tar
 
-  url="$(_download_archive_url)"
-  tmp="$(mktemp -d)"
-  archive="${tmp}/festschmiede-src.tar.gz"
+  _log "Lade FestSchmiede-Plattformdateien $(_github_ref) herunter..."
+  _log "Quelle: $(_github_raw_base)"
 
-  _log "Lade FestSchmiede $(_github_ref) herunter..."
-  _log "URL: $url"
+  mkdir -p "${install_dir}/installer"
+  _download_bootstrap_file "$install_dir" "installer/bootstrap-files.txt"
 
-  if ! curl -fsSL "$url" -o "$archive" 2>/dev/null; then
-    url="$(_download_archive_url_codeload)"
-    _log "Versuche alternativen Download: $url"
-    curl -fsSL "$url" -o "$archive"
-  fi
+  manifest="$(_bootstrap_manifest_path "$install_dir")"
+  while IFS= read -r rel_path; do
+    [[ -n "$rel_path" ]] || continue
+    [[ "$rel_path" == "installer/bootstrap-files.txt" ]] && continue
+    _log "  → ${rel_path}"
+    _download_bootstrap_file "$install_dir" "$rel_path"
+  done < <(_read_bootstrap_manifest "$manifest")
 
-  _log "Entpacke nach ${install_dir}..."
-  tar -xzf "$archive" -C "$tmp"
-  for d in "$tmp"/*/; do
-    top_dir="$(basename "$d")"
-    break
-  done
-  [[ -n "${top_dir:-}" ]] || { _err "Archiv konnte nicht gelesen werden"; exit 1; }
-  _sync_tree "${tmp}/${top_dir}" "$install_dir"
+  while IFS= read -r rel_path; do
+    [[ -n "$rel_path" ]] || continue
+    chmod +x "${install_dir}/${rel_path}" 2>/dev/null || true
+  done < <(_bootstrap_executable_paths)
 
-  rm -rf "$tmp"
-  _log "Dateien installiert in: ${install_dir}"
+  mkdir -p "${install_dir}/installer/generated" "${install_dir}/installer/logs"
+  _log "Plattform-Dateien installiert in: ${install_dir}"
 }
 
 _bootstrap_verify() {
   local install_dir="$1"
-  local missing=0
-  for f in docker-compose.yml installer/install.sh .env.example; do
-    if [[ ! -f "${install_dir}/${f}" ]]; then
-      _err "Fehlende Datei nach Bootstrap: ${f}"
+  local manifest rel_path missing=0
+
+  manifest="$(_bootstrap_manifest_path "$install_dir")"
+  while IFS= read -r rel_path; do
+    [[ -n "$rel_path" ]] || continue
+    if [[ ! -f "${install_dir}/${rel_path}" ]]; then
+      _err "Fehlende Datei nach Bootstrap: ${rel_path}"
+      missing=1
+    fi
+  done < <(_read_bootstrap_manifest "$manifest")
+
+  for unwanted in backend frontend package.json tests docs; do
+    if [[ -e "${install_dir}/${unwanted}" ]]; then
+      _err "Unerwartetes Verzeichnis/Datei nach Bootstrap: ${unwanted}"
       missing=1
     fi
   done
+
   [[ $missing -eq 0 ]] || exit 1
 }
 
@@ -291,8 +344,8 @@ main() {
     target="$(_resolve_target_dir "$local_root")"
     _log "Lokale Installation aus: ${local_root}"
     if [[ "$target" != "$local_root" ]]; then
-      _log "Kopiere nach ${target}..."
-      _sync_tree "$local_root" "$target"
+      _log "Kopiere Plattform-Dateien nach ${target}..."
+      _sync_deployment_tree "$local_root" "$target"
     fi
     if [[ "${FESTSCHMIEDE_BOOTSTRAP_ONLY:-}" == "1" ]]; then
       _log "Bootstrap abgeschlossen (lokal)"

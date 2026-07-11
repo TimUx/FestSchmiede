@@ -18,7 +18,7 @@ mkdir -p "$BACKUP_DIR"
 
 POSTGRES_USER="${POSTGRES_USER:-verein}"
 POSTGRES_DB="${POSTGRES_DB:-vereinsbestellung}"
-CONTAINER="${POSTGRES_CONTAINER:-vereins-postgres}"
+CONTAINER="${POSTGRES_CONTAINER:-festschmiede-postgres}"
 
 if ! docker ps --format '{{.Names}}' | grep -qx "$CONTAINER"; then
   echo "Fehler: Postgres-Container '$CONTAINER' läuft nicht." >&2

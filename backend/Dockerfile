@@ -38,7 +38,7 @@ USER app
 EXPOSE 3001
 
 HEALTHCHECK --interval=15s --timeout=5s --start-period=40s --retries=5 \
-  CMD wget -q --spider http://localhost:3001/api/health || exit 1
+  CMD wget -q --spider http://127.0.0.1:3001/api/health || exit 1
 
 ENTRYPOINT ["/app/scripts/docker-entrypoint.sh"]
 CMD ["start"]

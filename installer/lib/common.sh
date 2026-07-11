@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # FestSchmiede Installer – gemeinsame Variablen und Hilfsfunktionen
 
-INSTALLER_VERSION="2.3.4"
+INSTALLER_VERSION="2.3.5"
 PRODUCT_NAME="FestSchmiede"
 
 # Installationsverzeichnis (Repo-Root) – nur setzen wenn nicht bereits gesetzt
@@ -84,11 +84,37 @@ relocate_install_tree() {
 
   mkdir -p "$to"
   log_info "Verschiebe Installation von ${from} nach ${to}..."
-  if command -v rsync >/dev/null 2>&1; then
-    rsync -a "${from}/" "${to}/"
-  else
-    cp -a "${from}/." "${to}/"
+
+  local manifest rel_path
+  manifest="${INSTALLER_DIR}/bootstrap-files.txt"
+  if [[ ! -f "$manifest" ]]; then
+    manifest="${from}/installer/bootstrap-files.txt"
   fi
+  if [[ ! -f "$manifest" ]]; then
+    log_error "bootstrap-files.txt fehlt — Relocation abgebrochen"
+    return 1
+  fi
+
+  while IFS= read -r rel_path; do
+    [[ -n "$rel_path" ]] || continue
+    [[ "$rel_path" =~ ^# ]] && continue
+    [[ -f "${from}/${rel_path}" ]] || continue
+    mkdir -p "$(dirname "${to}/${rel_path}")"
+    cp -a "${from}/${rel_path}" "${to}/${rel_path}"
+  done < <(grep -vE '^\s*(#|$)' "$manifest")
+
+  for rel_path in install.sh installer/install.sh scripts/backup/postgres-backup.sh scripts/backup/postgres-restore.sh; do
+    [[ -f "${to}/${rel_path}" ]] && chmod +x "${to}/${rel_path}" 2>/dev/null || true
+  done
+
+  [[ -f "${from}/.env" ]] && cp -a "${from}/.env" "${to}/.env"
+  [[ -d "${from}/.installer-state" ]] && cp -a "${from}/.installer-state" "${to}/"
+  [[ -f "${from}/installer/generated/compose.override.yml" ]] && \
+    mkdir -p "${to}/installer/generated" && \
+    cp -a "${from}/installer/generated/compose.override.yml" "${to}/installer/generated/"
+  [[ -d "${from}/installer/logs" ]] && mkdir -p "${to}/installer/logs" && \
+    cp -a "${from}/installer/logs/." "${to}/installer/logs/" 2>/dev/null || true
+  [[ -d "${from}/backups" ]] && cp -a "${from}/backups" "${to}/" 2>/dev/null || true
 }
 
 load_existing_env() {

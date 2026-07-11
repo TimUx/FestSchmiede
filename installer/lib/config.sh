@@ -165,6 +165,11 @@ ${smtp_env}
     ports: !reset []
     expose:
       - "80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:80 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 EOF
     else
       cat >>"$file" <<EOF
@@ -191,6 +196,11 @@ ${smtp_env}
     ports: !reset []
     expose:
       - "80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:80 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 ${redis_service}
 ${volumes_block}
 EOF

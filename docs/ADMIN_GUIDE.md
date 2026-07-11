@@ -289,7 +289,7 @@ Internet (HTTPS)
 │  Traefik / nginx /  │  Port 443, TLS-Terminierung
 │  Caddy              │
 └──────────┬──────────┘
-           │ HTTP → vereins-frontend:80
+           │ HTTP → festschmiede-frontend:80
            ▼
 ┌─────────────────────┐
 │  Frontend (nginx)   │  /api/, /uploads/, /socket.io/ → Backend
@@ -338,7 +338,7 @@ Traefik muss im selben Docker-Netzwerk wie die Anwendung laufen. Beispiel mit Le
 services:
   frontend:
     image: ghcr.io/timux/festschmiede/frontend:latest
-    container_name: vereins-frontend
+    container_name: festschmiede-frontend
     restart: unless-stopped
     networks:
       - default
@@ -394,8 +394,8 @@ Wenn nginx direkt auf dem Host installiert ist und das Frontend über `localhost
 
 ```nginx
 # /etc/nginx/sites-available/bestellung.sv-musterstadt.de
-upstream vereins_frontend {
-    server 127.0.0.1:5173;   # oder: server vereins-frontend:80; bei nginx im Docker-Netzwerk
+upstream festschmiede_frontend {
+    server 127.0.0.1:5173;   # oder: server festschmiede-frontend:80; bei nginx im Docker-Netzwerk
     keepalive 32;
 }
 
@@ -414,7 +414,7 @@ server {
 
     # Frontend (inkl. /api/, /uploads/, /socket.io/ – weitergeleitet durch Frontend-nginx)
     location / {
-        proxy_pass http://vereins_frontend;
+        proxy_pass http://festschmiede_frontend;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -424,7 +424,7 @@ server {
 
     # WebSocket (zusätzliche Absicherung für /socket.io/)
     location /socket.io/ {
-        proxy_pass http://vereins_frontend;
+        proxy_pass http://festschmiede_frontend;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -477,7 +477,7 @@ Caddy übernimmt TLS automatisch (Let's Encrypt):
 ```caddy
 # /etc/caddy/Caddyfile
 bestellung.sv-musterstadt.de {
-    reverse_proxy vereins-frontend:80 {
+    reverse_proxy festschmiede-frontend:80 {
         header_up Host {host}
         header_up X-Real-IP {remote_host}
         header_up X-Forwarded-For {remote_host}

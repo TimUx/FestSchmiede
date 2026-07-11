@@ -3,6 +3,22 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.3.5 - 2026-07-11
+
+### Behoben
+
+- **Frontend Healthcheck:** `localhost` durch `127.0.0.1` ersetzt (IPv6-Verbindungsfehler in Alpine/nginx). Prüfung läuft container-intern und funktioniert auch ohne Host-Port-Mapping bei Reverse Proxy.
+- **Frontend nginx:** IPv6-Listen und Laufzeit-Auflösung von `backend` über Docker-DNS — kein Start-Abbruch mehr, wenn der Backend-Hostname beim Start noch fehlt.
+- **Installer Bootstrap:** Online-Installation lädt nur Plattform-Dateien (Compose, Installer, Backup-Skripte), nicht das gesamte Git-Repository.
+- **Container-Namen:** Einheitlich `festschmiede-postgres`, `festschmiede-backend`, `festschmiede-frontend`.
+- **Installer Health-Check:** Nutzt Docker-Container-Status statt externer HTTPS-URLs (verhindert Timeout bei Reverse Proxy).
+
+### Geändert
+
+- **Installer:** Healthcheck und `expose: 80` werden im Compose-Override bei Reverse Proxy explizit gesetzt.
+
+---
+
 ## 2.3.4 - 2026-07-11
 
 ### Neu

@@ -61,7 +61,7 @@ services:
     networks:
       - internal
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/api/health"]
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3001/api/health"]
       interval: 15s
       timeout: 5s
       retries: 5
@@ -75,7 +75,8 @@ services:
       - internal
       - public
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80"]
+      # Container-intern: Port 80 ist nur per expose im Proxy-Netz erreichbar, nicht auf dem Host
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:80 || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 5

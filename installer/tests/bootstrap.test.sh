@@ -21,6 +21,8 @@ echo "=== Bootstrap Tests ==="
 TMPDIR=$(mktemp -d)
 "${ROOT}/install.sh" --dir "$TMPDIR" --bootstrap-only >/dev/null 2>&1 \
   && [[ -f "$TMPDIR/docker-compose.yml" ]] \
+  && [[ ! -d "$TMPDIR/backend" ]] \
+  && [[ ! -d "$TMPDIR/frontend" ]] \
   && pass "--dir bootstrap" || fail "--dir bootstrap"
 rm -rf "$TMPDIR"
 
@@ -43,26 +45,31 @@ default_dir=$(
 
 # Version
 out=$("${ROOT}/install.sh" --version 2>&1)
-echo "$out" | grep -q "2.3.4" && pass "--version" || fail "--version"
+echo "$out" | grep -q "2.3.5" && pass "--version" || fail "--version"
 
 # Lokaler Modus erkennt Repository
 [[ -f "${ROOT}/installer/install.sh" ]] && pass "local installer exists" || fail "local installer exists"
 
 # URL-Generierung (inline test via bash)
-REF=$(FESTSCHMIEDE_VERSION=2.3.4 bash -c '
+REF=$(FESTSCHMIEDE_VERSION=2.3.5 bash -c '
   source /dev/null 2>/dev/null
   FESTSCHMIEDE_GITHUB_REPO=TimUx/FestSchmiede
-  FESTSCHMIEDE_VERSION=2.3.4
-  echo "https://github.com/${FESTSCHMIEDE_GITHUB_REPO}/archive/refs/tags/v${FESTSCHMIEDE_VERSION}.tar.gz"
+  FESTSCHMIEDE_VERSION=2.3.5
+  echo "https://raw.githubusercontent.com/${FESTSCHMIEDE_GITHUB_REPO}/v${FESTSCHMIEDE_VERSION}/docker-compose.yml"
 ')
-echo "$REF" | grep -q "FestSchmiede" && pass "archive URL format" || fail "archive URL format"
+echo "$REF" | grep -q "raw.githubusercontent.com" && pass "raw URL format" || fail "raw URL format"
+
+# Bootstrap-Manifest vorhanden
+[[ -f "${ROOT}/installer/bootstrap-files.txt" ]] && pass "bootstrap manifest exists" || fail "bootstrap manifest exists"
+manifest_count=$(grep -cvE '^\s*(#|$)' "${ROOT}/installer/bootstrap-files.txt")
+[[ "$manifest_count" -ge 10 ]] && pass "bootstrap manifest entries" || fail "bootstrap manifest entries"
 
 # Erkennung installierter Installer-Version (für Auto-Update)
 TMP_VER=$(mktemp -d)
 mkdir -p "$TMP_VER/installer/lib"
 echo 'INSTALLER_VERSION="2.3.0"' > "$TMP_VER/installer/lib/common.sh"
 detected=$(grep -E '^INSTALLER_VERSION=' "$TMP_VER/installer/lib/common.sh" | cut -d'"' -f2)
-[[ "$detected" == "2.3.0" && "$detected" != "2.3.4" ]] \
+[[ "$detected" == "2.3.0" && "$detected" != "2.3.5" ]] \
   && pass "installed version detect" || fail "installed version detect"
 rm -rf "$TMP_VER"
 
@@ -71,6 +78,7 @@ if [[ "${FESTSCHMIEDE_TEST_ONLINE:-}" == "1" ]]; then
   TMPDIR=$(mktemp -d)
   FESTSCHMIEDE_INSTALL_DIR="$TMPDIR" FESTSCHMIEDE_BOOTSTRAP_ONLY=1 bash < "${ROOT}/install.sh"
   [[ -f "$TMPDIR/docker-compose.yml" && -f "$TMPDIR/installer/install.sh" ]] \
+    && [[ ! -d "$TMPDIR/backend" ]] \
     && pass "online bootstrap download" || fail "online bootstrap download"
   rm -rf "$TMPDIR"
 else

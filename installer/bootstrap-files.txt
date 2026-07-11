@@ -1,0 +1,27 @@
+# FestSchmiede deployment bootstrap manifest
+# Only files required for container operation and the installer wizard.
+install.sh
+docker-compose.yml
+docker-compose.prod.yml
+docker-stack.yml
+.env.example
+installer/bootstrap-files.txt
+installer/install.sh
+installer/.gitignore
+installer/lib/common.sh
+installer/lib/tui.sh
+installer/lib/detect.sh
+installer/lib/validate.sh
+installer/lib/secrets.sh
+installer/lib/config.sh
+installer/lib/migrate.sh
+installer/lib/docker.sh
+installer/lib/rollback.sh
+installer/lib/operations.sh
+installer/lib/wizard.sh
+installer/lib/log.sh
+installer/lib/errors.sh
+installer/generated/.gitkeep
+installer/logs/.gitkeep
+scripts/backup/postgres-backup.sh
+scripts/backup/postgres-restore.sh

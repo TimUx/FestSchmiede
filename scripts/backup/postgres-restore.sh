@@ -12,7 +12,7 @@ fi
 BACKUP_FILE="$1"
 POSTGRES_USER="${POSTGRES_USER:-verein}"
 POSTGRES_DB="${POSTGRES_DB:-vereinsbestellung}"
-CONTAINER="${POSTGRES_CONTAINER:-vereins-postgres}"
+CONTAINER="${POSTGRES_CONTAINER:-festschmiede-postgres}"
 
 if [[ ! -f "$BACKUP_FILE" ]]; then
   echo "Fehler: Backup-Datei nicht gefunden: $BACKUP_FILE" >&2

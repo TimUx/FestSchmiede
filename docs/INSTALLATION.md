@@ -1,13 +1,13 @@
 # FestSchmiede – Installationsanleitung
 
-> **Version 2.3.4** – Professioneller interaktiver Installations-Assistent (TUI)
+> **Version 2.3.5** – Professioneller interaktiver Installations-Assistent (TUI)
 
 ## Schnellstart
 
 ### Online (ohne Git-Clone)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.3.4/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.3.5/install.sh | bash
 ```
 
 **Installationspfad angeben** (Priorität: `--dir` > `FESTSCHMIEDE_INSTALL_DIR` > interaktive Abfrage > Default):
@@ -114,13 +114,16 @@ Module aktivieren Sie nach der Installation unter **Administration → Module**.
 
 Ohne Reverse Proxy werden **Host-Ports** freigegeben; der Schritt „Proxy-Netzwerk“ entfällt.
 
-Beim Online-Install (`curl … \| bash`) werden vorhandene Installationen automatisch auf die Version aus dem Bootstrap-Skript aktualisiert. Erzwingen: `FESTSCHMIEDE_FORCE_DOWNLOAD=1`.
+Beim Online-Install (`curl … \| bash`) werden nur die für den Betrieb nötigen Dateien (Compose, Installer, Backup-Skripte) aus dem GitHub-Release heruntergeladen — nicht das gesamte Repository. Vorhandene Installationen werden automatisch auf die Version aus dem Bootstrap-Skript aktualisiert. Erzwingen: `FESTSCHMIEDE_FORCE_DOWNLOAD=1`.
 
 ## Erzeugte Dateien
 
 | Datei | Beschreibung |
 |-------|-------------|
+| `docker-compose.yml`, `docker-compose.prod.yml`, `docker-stack.yml` | Container-Definitionen |
 | `.env` | Umgebungsvariablen (chmod 600) |
+| `installer/` | Installations-Assistent (ohne Quellcode von Backend/Frontend) |
+| `scripts/backup/` | Datenbank-Backup und Restore |
 | `installer/generated/compose.override.yml` | Docker-Compose-Erweiterung |
 | `installer/logs/install-*.log` | Installationsprotokoll |
 | `.installer-state/` | Wizard-Status und Backups |
@@ -235,7 +238,8 @@ npm run qa:installer
 |---------|--------|
 | Docker nicht erreichbar | `sudo systemctl start docker` |
 | Port 80/443 belegt | Anderen Dienst stoppen oder Proxy-Modus wählen |
-| Backend-Timeout | `docker compose logs backend` prüfen |
+| Backend-Timeout | Container-Status prüfen: `docker ps`, `docker inspect festschmiede-backend`; Logs: `docker compose logs backend` |
+| Frontend unhealthy | Healthcheck nutzt `127.0.0.1` statt `localhost` (IPv6-Problem). Nach Image-Update: `docker compose up -d --force-recreate frontend`. Logs: `docker logs festschmiede-frontend` |
 | TUI fehlt | `sudo apt install dialog` |
 
 Protokoll: `installer/logs/install-*.log`

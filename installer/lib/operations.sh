@@ -64,6 +64,7 @@ run_database_backup() {
 verify_health_strict() {
   local timeout="${1:-180}"
   local api_url="http://localhost:3001/api/health"
+  local backend_container="${CFG[BACKEND_CONTAINER]:-festschmiede-backend}"
 
   if [[ "${CFG[INSTALL_PROFILE]:-local}" == "production" && -n "${CFG[PLATFORM_DOMAIN]:-}" ]]; then
     api_url="https://${CFG[API_SUBDOMAIN]:-api}.${CFG[PLATFORM_DOMAIN]}/api/health"
@@ -81,10 +82,14 @@ verify_health_strict() {
         return 0
       fi
     fi
+    if container_health_ok "$backend_container"; then
+      log_info "Health OK nach ${i}s (Container: ${backend_container})"
+      return 0
+    fi
     sleep 1
   done
 
-  installer_fail health_failed "Timeout nach ${timeout}s — API nicht bereit"
+  installer_fail health_failed "Timeout nach ${timeout}s — API/Container nicht bereit"
   return "$EXIT_HEALTH"
 }
 
