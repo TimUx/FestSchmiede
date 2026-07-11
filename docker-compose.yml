@@ -4,16 +4,16 @@ services:
     container_name: festschmiede-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-verein}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-verein_secret}
-      POSTGRES_DB: ${POSTGRES_DB:-vereinsbestellung}
+      POSTGRES_USER: ${POSTGRES_USER:-festschmiede}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-in-production}
+      POSTGRES_DB: ${POSTGRES_DB:-festschmiede}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     # Postgres nur intern – nicht nach außen exponieren (M7)
     expose:
       - "5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-verein} -d ${POSTGRES_DB:-vereinsbestellung}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-festschmiede} -d ${POSTGRES_DB:-festschmiede}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -38,7 +38,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3001
-      DATABASE_URL: postgresql://${POSTGRES_USER:-verein}:${POSTGRES_PASSWORD:-verein_secret}@postgres:5432/${POSTGRES_DB:-vereinsbestellung}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-festschmiede}:${POSTGRES_PASSWORD:-change-me-in-production}@postgres:5432/${POSTGRES_DB:-festschmiede}
       JWT_SECRET: ${JWT_SECRET:-change-me-in-production-use-long-random-string}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}

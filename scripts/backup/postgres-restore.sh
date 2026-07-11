@@ -10,8 +10,8 @@ if [[ $# -lt 1 ]]; then
 fi
 
 BACKUP_FILE="$1"
-POSTGRES_USER="${POSTGRES_USER:-verein}"
-POSTGRES_DB="${POSTGRES_DB:-vereinsbestellung}"
+POSTGRES_USER="${POSTGRES_USER:-festschmiede}"
+POSTGRES_DB="${POSTGRES_DB:-festschmiede}"
 CONTAINER="${POSTGRES_CONTAINER:-festschmiede-postgres}"
 
 if [[ ! -f "$BACKUP_FILE" ]]; then

@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DATABASE_URL: postgresql://verein:qa-ci-postgres-password-secure@localhost:5432/vereinsbestellung
+  DATABASE_URL: postgresql://festschmiede:qa-ci-postgres-password-secure@localhost:5432/festschmiede
   JWT_SECRET: qa-docker-ci-jwt-secret-not-in-blocklist-32chars
   APP_ENCRYPTION_KEY: qa-docker-ci-encryption-key-not-blocked32
   CORS_ORIGIN: http://localhost:5173

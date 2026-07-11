@@ -3,6 +3,20 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.3.7 - 2026-07-11
+
+### Behoben
+
+- **Installer:** Erkennt vorhandenes PostgreSQL-Daten-Volume bei Neuinstallation und bietet Zugangsdaten aus Backup übernehmen oder Volume zurücksetzen an (behebt P1000-Authentifizierungsfehler).
+- **Installer:** Generiert kein neues DB-Passwort, wenn vorhandene Zugangsdaten wiederverwendet werden.
+
+### Geändert
+
+- **Datenbank-Defaults:** `festschmiede` statt `verein` / `vereinsbestellung` (User, DB-Name, Backup-Dateinamen).
+- **Compose/CI:** Fallback-Passwort `change-me-in-production` statt `verein_secret`.
+
+---
+
 ## 2.3.6 - 2026-07-11
 
 ### Neu

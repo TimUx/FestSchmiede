@@ -46,6 +46,22 @@ compose_down() {
   (cd "$INSTALL_DIR" && "${COMPOSE_CMD[@]}" "${COMPOSE_FILES[@]}" down) >>"$LOG_FILE" 2>&1 || true
 }
 
+reset_postgres_volume_if_requested() {
+  [[ "${CFG[RESET_POSTGRES_VOLUME]:-}" == "yes" ]] || return 0
+  local vol="${CFG[POSTGRES_VOLUME_NAME]:-${SYS_DETECT[postgres_volume_name]:-}}"
+  [[ -n "$vol" ]] || return 0
+
+  log_info "Entferne PostgreSQL-Volume: ${vol}"
+  compose_down
+  if ! docker volume rm "$vol" >>"$LOG_FILE" 2>&1; then
+    log_error "PostgreSQL-Volume konnte nicht entfernt werden: ${vol}"
+    return 1
+  fi
+  SYS_DETECT[postgres_volume]="no"
+  SYS_DETECT[postgres_volume_name]=""
+  return 0
+}
+
 container_health_ok() {
   local name="$1"
   local status
@@ -107,6 +123,7 @@ run_installation() {
     step=$((step+1))
 
     tui_gauge "Installation" $((step*100/total)) "Starte Container..."
+    reset_postgres_volume_if_requested || return 1
     compose_up || return 1
     step=$((step+1))
 

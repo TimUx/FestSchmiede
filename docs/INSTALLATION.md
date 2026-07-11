@@ -1,13 +1,13 @@
 # FestSchmiede – Installationsanleitung
 
-> **Version 2.3.6** – Professioneller interaktiver Installations-Assistent (TUI)
+> **Version 2.3.7** – Professioneller interaktiver Installations-Assistent (TUI)
 
 ## Schnellstart
 
 ### Online (ohne Git-Clone)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.3.6/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.3.7/install.sh | bash
 ```
 
 **Installationspfad angeben** (Priorität: `--dir` > `FESTSCHMIEDE_INSTALL_DIR` > interaktive Abfrage > Default):
@@ -239,7 +239,8 @@ npm run qa:installer
 |---------|--------|
 | Docker nicht erreichbar | `sudo systemctl start docker` |
 | Port 80/443 belegt | Anderen Dienst stoppen oder Proxy-Modus wählen |
-| Backend-Timeout | Container-Status prüfen: `docker ps`, `docker inspect festschmiede-backend`; Logs: `docker compose logs backend` |
+| Backend P1000 / unhealthy | Passwort passt nicht zum PostgreSQL-Volume. Installer erneut starten und „Daten behalten“ wählen, oder Volume löschen: `docker compose down && docker volume rm festschmiede_postgres_data` |
+| Backend-Timeout | `docker compose logs backend`; oft Folge von P1000 (siehe oben) |
 | Frontend unhealthy | Healthcheck nutzt `127.0.0.1` statt `localhost` (IPv6-Problem). Nach Image-Update: `docker compose up -d --force-recreate frontend`. Logs: `docker logs festschmiede-frontend` |
 | TUI fehlt | `sudo apt install dialog` |
 

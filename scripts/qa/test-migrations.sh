@@ -8,8 +8,8 @@ CONTAINER="festschmiede-migrate-test"
 PORT=55432
 DB_USER=verein
 DB_PASS=verein_secret
-DB_NAME_FRESH=vereinsbestellung_fresh
-DB_NAME_UPGRADE=vereinsbestellung_upgrade
+DB_NAME_FRESH=festschmiede_fresh
+DB_NAME_UPGRADE=festschmiede_upgrade
 DATABASE_URL_FRESH="postgresql://${DB_USER}:${DB_PASS}@127.0.0.1:${PORT}/${DB_NAME_FRESH}"
 DATABASE_URL_UPGRADE="postgresql://${DB_USER}:${DB_PASS}@127.0.0.1:${PORT}/${DB_NAME_UPGRADE}"
 

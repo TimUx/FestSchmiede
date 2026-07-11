@@ -38,6 +38,7 @@ const INSECURE_PLATFORM_PASSWORDS = new Set([
 
 const INSECURE_POSTGRES_PASSWORDS = new Set([
   'verein_secret',
+  'change-me-in-production',
   'postgres',
   'password',
   'festschmiede',

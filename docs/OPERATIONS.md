@@ -122,7 +122,7 @@ Pre-Migration-Backups im Container: `/app/backups/pre-migrate-*.sql.gz` (wenn Da
 ./scripts/backup/postgres-backup.sh
 ```
 
-Backups landen standardmäßig in `./backups/` als `vereinsbestellung-YYYYMMDD-HHMMSS.sql.gz`.
+Backups landen standardmäßig in `./backups/` als `festschmiede-YYYYMMDD-HHMMSS.sql.gz`.
 
 **Empfehlung:** Vor jedem Update und nach jedem großen Event ein Backup; Kopie auf zweitem Medium.
 
@@ -163,7 +163,7 @@ Erwartete Ausgabe: `DRY_RUN OK: … (gzip gültig)`.
 
 | Variable | Wofür | Hinweis |
 |----------|--------|---------|
-| `POSTGRES_PASSWORD` | Datenbank | Starkes Passwort, nicht `verein_secret` |
+| `POSTGRES_PASSWORD` | Datenbank | Starkes Passwort, nicht `change-me-in-production` |
 | `JWT_SECRET` | Mitarbeiter-Login | Mind. 32 Zeichen, zufällig |
 | `APP_ENCRYPTION_KEY` | Zahlung/E-Mail in DB | Mind. 32 Zeichen, wenn Module genutzt |
 | `CORS_ORIGIN` | Öffentliche Frontend-URL | In Produktion: `platform.network.corsOrigins` mit `https://…` (kein `*`) |

@@ -12,12 +12,12 @@ fi
 
 BACKUP_DIR="${BACKUP_DIR:-${ROOT_DIR}/backups}"
 TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
-FILE="${BACKUP_DIR}/vereinsbestellung-${TIMESTAMP}.sql.gz"
+FILE="${BACKUP_DIR}/festschmiede-${TIMESTAMP}.sql.gz"
 
 mkdir -p "$BACKUP_DIR"
 
-POSTGRES_USER="${POSTGRES_USER:-verein}"
-POSTGRES_DB="${POSTGRES_DB:-vereinsbestellung}"
+POSTGRES_USER="${POSTGRES_USER:-festschmiede}"
+POSTGRES_DB="${POSTGRES_DB:-festschmiede}"
 CONTAINER="${POSTGRES_CONTAINER:-festschmiede-postgres}"
 
 if ! docker ps --format '{{.Names}}' | grep -qx "$CONTAINER"; then

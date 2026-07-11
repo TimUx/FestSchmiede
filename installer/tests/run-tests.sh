@@ -115,6 +115,22 @@ grep -q "public" "${INSTALL_DIR}/installer/generated/compose.override.yml" \
 ! grep -q "traefik.enable=true" "${INSTALL_DIR}/installer/generated/compose.override.yml" \
   && pass "bundled traefik labels only in prod overlay" || fail "bundled traefik labels only in prod overlay"
 
+echo "--- Postgres Volume ---"
+TMP_PG=$(mktemp -d)
+export INSTALL_DIR="$TMP_PG" INSTALLER_DIR BACKUP_DIR="${TMP_PG}/.installer-state/backups"
+mkdir -p "$BACKUP_DIR/pre-install-old"
+echo 'POSTGRES_USER=legacyuser' >"$BACKUP_DIR/pre-install-old/.env"
+echo 'POSTGRES_PASSWORD=legacypass' >>"$BACKUP_DIR/pre-install-old/.env"
+echo 'POSTGRES_DB=legacydb' >>"$BACKUP_DIR/pre-install-old/.env"
+CFG=()
+SYS_DETECT[postgres_volume]=yes
+source "${INSTALLER_DIR}/lib/config.sh"
+cred=$(find_postgres_credentials_backup)
+load_postgres_credentials_from_file "$cred" \
+  && [[ "${CFG[POSTGRES_USER]}" == "legacyuser" && "${CFG[POSTGRES_PASSWORD]}" == "legacypass" ]] \
+  && pass "postgres credentials from backup" || fail "postgres credentials from backup"
+rm -rf "$TMP_PG"
+
 echo ""
 echo "Ergebnis: $PASS bestanden, $FAIL fehlgeschlagen"
 [[ $FAIL -eq 0 ]]

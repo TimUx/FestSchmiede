@@ -285,8 +285,11 @@ wizard_step_database() {
 
   CFG[DB_MODE]="$choice"
   if [[ "$choice" == "external" ]]; then
-  CFG[DATABASE_URL]=$(tui_input "Datenbank-URL" "PostgreSQL Connection String:" "${CFG[DATABASE_URL]:-postgresql://user:pass@host:5432/db}") || return 1
+    CFG[DATABASE_URL]=$(tui_input "Datenbank-URL" "PostgreSQL Connection String:" "${CFG[DATABASE_URL]:-postgresql://user:pass@host:5432/db}") || return 1
+    return 0
   fi
+
+  resolve_postgres_volume_strategy || return 1
   return 0
 }
 

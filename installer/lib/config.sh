@@ -1,9 +1,98 @@
 #!/usr/bin/env bash
 # FestSchmiede Installer – Konfigurationsgenerierung (.env, compose)
 
+#!/usr/bin/env bash
+# FestSchmiede Installer – Konfigurationsgenerierung (.env, compose)
+
+load_postgres_credentials_from_file() {
+  local env_file="$1"
+  local key value
+  [[ -f "$env_file" ]] || return 1
+  while IFS='=' read -r key value; do
+    [[ "$key" =~ ^(POSTGRES_USER|POSTGRES_PASSWORD|POSTGRES_DB)$ ]] || continue
+    value="${value%$'\r'}"
+    value="${value#\"}"; value="${value%\"}"
+    CFG["$key"]="$value"
+  done < <(grep -E '^POSTGRES_(USER|PASSWORD|DB)=' "$env_file" 2>/dev/null || true)
+  [[ -n "${CFG[POSTGRES_PASSWORD]:-}" ]]
+}
+
+find_postgres_credentials_backup() {
+  local oldest=""
+  oldest=$(ls -td "${BACKUP_DIR}"/pre-install-* 2>/dev/null | tail -1)
+  if [[ -n "$oldest" && -f "${oldest}/.env" ]]; then
+    echo "${oldest}/.env"
+    return 0
+  fi
+  if [[ -f "${INSTALL_DIR}/.env" ]]; then
+    echo "${INSTALL_DIR}/.env"
+    return 0
+  fi
+  return 1
+}
+
+resolve_postgres_volume_strategy() {
+  detect_postgres_volume
+  [[ "${CFG[DB_MODE]:-internal}" == "internal" ]] || return 0
+  [[ "${SYS_DETECT[postgres_volume]:-no}" == "yes" ]] || return 0
+
+  local vol="${SYS_DETECT[postgres_volume_name]}"
+  local cred_file="" msg
+
+  msg="Es existiert bereits ein PostgreSQL-Daten-Volume:
+  ${vol}
+
+PostgreSQL initialisiert Benutzer und Passwort nur beim ersten Start.
+Ein neues Passwort in der .env führt sonst zu P1000-Authentifizierungsfehlern."
+
+  if cred_file=$(find_postgres_credentials_backup); then
+    msg="${msg}
+
+Vorhandene Zugangsdaten aus ${cred_file} können übernommen werden."
+    if tui_yesno "Datenbank-Volume" "${msg}
+
+Vorhandene Datenbank-Daten und Zugangsdaten behalten?"; then
+      load_postgres_credentials_from_file "$cred_file" || {
+        tui_msgbox "Fehler" "Zugangsdaten konnten nicht aus ${cred_file} gelesen werden."
+        return 1
+      }
+      CFG[REUSE_POSTGRES_CREDENTIALS]="yes"
+      CFG[POSTGRES_VOLUME_NAME]="$vol"
+      log_info "PostgreSQL-Zugangsdaten aus ${cred_file} übernommen (Volume: ${vol})"
+      return 0
+    fi
+  else
+    msg="${msg}
+
+Keine frühere .env mit Zugangsdaten gefunden."
+    if ! tui_yesno "Datenbank-Volume" "${msg}
+
+Datenbank-Volume zurücksetzen (alle Daten löschen)?"; then
+      WIZARD_CANCELLED=1
+      return 1
+    fi
+    CFG[RESET_POSTGRES_VOLUME]="yes"
+    CFG[POSTGRES_VOLUME_NAME]="$vol"
+    log_info "PostgreSQL-Volume wird zurückgesetzt: ${vol}"
+    return 0
+  fi
+
+  if tui_yesno "Datenbank löschen" "Alle PostgreSQL-Daten im Volume ${vol} werden unwiderruflich gelöscht!
+
+Fortfahren?"; then
+    CFG[RESET_POSTGRES_VOLUME]="yes"
+    CFG[POSTGRES_VOLUME_NAME]="$vol"
+    log_info "PostgreSQL-Volume wird zurückgesetzt: ${vol}"
+    return 0
+  fi
+
+  WIZARD_CANCELLED=1
+  return 1
+}
+
 apply_defaults() {
-  CFG[POSTGRES_USER]="${CFG[POSTGRES_USER]:-verein}"
-  CFG[POSTGRES_DB]="${CFG[POSTGRES_DB]:-vereinsbestellung}"
+  CFG[POSTGRES_USER]="${CFG[POSTGRES_USER]:-festschmiede}"
+  CFG[POSTGRES_DB]="${CFG[POSTGRES_DB]:-festschmiede}"
   CFG[GHCR_IMAGE_PREFIX]="${CFG[GHCR_IMAGE_PREFIX]:-ghcr.io/timux/festschmiede}"
   CFG[IMAGE_TAG]="${CFG[IMAGE_TAG]:-latest}"
   CFG[JWT_EXPIRES_IN]="${CFG[JWT_EXPIRES_IN]:-8h}"

@@ -2,13 +2,13 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: verein
+      POSTGRES_USER: festschmiede
       POSTGRES_PASSWORD: qa-ci-postgres-password-secure
-      POSTGRES_DB: vereinsbestellung
+      POSTGRES_DB: festschmiede
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U verein -d vereinsbestellung"]
+      test: ["CMD-SHELL", "pg_isready -U festschmiede -d festschmiede"]
       interval: 5s
       timeout: 5s
       retries: 12
@@ -37,7 +37,7 @@ services:
       NODE_ENV: production
       FESTSCHMIEDE_CI: "1"
       PORT: 3001
-      DATABASE_URL: postgresql://verein:qa-ci-postgres-password-secure@postgres:5432/vereinsbestellung
+      DATABASE_URL: postgresql://festschmiede:qa-ci-postgres-password-secure@postgres:5432/festschmiede
       JWT_SECRET: qa-docker-ci-jwt-secret-not-in-blocklist-32chars
       JWT_EXPIRES_IN: 8h
       CORS_ORIGIN: http://localhost:5173

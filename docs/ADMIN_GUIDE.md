@@ -175,9 +175,9 @@ docker compose up -d
 ### Datenbank
 
 ```env
-POSTGRES_USER=verein
-POSTGRES_PASSWORD=verein_secret      # In Produktion ändern!
-POSTGRES_DB=vereinsbestellung
+POSTGRES_USER=festschmiede
+POSTGRES_PASSWORD=<starkes-passwort>      # In Produktion ändern!
+POSTGRES_DB=festschmiede
 ```
 
 ### Sicherheit & Authentifizierung

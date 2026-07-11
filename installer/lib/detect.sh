@@ -126,6 +126,19 @@ detect_ports() {
   done
 }
 
+detect_postgres_volume() {
+  SYS_DETECT[postgres_volume]="no"
+  SYS_DETECT[postgres_volume_name]=""
+  local vol
+  for vol in "${DOCKER_VOLUMES[@]}"; do
+    if [[ "$vol" == *postgres_data* ]]; then
+      SYS_DETECT[postgres_volume]="yes"
+      SYS_DETECT[postgres_volume_name]="$vol"
+      return 0
+    fi
+  done
+}
+
 detect_existing_festschmiede() {
   SYS_DETECT[existing_install]="no"
   if [[ -f "${INSTALL_DIR}/.env" ]]; then
@@ -147,6 +160,7 @@ run_full_detection() {
   detect_reverse_proxy
   detect_firewall
   detect_ports
+  detect_postgres_volume
   detect_existing_festschmiede
   log_info "Systemanalyse abgeschlossen"
 }
@@ -185,6 +199,9 @@ format_detection_report() {
     for v in "${DOCKER_VOLUMES[@]:0:6}"; do
       report+=$'\n'"  - $v"
     done
+    if [[ "${SYS_DETECT[postgres_volume]:-no}" == "yes" ]]; then
+      report+=$'\n'"  → PostgreSQL-Daten: ${SYS_DETECT[postgres_volume_name]}"
+    fi
   fi
 
   report+=$'\n\n'"--- Bestehende Installation ---"

@@ -11,8 +11,8 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: verein
-      POSTGRES_DB: vereinsbestellung
+      POSTGRES_USER: festschmiede
+      POSTGRES_DB: festschmiede
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
     secrets:
       - db_password
@@ -28,7 +28,7 @@ services:
       restart_policy:
         condition: on-failure
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U verein -d vereinsbestellung"]
+      test: ["CMD-SHELL", "pg_isready -U festschmiede -d festschmiede"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -38,7 +38,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3001
-      DATABASE_URL: postgresql://verein@postgres:5432/vereinsbestellung
+      DATABASE_URL: postgresql://festschmiede@postgres:5432/festschmiede
       JWT_SECRET_FILE: /run/secrets/jwt_secret
       MULTI_TENANT_ENABLED: "true"
       PLATFORM_DOMAIN: ${PLATFORM_DOMAIN:-localhost}
