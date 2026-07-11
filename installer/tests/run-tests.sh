@@ -72,6 +72,8 @@ CFG[PROXY_MODE]="none"
 generate_compose_override
 grep -q "festschmiede_internal" "${INSTALL_DIR}/installer/generated/compose.override.yml" \
   && pass "internal network local" || fail "internal network local"
+[[ -f "${INSTALL_DIR}/docker-compose.override.yml" ]] \
+  && pass "override published at install root" || fail "override published at install root"
 ! grep -qE "ports: (\[\]|!reset \[\])" "${INSTALL_DIR}/installer/generated/compose.override.yml" \
   && pass "local keeps host ports" || fail "local keeps host ports"
 
@@ -101,18 +103,20 @@ CFG[PROXY_DEPLOYMENT]="external"
 CFG[HTTPS_ENABLED]="yes"
 CFG[TRAEFIK_CERT_RESOLVER]="letsencrypt"
 generate_compose_override
-grep -q "traefik.enable=true" "${INSTALL_DIR}/installer/generated/compose.override.yml" \
+grep -q "traefik.enable=true" "${INSTALL_DIR}/docker-compose.override.yml" \
   && pass "external traefik labels" || fail "external traefik labels"
-grep -q "traefik.docker.network=traefik_net" "${INSTALL_DIR}/installer/generated/compose.override.yml" \
+grep -q "traefik.docker.network=traefik_net" "${INSTALL_DIR}/docker-compose.override.yml" \
   && pass "external traefik network label" || fail "external traefik network label"
 
 CFG[PROXY_MODE]="traefik"
 CFG[PROXY_DEPLOYMENT]="bundled"
 CFG[DOCKER_NETWORK_CREATE]="yes"
 generate_compose_override
-grep -q "public" "${INSTALL_DIR}/installer/generated/compose.override.yml" \
+grep -q "public" "${INSTALL_DIR}/docker-compose.override.yml" \
   && pass "traefik uses public network" || fail "traefik uses public network"
-! grep -q "traefik.enable=true" "${INSTALL_DIR}/installer/generated/compose.override.yml" \
+grep -q "driver: bridge" "${INSTALL_DIR}/docker-compose.override.yml" \
+  && pass "traefik public network created" || fail "traefik public network created"
+! grep -q "traefik.enable=true" "${INSTALL_DIR}/docker-compose.override.yml" \
   && pass "bundled traefik labels only in prod overlay" || fail "bundled traefik labels only in prod overlay"
 
 echo "--- Postgres Volume ---"

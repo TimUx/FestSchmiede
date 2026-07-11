@@ -3,6 +3,15 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.3.9 - 2026-07-11
+
+### Behoben
+
+- **Installer:** Compose-Override wird als `docker-compose.override.yml` im Installationsroot veröffentlicht (Traefik-Labels und Proxy-Netzwerk sichtbar und von `docker compose` automatisch geladen).
+- **Installer:** Traefik-Proxy-Netzwerk wird auch bei neu erstelltem Netzwerk korrekt definiert; Proxy-Einstellungen werden zuverlässiger aus `.env` wiederhergestellt.
+
+---
+
 ## 2.3.8 - 2026-07-11
 
 ### Behoben

@@ -8,8 +8,11 @@ create_pre_install_backup() {
   mkdir -p "$backup_path"
 
   [[ -f "${INSTALL_DIR}/.env" ]] && cp "${INSTALL_DIR}/.env" "$backup_path/"
-  [[ -f "${INSTALL_DIR}/installer/generated/compose.override.yml" ]] && \
-    cp "${INSTALL_DIR}/installer/generated/compose.override.yml" "$backup_path/"
+  if [[ -f "${INSTALL_DIR}/docker-compose.override.yml" ]]; then
+    cp "${INSTALL_DIR}/docker-compose.override.yml" "$backup_path/compose.override.yml"
+  elif [[ -f "${INSTALL_DIR}/installer/generated/compose.override.yml" ]]; then
+    cp "${INSTALL_DIR}/installer/generated/compose.override.yml" "$backup_path/compose.override.yml"
+  fi
 
   echo "$backup_path" >"${STATE_DIR}/last_backup"
   log_info "Pre-Install-Backup: $backup_path"
@@ -34,8 +37,11 @@ perform_rollback() {
   compose_down
 
   [[ -f "${backup_path}/.env" ]] && cp "${backup_path}/.env" "${INSTALL_DIR}/.env"
-  [[ -f "${backup_path}/compose.override.yml" ]] && \
+  [[ -f "${backup_path}/compose.override.yml" ]] && {
+    mkdir -p "${INSTALL_DIR}/installer/generated"
     cp "${backup_path}/compose.override.yml" "${INSTALL_DIR}/installer/generated/compose.override.yml"
+    cp "${backup_path}/compose.override.yml" "${INSTALL_DIR}/docker-compose.override.yml"
+  }
 
   log_info "Rollback abgeschlossen – Konfiguration wiederhergestellt"
 

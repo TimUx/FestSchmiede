@@ -404,7 +404,7 @@ Tipp: Regelmäßige Backups mit scripts/backup/postgres-backup.sh"
 Vorlagen/Labels: ${INSTALL_DIR}/installer/generated/"
     if proxy_generates_traefik_labels; then
       body="${body}
-Traefik-Labels in compose.override.yml"
+Traefik-Labels in docker-compose.override.yml"
     fi
     if proxy_generates_config_files; then
       body="${body}

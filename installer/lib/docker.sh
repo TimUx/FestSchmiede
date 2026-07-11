@@ -38,6 +38,7 @@ compose_up() {
   fi
 
   log_info "Starte Container..."
+  log_info "Compose: ${COMPOSE_CMD[*]} ${COMPOSE_FILES[*]} ${profiles[*]}"
   (cd "$INSTALL_DIR" && "${COMPOSE_CMD[@]}" "${COMPOSE_FILES[@]}" "${profiles[@]}" up -d) >>"$LOG_FILE" 2>&1
 }
 

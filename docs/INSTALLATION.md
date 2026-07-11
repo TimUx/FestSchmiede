@@ -1,13 +1,13 @@
 # FestSchmiede – Installationsanleitung
 
-> **Version 2.3.8** – Professioneller interaktiver Installations-Assistent (TUI)
+> **Version 2.3.9** – Professioneller interaktiver Installations-Assistent (TUI)
 
 ## Schnellstart
 
 ### Online (ohne Git-Clone)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.3.8/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.3.9/install.sh | bash
 ```
 
 **Installationspfad angeben** (Priorität: `--dir` > `FESTSCHMIEDE_INSTALL_DIR` > interaktive Abfrage > Default):
@@ -124,7 +124,8 @@ Beim Online-Install (`curl … \| bash`) werden nur die für den Betrieb nötige
 | `.env` | Umgebungsvariablen (chmod 600) |
 | `installer/` | Installations-Assistent (ohne Quellcode von Backend/Frontend) |
 | `scripts/backup/` | Datenbank-Backup und Restore |
-| `installer/generated/compose.override.yml` | Docker-Compose-Erweiterung (inkl. Traefik-Labels bei externem Traefik) |
+| `docker-compose.override.yml` | Docker-Compose-Erweiterung im Installationsroot (Traefik-Labels, Netzwerke) |
+| `installer/generated/compose.override.yml` | Interne Kopie der Compose-Erweiterung (vom Installer erzeugt) |
 | `installer/generated/proxy/` | Reverse-Proxy-Vorlagen (nginx, Caddy, Apache, HAProxy) |
 | `installer/logs/install-*.log` | Installationsprotokoll |
 | `.installer-state/` | Wizard-Status und Backups |

@@ -99,8 +99,9 @@ apply_defaults() {
   CFG[PLATFORM_NAME]="${CFG[PLATFORM_NAME]:-FestSchmiede}"
   CFG[PLATFORM_LOCALE]="${CFG[PLATFORM_LOCALE]:-de-DE}"
   CFG[PLATFORM_TIMEZONE]="${CFG[PLATFORM_TIMEZONE]:-Europe/Berlin}"
-  CFG[DOCKER_INTERNAL_NETWORK]="${CFG[DOCKER_INTERNAL_NETWORK]:-festschmiede_internal}"
-  CFG[DOCKER_PROXY_NETWORK]="${CFG[DOCKER_PROXY_NETWORK]:-${CFG[DOCKER_NETWORK]:-festschmiede_public}}"
+  CFG[DOCKER_INTERNAL_NETWORK]="${CFG[DOCKER_INTERNAL_NETWORK]:-${CFG[FESTSCHMIEDE_INTERNAL_NETWORK]:-festschmiede_internal}}"
+  CFG[DOCKER_PROXY_NETWORK]="${CFG[DOCKER_PROXY_NETWORK]:-${CFG[FESTSCHMIEDE_PROXY_NETWORK]:-${CFG[DOCKER_NETWORK]:-festschmiede_public}}}"
+  CFG[DOCKER_NETWORK_CREATE]="${CFG[DOCKER_NETWORK_CREATE]:-yes}"
   CFG[USES_REVERSE_PROXY]="${CFG[USES_REVERSE_PROXY]:-no}"
 
   # Legacy: PROXY_MODE=existing → externer Proxy ohne Typ
@@ -147,7 +148,38 @@ apply_defaults() {
   fi
 }
 
+compose_override_source_path() {
+  echo "${INSTALL_DIR}/installer/generated/compose.override.yml"
+}
+
+compose_override_publish_path() {
+  echo "${INSTALL_DIR}/docker-compose.override.yml"
+}
+
+publish_compose_override() {
+  local source="$1"
+  local published
+  published="$(compose_override_publish_path)"
+  cp "$source" "$published"
+  log_info "Compose-Override veröffentlicht: $published"
+}
+
+resolve_compose_override_file() {
+  local published
+  published="$(compose_override_publish_path)"
+  if [[ -f "$published" ]]; then
+    echo "$published"
+    return 0
+  fi
+  if [[ -f "$(compose_override_source_path)" ]]; then
+    echo "$(compose_override_source_path)"
+    return 0
+  fi
+  return 1
+}
+
 build_compose_files() {
+  local override_file=""
   COMPOSE_FILES=("-f" "${INSTALL_DIR}/docker-compose.yml")
 
   apply_defaults
@@ -155,8 +187,8 @@ build_compose_files() {
     COMPOSE_FILES+=("-f" "${INSTALL_DIR}/docker-compose.prod.yml")
   fi
 
-  if [[ -f "${INSTALL_DIR}/installer/generated/compose.override.yml" ]]; then
-    COMPOSE_FILES+=("-f" "${INSTALL_DIR}/installer/generated/compose.override.yml")
+  if override_file=$(resolve_compose_override_file); then
+    COMPOSE_FILES+=("-f" "$override_file")
   fi
 }
 
@@ -425,12 +457,20 @@ networks:
     driver: bridge
 EOF
 
-  if [[ "$use_proxy" == "yes" ]] && proxy_uses_traefik_network && [[ "$proxy_create" == "no" ]]; then
-    cat >>"$file" <<EOF
+  if [[ "$use_proxy" == "yes" ]] && proxy_uses_traefik_network; then
+    if [[ "$proxy_create" == "no" ]]; then
+      cat >>"$file" <<EOF
   public:
     name: ${proxy_net}
     external: true
 EOF
+    else
+      cat >>"$file" <<EOF
+  public:
+    name: ${proxy_net}
+    driver: bridge
+EOF
+    fi
   fi
 
   if [[ "$use_proxy" == "yes" ]] && ! proxy_uses_traefik_network; then
@@ -571,6 +611,7 @@ ${volumes_block}
 EOF
   fi
 
+  publish_compose_override "$file"
   log_info "Compose-Override erzeugt: $file"
   generate_proxy_config_files
 }
@@ -624,6 +665,8 @@ REDIS_URL=${CFG[REDIS_URL]:-}
 
 FESTSCHMIEDE_INTERNAL_NETWORK=${CFG[DOCKER_INTERNAL_NETWORK]}
 FESTSCHMIEDE_PROXY_NETWORK=${CFG[DOCKER_PROXY_NETWORK]}
+DOCKER_PROXY_NETWORK=${CFG[DOCKER_PROXY_NETWORK]}
+DOCKER_NETWORK_CREATE=${CFG[DOCKER_NETWORK_CREATE]:-yes}
 PROXY_MODE=${CFG[PROXY_MODE]:-none}
 PROXY_DEPLOYMENT=${CFG[PROXY_DEPLOYMENT]:-none}
 TRAEFIK_CERT_RESOLVER=${CFG[TRAEFIK_CERT_RESOLVER]:-}
@@ -651,7 +694,7 @@ format_config_summary() {
   if [[ "${CFG[USES_REVERSE_PROXY]:-no}" == "yes" ]]; then
     s+=$'\n'"Proxy-Netz:        ${CFG[DOCKER_PROXY_NETWORK]:-festschmiede_public} (nur Frontend)"
     if proxy_generates_traefik_labels; then
-      s+=$'\n'"Traefik-Labels:    compose.override.yml (Frontend)"
+      s+=$'\n'"Traefik-Labels:    docker-compose.override.yml (Frontend)"
     elif proxy_generates_config_files; then
       s+=$'\n'"Proxy-Vorlagen:    installer/generated/proxy/"
     fi

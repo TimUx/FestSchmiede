@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # FestSchmiede Installer – gemeinsame Variablen und Hilfsfunktionen
 
-INSTALLER_VERSION="2.3.8"
+INSTALLER_VERSION="2.3.9"
 PRODUCT_NAME="FestSchmiede"
 
 # Installationsverzeichnis (Repo-Root) – nur setzen wenn nicht bereits gesetzt
@@ -109,6 +109,7 @@ relocate_install_tree() {
 
   [[ -f "${from}/.env" ]] && cp -a "${from}/.env" "${to}/.env"
   [[ -d "${from}/.installer-state" ]] && cp -a "${from}/.installer-state" "${to}/"
+  [[ -f "${from}/docker-compose.override.yml" ]] && cp -a "${from}/docker-compose.override.yml" "${to}/"
   [[ -f "${from}/installer/generated/compose.override.yml" ]] && \
     mkdir -p "${to}/installer/generated" && \
     cp -a "${from}/installer/generated/compose.override.yml" "${to}/installer/generated/"
