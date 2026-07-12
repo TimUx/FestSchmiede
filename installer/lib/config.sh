@@ -228,6 +228,11 @@ escape_yaml_value() {
   printf '%s' "$1" | sed 's/"/\\"/g'
 }
 
+escape_stack_value() {
+  # Swarm/Compose-Interpolation: $ muss als $$ geschrieben werden
+  printf '%s' "$1" | sed -e 's/"/\\"/g' -e 's/\$/$$/g'
+}
+
 _swarm_node_placement_yaml() {
   local node_id="${CFG[SWARM_NODE_ID]:-}"
   local node_hostname="${CFG[SWARM_NODE_HOSTNAME]:-}"
@@ -253,7 +258,7 @@ _write_swarm_traefik_deploy_labels() {
       labels:
         - traefik.enable=true
         - traefik.docker.network=${proxy_net}
-        - traefik.http.routers.festschmiede.rule=Host(\`${domain}\`) || HostRegexp(\`^[a-z0-9-]+\\\\.${domain}$\`)
+        - traefik.http.routers.festschmiede.rule=Host(\`${domain}\`) || HostRegexp(\`^[a-z0-9-]+\\\\.${domain}\$\$\`)
         - traefik.http.routers.festschmiede.entrypoints=websecure
 EOF
   if [[ -n "$resolver" && "${CFG[HTTPS_ENABLED]:-no}" == "yes" ]]; then
@@ -294,16 +299,16 @@ generate_swarm_stack() {
   local domain="${CFG[PLATFORM_DOMAIN]}"
 
   local db_user db_name db_pass jwt_sec enc_key admin_pass admin_email cors allowed wildcard
-  db_user="$(escape_yaml_value "${CFG[POSTGRES_USER]}")"
-  db_name="$(escape_yaml_value "${CFG[POSTGRES_DB]}")"
-  db_pass="$(escape_yaml_value "${CFG[POSTGRES_PASSWORD]}")"
-  jwt_sec="$(escape_yaml_value "${CFG[JWT_SECRET]}")"
-  enc_key="$(escape_yaml_value "${CFG[APP_ENCRYPTION_KEY]}")"
-  admin_pass="$(escape_yaml_value "${CFG[PLATFORM_ADMIN_PASSWORD]}")"
-  admin_email="$(escape_yaml_value "${CFG[PLATFORM_ADMIN_EMAIL]:-platform@festschmiede.local}")"
-  cors="$(escape_yaml_value "${CFG[CORS_ORIGIN]}")"
-  allowed="$(escape_yaml_value "${CFG[PLATFORM_ALLOWED_ORIGINS]:-}")"
-  wildcard="$(escape_yaml_value "${CFG[PLATFORM_WILDCARD_DOMAIN]:-}")"
+  db_user="$(escape_stack_value "${CFG[POSTGRES_USER]}")"
+  db_name="$(escape_stack_value "${CFG[POSTGRES_DB]}")"
+  db_pass="$(escape_stack_value "${CFG[POSTGRES_PASSWORD]}")"
+  jwt_sec="$(escape_stack_value "${CFG[JWT_SECRET]}")"
+  enc_key="$(escape_stack_value "${CFG[APP_ENCRYPTION_KEY]}")"
+  admin_pass="$(escape_stack_value "${CFG[PLATFORM_ADMIN_PASSWORD]}")"
+  admin_email="$(escape_stack_value "${CFG[PLATFORM_ADMIN_EMAIL]:-platform@festschmiede.local}")"
+  cors="$(escape_stack_value "${CFG[CORS_ORIGIN]}")"
+  allowed="$(escape_stack_value "${CFG[PLATFORM_ALLOWED_ORIGINS]:-}")"
+  wildcard="$(escape_stack_value "${CFG[PLATFORM_WILDCARD_DOMAIN]:-}")"
 
   local database_url redis_env="" smtp_env="" postgres_service="" redis_service="" secrets_block=""
   if [[ "$db_mode" == "internal" ]]; then
@@ -336,7 +341,7 @@ $(_swarm_node_placement_yaml)
       timeout: 5s
       retries: 10"
   else
-    database_url="$(escape_yaml_value "${CFG[DATABASE_URL]}")"
+    database_url="$(escape_stack_value "${CFG[DATABASE_URL]}")"
   fi
 
   if [[ "$use_redis" == "internal" ]]; then
@@ -362,11 +367,11 @@ $(_swarm_node_placement_yaml)
     secrets_block="
   redis_data:"
   elif [[ "$use_redis" == "external" && -n "${CFG[REDIS_URL]:-}" ]]; then
-    redis_env="      REDIS_URL: \"$(escape_yaml_value "${CFG[REDIS_URL]}")\""
+    redis_env="      REDIS_URL: \"$(escape_stack_value "${CFG[REDIS_URL]}")\""
   fi
 
   if [[ "${CFG[SMTP_ENABLED]:-no}" == "yes" ]]; then
-    smtp_env="      INSTALL_SMTP_HOST: \"$(escape_yaml_value "${CFG[SMTP_HOST]:-}")\"
+    smtp_env="      INSTALL_SMTP_HOST: \"$(escape_stack_value "${CFG[SMTP_HOST]:-}")\"
       INSTALL_SMTP_PORT: \"${CFG[SMTP_PORT]:-587}\""
   fi
 

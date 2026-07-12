@@ -163,6 +163,8 @@ grep -q "node.id == abc123node" "${INSTALL_DIR}/stack.yml" \
   && pass "swarm placement constraint" || fail "swarm placement constraint"
 grep -q "traefik.enable=true" "${INSTALL_DIR}/stack.yml" \
   && pass "swarm traefik deploy labels" || fail "swarm traefik deploy labels"
+grep -q 'HostRegexp.*\$\$' "${INSTALL_DIR}/stack.yml" \
+  && pass "swarm traefik regex dollar escaped" || fail "swarm traefik regex dollar escaped"
 grep -q "replicas: 1" "${INSTALL_DIR}/stack.yml" \
   && pass "swarm single replica" || fail "swarm single replica"
 grep -q "external: true" "${INSTALL_DIR}/stack.yml" \
@@ -172,6 +174,11 @@ grep -q "DEPLOYMENT_MODE=swarm" "${INSTALL_DIR}/.env" \
   && pass "env deployment mode swarm" || fail "env deployment mode swarm"
 ! grep -q "^COMPOSE_FILE=" "${INSTALL_DIR}/.env" \
   && pass "no compose file in swarm env" || fail "no compose file in swarm env"
+
+CFG[POSTGRES_PASSWORD]='pass$with$dollar'
+generate_swarm_stack
+grep -q 'pass$$with$$dollar' "${INSTALL_DIR}/stack.yml" \
+  && pass "swarm escapes dollar in secrets" || fail "swarm escapes dollar in secrets"
 
 echo "--- Postgres Volume ---"
 TMP_PG=$(mktemp -d)

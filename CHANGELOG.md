@@ -3,6 +3,15 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.3.13 - 2026-07-12
+
+### Behoben
+
+- **Installer (Swarm):** `$` in Secrets/ENV und Traefik-Regex werden als `$$` escaped (Stack-Deploy-Interpolation).
+- **Backend:** Produktions-CORS nutzt `CORS_ORIGIN` auch dann, wenn `PLATFORM_DOMAIN` noch localhost ist (z. B. fehlende Swarm-ENV).
+
+---
+
 ## 2.3.12 - 2026-07-12
 
 ### Neu

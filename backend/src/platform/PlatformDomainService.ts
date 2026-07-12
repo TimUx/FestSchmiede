@@ -94,7 +94,7 @@ export function resolveCorsNetworkSettings(
   networkSettings: Record<string, unknown> | undefined,
   domainConfig: PlatformDomainConfig
 ): Record<string, unknown> {
-  if (!isProductionEnv() || isLocalPlatformDomain(domainConfig.platformDomain)) {
+  if (!isProductionEnv()) {
     return networkSettings ?? {};
   }
 

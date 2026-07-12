@@ -128,4 +128,16 @@ describe('PlatformDomainService', () => {
     const domainConfig = loadDomainConfigFromEnv();
     expect(productionCorsOriginsFromEnv(domainConfig)).toEqual(['https://app.plattform.de']);
   });
+
+  it('applies HTTPS CORS_ORIGIN in production even when PLATFORM_DOMAIN is localhost', () => {
+    process.env.NODE_ENV = 'production';
+    process.env.PLATFORM_DOMAIN = 'localhost';
+    process.env.CORS_ORIGIN = 'https://app.plattform.de';
+    const domainConfig = loadDomainConfigFromEnv();
+    const resolved = resolveCorsNetworkSettings(
+      { corsOrigins: ['http://localhost:5173'], allowWildcardSubdomains: false },
+      domainConfig
+    );
+    expect(resolved.corsOrigins).toEqual(['https://app.plattform.de']);
+  });
 });
