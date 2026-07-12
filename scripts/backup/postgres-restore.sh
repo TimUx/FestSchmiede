@@ -112,9 +112,9 @@ fi
 cd "$ROOT_DIR"
 pause_app_services_for_db_restore
 
-terminate_db_connections "$CONTAINER"
-
 echo "Stelle Datenbank wieder her aus: $BACKUP_FILE"
+echo "Leere Zieldatenbank '${POSTGRES_DB}' vor dem Import..."
+recreate_target_database "$CONTAINER"
 
 if ! gunzip -c "$BACKUP_FILE" | docker exec -i "$CONTAINER" psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1; then
   echo "Fehler: psql-Restore fehlgeschlagen." >&2

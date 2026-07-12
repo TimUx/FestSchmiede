@@ -3,6 +3,14 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.4.13 - 2026-07-12
+
+### Behoben
+
+- **DB-Restore:** Leert die Zieldatenbank vor dem Import (`DROP`/`CREATE`), damit pg_dump-Backups nicht an bereits vorhandenen Typen scheitern.
+
+---
+
 ## 2.4.12 - 2026-07-12
 
 ### Behoben

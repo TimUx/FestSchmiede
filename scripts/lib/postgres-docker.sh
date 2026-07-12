@@ -69,3 +69,16 @@ terminate_db_connections() {
     "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '${db}' AND pid <> pg_backend_pid();" \
     >/dev/null 2>&1 || true
 }
+
+recreate_target_database() {
+  local container="$1"
+  local db="${POSTGRES_DB:-festschmiede}"
+  local user="${POSTGRES_USER:-festschmiede}"
+
+  terminate_db_connections "$container"
+
+  docker exec "$container" psql -U "$user" -d postgres -v ON_ERROR_STOP=1 <<-SQL
+DROP DATABASE IF EXISTS "${db}";
+CREATE DATABASE "${db}" OWNER "${user}";
+SQL
+}
