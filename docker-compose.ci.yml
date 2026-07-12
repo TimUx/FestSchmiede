@@ -62,6 +62,9 @@ services:
       args:
         VITE_API_URL: ""
         VITE_WS_URL: ""
+    environment:
+      BACKEND_HOST: backend
+      BACKEND_PORT: "3001"
     depends_on:
       backend:
         condition: service_healthy
