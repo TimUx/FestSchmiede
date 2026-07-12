@@ -3,6 +3,16 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.4.1 - 2026-07-12
+
+### Behoben
+
+- **Frontend-Produktions-Image:** `VITE_API_URL` und `VITE_WS_URL` standardmäßig leer (Same-Origin über nginx), nicht mehr `http://localhost:3001` — behebt „NetworkError“ / CORS auf www und app.
+- **nginx:** Proxy für `/:tenant/api/` und `/:tenant/uploads/` (Pfad-Mandanten-Routing).
+- **Installer:** Setzt `VITE_API_URL`/`VITE_WS_URL` in Produktion auf leer.
+
+---
+
 ## 2.4.0 - 2026-07-12
 
 ### Geändert (Breaking)

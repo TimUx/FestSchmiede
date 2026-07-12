@@ -143,12 +143,12 @@ apply_defaults() {
     migrate_traefik_tls_model
     if [[ "${CFG[ENABLE_APP_HOST]:-yes}" == "yes" ]]; then
       CFG[CORS_ORIGIN]="https://${CFG[APP_SUBDOMAIN]:-app}.${CFG[PLATFORM_DOMAIN]}"
-      CFG[VITE_API_URL]="https://${CFG[APP_SUBDOMAIN]:-app}.${CFG[PLATFORM_DOMAIN]}"
     else
       CFG[CORS_ORIGIN]="https://${CFG[PLATFORM_DOMAIN]}"
-      CFG[VITE_API_URL]="https://${CFG[PLATFORM_DOMAIN]}"
     fi
-    CFG[VITE_WS_URL]="${CFG[VITE_API_URL]}"
+    # Same-Origin: Frontend-nginx leitet /api/ und /socket.io/ intern weiter
+    CFG[VITE_API_URL]=""
+    CFG[VITE_WS_URL]=""
     CFG[PLATFORM_ALLOWED_ORIGINS]="$(build_production_allowed_origins)"
   else
     CFG[MULTI_TENANT_ENABLED]="false"
