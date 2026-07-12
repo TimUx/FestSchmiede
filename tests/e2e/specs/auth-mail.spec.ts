@@ -1,15 +1,15 @@
 import { test, expect } from '@playwright/test';
-import { TENANT_BASE } from '../constants';
+import { TENANT_BASE, tenantPath } from '../constants';
 
 test.describe('Authentication', () => {
   test.use({ baseURL: TENANT_BASE });
   test('login page loads with email field', async ({ page }) => {
-    await page.goto('/admin/login');
+    await page.goto(tenantPath('/admin/login'));
     await expect(page.getByLabel('E-Mail')).toBeVisible();
   });
 
   test('staff login page loads', async ({ page }) => {
-    await page.goto('/mitarbeiter/login');
+    await page.goto(tenantPath('/mitarbeiter/login'));
     await expect(page.getByLabel('E-Mail')).toBeVisible();
   });
 });
