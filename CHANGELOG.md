@@ -3,6 +3,15 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.4.5 - 2026-07-12
+
+### Behoben
+
+- **nginx-Proxy:** `proxy_pass` mit Variablen leitete `/api/` fehlerhaft als `/api/api/…` weiter — behoben durch statischen `upstream`-Block (`backend_service`). Behebt leere Frontend-Seiten und E2E-Timeouts in CI.
+- **CI:** `docker-compose.ci.yml` setzt `BACKEND_HOST`; `wait-for-services.sh` prüft Routing-API über Frontend.
+
+---
+
 ## 2.4.4 - 2026-07-12
 
 ### Behoben

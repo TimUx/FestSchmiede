@@ -22,7 +22,7 @@ echo "Warte auf Frontend: $FRONTEND_URL"
 for ((i=1; i<=TIMEOUT; i++)); do
   if curl -sf "$FRONTEND_URL" >/dev/null; then
     echo "Frontend bereit nach ${i}s"
-    exit 0
+    break
   fi
   if [[ $i -eq $TIMEOUT ]]; then
     echo "Frontend nicht erreichbar" >&2
@@ -30,3 +30,16 @@ for ((i=1; i<=TIMEOUT; i++)); do
   fi
   sleep 1
 done
+
+ROUTING_URL="${FRONTEND_URL}/api/public/routing-config?frontendPath=/"
+echo "Prüfe Frontend→Backend-Proxy: $ROUTING_URL"
+for ((i=1; i<=60; i++)); do
+  if curl -sf "$ROUTING_URL" | grep -q '"scope"'; then
+    echo "Routing-API über Frontend nach ${i}s erreichbar"
+    exit 0
+  fi
+  sleep 1
+done
+
+echo "Routing-API über Frontend nicht erreichbar (nginx→backend)" >&2
+exit 1
