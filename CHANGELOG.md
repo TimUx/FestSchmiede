@@ -3,6 +3,15 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.4.6 - 2026-07-12
+
+### Behoben
+
+- **E2E/CI:** Playwright-Mandantentests nutzen relative Pfade unter `TENANT_BASE` (Trailing-Slash), damit Navigation zu `/default/…` statt fälschlich `/admin/login` auf localhost-WWW landet.
+- **E2E:** Admin-Navigationstest an Volunteer-first-UI angepasst (Benachrichtigungen unter Funktionen).
+
+---
+
 ## 2.4.5 - 2026-07-12
 
 ### Behoben
