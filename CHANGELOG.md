@@ -3,6 +3,16 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.4.12 - 2026-07-12
+
+### Behoben
+
+- **DB-Restore (Swarm):** `postgres-restore.sh` erkennt Postgres-Tasks wie das Backup-Skript; stoppt App-Services vor dem Restore.
+- **Installer-Update:** Migrations-Wartezeit prüft nur noch `database.ok` (nicht den gesamten Health-Status).
+- **Rollback:** Restore beendet aktive DB-Verbindungen und wartet auf Postgres.
+
+---
+
 ## 2.4.11 - 2026-07-12
 
 ### Behoben

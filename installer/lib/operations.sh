@@ -97,7 +97,7 @@ wait_for_migration() {
 
   for ((i=1; i<=120; i++)); do
     body=$(fetch_internal_backend_health_body 2>/dev/null || true)
-    if parse_health_response_ok "$body"; then
+    if parse_health_database_ok "$body"; then
       log_info "Migration/Backend bereit nach ${elapsed}s"
       return 0
     fi

@@ -49,6 +49,9 @@ else
   }
 fi
 
+# shellcheck source=scripts/lib/postgres-docker.sh
+source "${ROOT_DIR}/scripts/lib/postgres-docker.sh"
+
 dotenv_export_file "${ROOT_DIR}/.env" \
   POSTGRES_USER POSTGRES_DB POSTGRES_CONTAINER BACKUP_DIR STACK_NAME DEPLOYMENT_MODE
 
@@ -61,26 +64,9 @@ mkdir -p "$BACKUP_DIR"
 POSTGRES_USER="${POSTGRES_USER:-festschmiede}"
 POSTGRES_DB="${POSTGRES_DB:-festschmiede}"
 
-resolve_postgres_container() {
-  if [[ -n "${POSTGRES_CONTAINER:-}" ]]; then
-    printf '%s' "$POSTGRES_CONTAINER"
-    return
-  fi
+CONTAINER="$(wait_for_postgres_ready 30 || resolve_postgres_container)"
 
-  local stack="${STACK_NAME:-festschmiede}"
-  local name
-  name=$(docker ps --format '{{.Names}}' | grep -E "^${stack}_postgres\\.[0-9]+" | head -1) || true
-  if [[ -n "$name" ]]; then
-    printf '%s' "$name"
-    return
-  fi
-
-  printf '%s' "festschmiede-postgres"
-}
-
-CONTAINER="$(resolve_postgres_container)"
-
-if ! docker ps --format '{{.Names}}' | grep -qx "$CONTAINER"; then
+if ! postgres_container_running "$CONTAINER"; then
   echo "Fehler: Postgres-Container '$CONTAINER' läuft nicht." >&2
   echo "→ Prüfen Sie: docker compose ps  bzw.  docker service ps ${STACK_NAME:-festschmiede}_postgres" >&2
   exit 1

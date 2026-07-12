@@ -203,8 +203,14 @@ parse_health_response_ok() {
   local status db_ok
   [[ -n "$body" ]] || return 1
   status=$(echo "$body" | grep -o '"status"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*"\([^"]*\)"$/\1/')
-  db_ok=$(echo "$body" | grep -o '"ok"[[:space:]]*:[[:space:]]*true' | head -1 || true)
+  db_ok=$(echo "$body" | grep -oE '"database"[[:space:]]*:[[:space:]]*\{[^}]*"ok"[[:space:]]*:[[:space:]]*true' | head -1 || true)
   [[ "$status" == "ok" && -n "$db_ok" ]]
+}
+
+parse_health_database_ok() {
+  local body="$1"
+  [[ -n "$body" ]] || return 1
+  echo "$body" | grep -qE '"database"[[:space:]]*:[[:space:]]*\{[^}]*"ok"[[:space:]]*:[[:space:]]*true'
 }
 
 fetch_public_https_health_body() {
