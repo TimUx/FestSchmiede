@@ -77,8 +77,7 @@ recreate_target_database() {
 
   terminate_db_connections "$container"
 
-  docker exec "$container" psql -U "$user" -d postgres -v ON_ERROR_STOP=1 <<-SQL
-DROP DATABASE IF EXISTS "${db}";
-CREATE DATABASE "${db}" OWNER "${user}";
-SQL
+  docker exec "$container" psql -U "$user" -d postgres -v ON_ERROR_STOP=1 \
+    -c "DROP DATABASE IF EXISTS \"${db}\";" \
+    -c "CREATE DATABASE \"${db}\" OWNER \"${user}\";"
 }

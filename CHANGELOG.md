@@ -3,6 +3,14 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.4.14 - 2026-07-12
+
+### Behoben
+
+- **DB-Restore:** `DROP`/`CREATE DATABASE` wird per `psql -c` ausgeführt (`docker exec` ohne `-i` ignorierte zuvor Heredoc-stdin).
+
+---
+
 ## 2.4.13 - 2026-07-12
 
 ### Behoben
