@@ -37,6 +37,9 @@ export function OrdersPage() {
 
   useEffect(() => {
     if (!token || !eventId) return;
+    api.getOrders(token, eventId)
+      .then(setOrders)
+      .catch((err) => setError(err instanceof Error ? err.message : 'Fehler'));
     return subscribeEventOrders(token, eventId, '', setOrders, 'normal');
   }, [eventId, token]);
 
@@ -44,6 +47,17 @@ export function OrdersPage() {
     if (!token) return;
     try {
       await api.updateOrderStatus(token, orderId, status);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Fehler');
+    }
+  };
+
+  const handleReleaseToKitchen = async (orderId: string) => {
+    if (!token) return;
+    setError('');
+    try {
+      const updated = await api.releaseOrderToKitchen(token, orderId);
+      setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Fehler');
     }
@@ -78,6 +92,7 @@ export function OrdersPage() {
             showActions
             onEdit={() => setEditingOrder(order)}
             onStatusChange={(status) => void handleStatusChange(order.id, status)}
+            onReleaseToKitchen={() => void handleReleaseToKitchen(order.id)}
           />
         ))}
       </Stack>
