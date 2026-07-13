@@ -9,6 +9,7 @@ Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1
 
 - **CI:** ESLint-Warnung (ungenutzte Variable) in `platformNotificationService` behoben.
 - **CI:** Unit-Tests für Mandanten-Onboarding und -Anträge an `ensureAdministrator`-Mock angepasst.
+- **CI:** E2E-Test der Landingpage an Burger-Menü-Navigation angepasst.
 
 ---
 
