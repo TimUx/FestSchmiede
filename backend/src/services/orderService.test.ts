@@ -18,6 +18,14 @@ vi.mock('../repositories', () => ({
 vi.mock('./eventService', () => ({
   eventService: {
     getActive: () => mockGetActive(),
+    getPickupEvent: async (id: string) => {
+      const event = await mockGetActive();
+      return { ...event, id };
+    },
+    getOrderableById: async (id: string, _channel: string) => {
+      const event = await mockGetActive();
+      return { ...event, id, onlineOrdersActive: true, cashierActive: true, ordersClosed: false };
+    },
   },
 }));
 
@@ -123,7 +131,7 @@ describe('orderService.lookupByNumberAndName', () => {
     mockFindByOrderNumber.mockResolvedValue(buildOrder({ source: 'CASHIER', customer: null }));
     mockFilterReleasedIds.mockResolvedValue([]);
 
-    const result = await orderService.lookupByNumberAndName(42);
+    const result = await orderService.lookupByNumberAndName('event-1', 42);
 
     expect(result.orderNumber).toBe(42);
     expect(result.source).toBe('CASHIER');
@@ -137,7 +145,7 @@ describe('orderService.lookupByNumberAndName', () => {
       })
     );
 
-    await expect(orderService.lookupByNumberAndName(42)).rejects.toEqual(
+    await expect(orderService.lookupByNumberAndName('event-1', 42)).rejects.toEqual(
       new AppError(400, 'Nachname erforderlich')
     );
   });
@@ -151,7 +159,7 @@ describe('orderService.lookupByNumberAndName', () => {
     );
     mockFilterReleasedIds.mockResolvedValue(['order-1']);
 
-    await expect(orderService.lookupByNumberAndName(42, 'Falsch')).rejects.toEqual(
+    await expect(orderService.lookupByNumberAndName('event-1', 42, 'Falsch')).rejects.toEqual(
       new AppError(404, 'Bestellung nicht gefunden')
     );
   });

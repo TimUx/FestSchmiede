@@ -28,6 +28,7 @@ import {
   createFoodItemSchema,
   updateFoodItemSchema,
   setFoodSoldOutSchema,
+  setEventFoodAssignmentsSchema,
   createOnlineOrderSchema,
   createOrderCheckoutSchema,
   createCashierOrderSchema,
@@ -154,6 +155,8 @@ router.post(
 router.get('/public/tenant', tenantController.getPublic);
 router.get('/public/club', clubController.getPublic);
 router.get('/public/order-settings', clubController.getOrderSettings);
+router.get('/public/events/pickup', eventController.getPickupEvents);
+router.get('/public/events', eventController.getPublicEvents);
 router.get('/public/event', eventController.getActive);
 router.get('/public/menu', foodItemController.getPublic);
 router.post('/public/orders', publicOrderRateLimiter, validateBody(createOnlineOrderSchema), orderController.createOnline);
@@ -166,13 +169,20 @@ router.get('/public/pickup-board', orderController.getReady);
 // Staff - Orders
 router.use('/staff', authenticate, loadUser);
 
+router.get('/staff/events/pickup', requireAnyStaffPermission('orders.view', 'orders.kitchen', 'orders.manage', 'orders.pickup'), eventController.getPickupEvents);
+router.get('/staff/events/cashier', requireAnyStaffPermission('orders.view', 'orders.kitchen', 'orders.manage', 'orders.pickup', 'food.view', 'food.edit'), eventController.getCashierEvents);
 router.get('/staff/events', requireAnyStaffPermission('orders.view', 'orders.kitchen', 'orders.manage', 'orders.pickup', 'food.view', 'food.edit', 'events.manage'), eventController.getAll);
 router.get('/staff/events/active', requireAnyStaffPermission('orders.view', 'orders.kitchen', 'orders.manage', 'orders.pickup', 'food.view', 'food.edit', 'events.manage'), eventController.getActive);
 router.post('/staff/events', requirePermissionKey('events.manage'), validateBody(createEventSchema), eventController.create);
 router.put('/staff/events/:id', requirePermissionKey('events.manage'), validateParams(idParamSchema), validateBody(updateEventSchema), eventController.update);
 router.post('/staff/events/:id/activate', requirePermissionKey('events.manage'), validateParams(idParamSchema), eventController.setActive);
 
+router.get('/staff/food-items', requireAnyStaffPermission('food.view', 'food.edit'), foodItemController.getCatalog);
+router.post('/staff/food-items', requirePermissionKey('food.edit'), validateBody(createFoodItemSchema), foodItemController.createCatalog);
+
 router.get('/staff/events/:eventId/food-items', requireAnyStaffPermission('orders.view', 'orders.kitchen', 'food.view', 'food.edit'), foodItemController.getByEvent);
+router.get('/staff/events/:eventId/food-item-assignments', requireAnyStaffPermission('food.view', 'food.edit', 'events.manage'), foodItemController.getEventAssignments);
+router.put('/staff/events/:eventId/food-item-assignments', requirePermissionKey('food.edit'), validateBody(setEventFoodAssignmentsSchema), foodItemController.setEventAssignments);
 router.post('/staff/events/:eventId/food-items', requirePermissionKey('food.edit'), validateBody(createFoodItemSchema), foodItemController.create);
 router.put('/staff/food-items/:id', requirePermissionKey('food.edit'), validateParams(idParamSchema), validateBody(updateFoodItemSchema), foodItemController.update);
 router.patch('/staff/food-items/:id/sold-out', requireAnyStaffPermission('food.edit', 'orders.kitchen', 'orders.manage'), validateParams(idParamSchema), validateBody(setFoodSoldOutSchema), foodItemController.setSoldOut);

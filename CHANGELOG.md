@@ -3,6 +3,35 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.4.32 - 2026-07-13
+
+### Hinzugefügt
+
+- **Mehrere Veranstaltungen:** Jede Veranstaltung hat einen Schalter **Veranstaltung aktiv** — mehrere können gleichzeitig aktiv sein.
+- **Speisen-Katalog:** Mandantenweiter Katalog unter **Speisen**; Zuordnung je Veranstaltung über **Veranstaltungen → Speisen**.
+- **Online-Bestellung:** Bei mehreren buchbaren Veranstaltungen Auswahl per Touch-Grid vor der Speisekarte.
+- **Bestellung vor Ort & Abholung:** Veranstaltungs-Dropdown mit Vorauswahl nach heutigem Veranstaltungsdatum.
+- **Abholboard:** Veranstaltungsauswahl bei mehreren Events; Monitor zeigt nur Nummern der gewählten Veranstaltung.
+- **Benachrichtigungen:** E-Mail bei fehlgeschlagener Online-Zahlung (`paymentFailed`); SMTP-Verbindungstest robuster.
+- **Rechtliches Modul:** Aktivierung über registrierten Settings-Namespace `module.legal`.
+- **Öffentliche APIs:** `GET /public/events`, `GET /public/events/pickup`, `GET /staff/events/cashier`, `GET /staff/events/pickup`; `eventId` bei Menü, Bestellung, Lookup und Abholboard.
+
+### Geändert
+
+- **Veranstaltungen:** Button „Aktivieren“ entfällt — Aktivierung nur noch über den Schalter im Bearbeitungsdialog.
+- **Speisen:** „Ausverkauft“ gilt pro Veranstaltung (Staff **Verfügbarkeit**), nicht mehr im Katalog.
+- **Mitarbeiterbereich:** Dashboard und Bestellliste laden Daten initial per API (nicht nur Realtime).
+
+### Behoben
+
+- **Dashboard / Bestellliste:** Statistiken und Bestellungen wurden nicht angezeigt (fehlerhafte SQL-Spalten in `orderStats`, fehlender Initial-Load).
+- **Veranstaltung bearbeiten:** Interner Serverfehler beim Speichern (ungültiges Feld `activateOnCreate` an Prisma).
+- **Logo-Upload:** Vereinslogo wird nach Upload in öffentlichen Mandantendaten angezeigt.
+- **Benachrichtigungen:** Modul-Status „Deaktiviert“ / SMTP-Test 500 bei fehlender `smtp.from`-Konfiguration.
+- **Bestellseite:** „Keine Bestellungen möglich“ nach zweiter Veranstaltung, wenn nur die neue ohne Speisen aktiv war.
+
+---
+
 ## 2.4.31 - 2026-07-13
 
 ### Hinzugefügt

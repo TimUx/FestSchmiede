@@ -94,11 +94,14 @@ Hier bestätigen Sie, dass ein Kunde seine Bestellung abgeholt hat.
 
 ### Ablauf
 
-1. Kunde nennt seine **Abholnummer** (z. B. „043")
-2. Nummer eingeben und suchen
-3. Bestellung wird angezeigt: Gerichte, Gesamtpreis, Status
-4. Wenn Status **Fertig**: **Abholung bestätigen** tippen
-5. Status wechselt zu *Abgeholt*, Nummer verschwindet vom Abholboard
+1. **Veranstaltung wählen** (Dropdown — vorausgewählt: heutiges Veranstaltungsdatum, falls eindeutig)
+2. Kunde nennt seine **Abholnummer** (z. B. „043")
+3. Nummer eingeben und suchen
+4. Bestellung wird angezeigt: Gerichte, Gesamtpreis, Status
+5. Wenn Status **Fertig**: **Abholung bestätigen** tippen
+6. Status wechselt zu *Abgeholt*, Nummer verschwindet vom Abholboard
+
+> **Wichtig:** Abholnummern gelten **pro Veranstaltungstag**. Bei mehreren parallelen Veranstaltungen immer die richtige Veranstaltung im Dropdown wählen.
 
 ### Hinweise
 
@@ -121,11 +124,14 @@ Für Bestellungen **vor Ort** ohne Kundendaten (kein Name nötig).
 
 ### Ablauf
 
-1. Gerichte per Plus/Minus auswählen
-2. **Bestellung speichern** tippen
-3. Die **Abholnummer** wird groß angezeigt
-4. Nummer dem Kunden mitteilen oder anzeigen
-5. **Nächste Bestellung** für den folgenden Kunden
+1. **Veranstaltung wählen** (Dropdown — Standard: heutiges Datum)
+2. Gerichte per Plus/Minus auswählen
+3. **Bestellung speichern** tippen
+4. Die **Abholnummer** wird groß angezeigt
+5. Nummer dem Kunden mitteilen oder anzeigen
+6. **Nächste Bestellung** für den folgenden Kunden
+
+Ohne gewählte Veranstaltung ist keine Bestellung möglich.
 
 ---
 
@@ -200,7 +206,7 @@ Wenn das Modul **Rechtliche Informationen** aktiviert ist, erscheinen zusätzlic
 
 ### Abholboard für Gäste
 
-Separater Monitor unter `/abholboard` – kein Login nötig.
+Separater Monitor unter `/abholboard` – kein Login nötig. Bei mehreren aktiven Veranstaltungen zuerst die richtige Veranstaltung wählen.
 
 ![Abholboard](screenshots/04-abholboard-monitor.png)
 

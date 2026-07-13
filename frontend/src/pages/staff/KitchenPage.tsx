@@ -49,6 +49,7 @@ export function KitchenPage() {
 
   useEffect(() => {
     if (!token || !eventId) return;
+    loadOrders();
     const statuses: OrderStatus[] = ['NEW', 'IN_PROGRESS'];
     if (showReady) statuses.push('READY');
     if (showPickedUp) statuses.push('PICKED_UP');

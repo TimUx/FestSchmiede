@@ -14,17 +14,29 @@ export const orderController = {
   ) {
     try {
       await validateOrderBotProtection(req.body);
-      const { firstName, lastName, email, phone, items, paymentMethodId } = req.body;
-      const order = await orderService.createOnlineOrder({ firstName, lastName, email, phone, items, paymentMethodId });
+      const { eventId, firstName, lastName, email, phone, items, paymentMethodId } = req.body;
+      const order = await orderService.createOnlineOrder({
+        eventId,
+        firstName,
+        lastName,
+        email,
+        phone,
+        items,
+        paymentMethodId,
+      });
       res.status(201).json(order);
     } catch (err) {
       next(err);
     }
   },
 
-  async createCashier(req: { body: { items: { foodItemId: string; quantity: number }[]; paymentMethodId?: string } }, res: Response, next: NextFunction) {
+  async createCashier(
+    req: { body: { eventId: string; items: { foodItemId: string; quantity: number }[]; paymentMethodId?: string } },
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      const order = await orderService.createCashierOrder(req.body.items, req.body.paymentMethodId);
+      const order = await orderService.createCashierOrder(req.body.eventId, req.body.items, req.body.paymentMethodId);
       res.status(201).json(order);
     } catch (err) {
       next(err);
@@ -57,18 +69,22 @@ export const orderController = {
     }
   },
 
-  async lookup(req: { body: { orderNumber: number; lastName?: string } }, res: Response, next: NextFunction) {
+  async lookup(req: { body: { eventId: string; orderNumber: number; lastName?: string } }, res: Response, next: NextFunction) {
     try {
-      const order = await orderService.lookupByNumberAndName(req.body.orderNumber, req.body.lastName);
+      const order = await orderService.lookupByNumberAndName(
+        req.body.eventId,
+        req.body.orderNumber,
+        req.body.lastName
+      );
       res.json(order);
     } catch (err) {
       next(err);
     }
   },
 
-  async lookupByNumber(req: { body: { orderNumber: number; lastName?: string } }, res: Response, next: NextFunction) {
+  async lookupByNumber(req: { body: { eventId: string; orderNumber: number; lastName?: string } }, res: Response, next: NextFunction) {
     try {
-      const order = await orderService.lookupByNumber(req.body.orderNumber, req.body.lastName);
+      const order = await orderService.lookupByNumber(req.body.eventId, req.body.orderNumber, req.body.lastName);
       res.json(order);
     } catch (err) {
       next(err);
@@ -110,10 +126,14 @@ export const orderController = {
     }
   },
 
-  async getReady(_req: unknown, res: Response, next: NextFunction) {
+  async getReady(req: { query: { eventId?: string } }, res: Response, next: NextFunction) {
     try {
-      const event = await eventService.getActive();
-      const orders = await orderService.getReadyOrders(event.id);
+      if (!req.query.eventId) {
+        res.status(400).json({ error: 'Veranstaltung erforderlich' });
+        return;
+      }
+      await eventService.getPickupEvent(req.query.eventId);
+      const orders = await orderService.getReadyOrders(req.query.eventId);
       res.json(orders);
     } catch (err) {
       next(err);

@@ -35,8 +35,16 @@ export function OrdersPage() {
       .finally(() => setLoading(false));
   }, [token]);
 
+  const loadOrders = () => {
+    if (!token || !eventId) return;
+    api.getOrders(token, eventId)
+      .then(setOrders)
+      .catch((err) => setError(err.message));
+  };
+
   useEffect(() => {
     if (!token || !eventId) return;
+    loadOrders();
     return subscribeEventOrders(token, eventId, '', setOrders, 'normal');
   }, [eventId, token]);
 

@@ -82,17 +82,20 @@ export const realtimeSyncService = {
     });
   },
 
-  async syncPickupBoard(clientEtag?: string): Promise<SyncResult<Awaited<ReturnType<typeof orderService.getReadyOrders>>>> {
+  async syncPickupBoard(
+    eventId: string,
+    clientEtag?: string
+  ): Promise<SyncResult<Awaited<ReturnType<typeof orderService.getReadyOrders>>>> {
     return trackRealtimePoll('pickup-board', async () => {
-      const event = await eventService.getActive();
+      await eventService.getPickupEvent(eventId);
       const agg = await prisma.order.aggregate({
-        where: tenantWhere({ eventId: event.id, status: StatusCode.READY }),
+        where: tenantWhere({ eventId, status: StatusCode.READY }),
         _max: { updatedAt: true },
         _count: true,
       });
-      const etag = buildEtag(['pickup', event.id, agg._count, agg._max.updatedAt?.toISOString()]);
+      const etag = buildEtag(['pickup', eventId, agg._count, agg._max.updatedAt?.toISOString()]);
       if (clientEtag && clientEtag === etag) return unchanged(etag);
-      const data = await orderService.getReadyOrders(event.id);
+      const data = await orderService.getReadyOrders(eventId);
       return { changed: true, etag, serverTime: new Date().toISOString(), data };
     });
   },

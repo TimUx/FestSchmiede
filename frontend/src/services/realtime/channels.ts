@@ -59,7 +59,7 @@ export function subscribePickupBoard(
       wsEvents: ['order:updated'],
       join: () => realtimeService.joinPickupBoard(eventId),
       activity: 'high',
-      poll: (etag) => api.syncPickupBoard(etag),
+      poll: (etag) => api.syncPickupBoard(eventId, etag),
       onPollData: (data) => onData(data as PickupBoardOrder[]),
     }
   );

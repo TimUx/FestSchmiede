@@ -173,12 +173,12 @@ async function buildOrderItems(
   }[] = [];
 
   const foodItemIds = merged.map((i) => i.foodItemId);
-  const foodItems = await foodItemRepository.findByIds(foodItemIds);
-  const foodItemMap = new Map(foodItems.map((f) => [f.id, f]));
+  const eventItems = await foodItemRepository.findByEvent(eventId, true);
+  const eventItemMap = new Map(eventItems.map((f) => [f.id, f]));
 
   for (const item of merged) {
-    const foodItem = foodItemMap.get(item.foodItemId);
-    if (!foodItem || foodItem.eventId !== eventId) {
+    const foodItem = eventItemMap.get(item.foodItemId);
+    if (!foodItem) {
       throw new AppError(400, 'Ungültiges Gericht');
     }
     if (!foodItem.active || foodItem.soldOut) {
@@ -260,8 +260,8 @@ export const orderService = {
     }));
   },
 
-  async lookupByNumberAndName(orderNumber: number, lastName?: string) {
-    const event = await eventService.getActive();
+  async lookupByNumberAndName(eventId: string, orderNumber: number, lastName?: string) {
+    const event = await eventService.getPickupEvent(eventId);
     const orderDate = getEventOrderDate(event.date);
     const order = await orderRepository.findByOrderNumber(
       event.id,
@@ -291,11 +291,12 @@ export const orderService = {
     return mapOrderWithCancellation(order as OrderWithRelations);
   },
 
-  async lookupByNumber(orderNumber: number, lastName?: string) {
-    return this.lookupByNumberAndName(orderNumber, lastName);
+  async lookupByNumber(eventId: string, orderNumber: number, lastName?: string) {
+    return this.lookupByNumberAndName(eventId, orderNumber, lastName);
   },
 
   async createOnlineOrder(data: {
+    eventId: string;
     firstName?: string;
     lastName?: string;
     email?: string;
@@ -303,10 +304,7 @@ export const orderService = {
     items: { foodItemId: string; quantity: number }[];
     paymentMethodId?: string;
   }) {
-    const event = await eventService.getActive();
-    if (!event.onlineOrdersActive || event.ordersClosed) {
-      throw new AppError(403, 'Online-Bestellung ist geschlossen. Bitte bestellen Sie an der Theke.');
-    }
+    const event = await eventService.getOrderableById(data.eventId, 'online');
 
     const orderSettings = await clubService.getOrderSettings();
     const customerData = {
@@ -390,13 +388,11 @@ export const orderService = {
   },
 
   async createCashierOrder(
+    eventId: string,
     items: { foodItemId: string; quantity: number }[],
     paymentMethodId?: string
   ) {
-    const event = await eventService.getActive();
-    if (!event.cashierActive || event.ordersClosed) {
-      throw new AppError(403, 'Kassenbestellung ist geschlossen. Bitte wenden Sie sich an das Personal.');
-    }
+    const event = await eventService.getOrderableById(eventId, 'cashier');
 
     const paymentAvailable = await getPaymentServiceRegistry().isAvailable();
     const payOnline = Boolean(paymentAvailable && paymentMethodId);

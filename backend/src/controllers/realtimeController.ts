@@ -39,9 +39,17 @@ export const realtimeController = {
     }
   },
 
-  async syncPickupBoard(req: { query: { etag?: string } }, res: Response, next: NextFunction) {
+  async syncPickupBoard(
+    req: { query: { eventId?: string; etag?: string } },
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      const result = await realtimeSyncService.syncPickupBoard(req.query.etag);
+      if (!req.query.eventId) {
+        res.status(400).json({ error: 'Veranstaltung erforderlich' });
+        return;
+      }
+      const result = await realtimeSyncService.syncPickupBoard(req.query.eventId, req.query.etag);
       res.json(result);
     } catch (err) {
       next(err);
