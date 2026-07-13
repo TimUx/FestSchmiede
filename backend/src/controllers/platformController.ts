@@ -493,6 +493,30 @@ export const platformController = {
     }
   },
 
+  async deleteApplication(req: PlatformAuthRequest, res: Response, next: NextFunction) {
+    try {
+      await tenantApplicationService.delete(req.params.id as string, req.platformUser!.userId);
+      res.status(204).send();
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async setApplicationTenantLink(req: PlatformAuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { tenantId } = req.body as { tenantId: string | null };
+      res.json(
+        await tenantApplicationService.setTenantLink(
+          req.params.id as string,
+          tenantId,
+          req.platformUser!.userId
+        )
+      );
+    } catch (err) {
+      next(err);
+    }
+  },
+
   async listLegalPages(_req: PlatformAuthRequest, res: Response, next: NextFunction) {
     try {
       res.json({ items: await platformLegalService.listAdmin() });

@@ -141,6 +141,10 @@ export class PlatformTenantAdminService {
   }
 
   async delete(id: string, actorId: string): Promise<void> {
+    await prisma.tenantApplication.updateMany({
+      where: { tenantId: id },
+      data: { tenantId: null },
+    });
     await prisma.tenant.delete({ where: { id } });
     await this.audit.log({ action: 'platform.tenant.delete', actorId, tenantId: id });
   }

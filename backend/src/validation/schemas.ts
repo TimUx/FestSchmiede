@@ -292,6 +292,10 @@ export const approveTenantApplicationSchema = z.object({
   adminComment: z.string().max(5000).optional(),
 });
 
+export const linkTenantApplicationSchema = z.object({
+  tenantId: z.string().uuid().nullable(),
+});
+
 const platformTenantSlugSchema = z
   .string()
   .min(2, 'Mindestens 2 Zeichen')

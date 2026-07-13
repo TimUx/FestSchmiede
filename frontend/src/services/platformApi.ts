@@ -73,6 +73,7 @@ export interface TenantApplication {
   reviewedBy: string | null;
   reviewedAt: string | null;
   tenantId: string | null;
+  linkedTenant?: { id: string; name: string; slug: string; status: string } | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -412,6 +413,15 @@ export const platformApi = {
 
   archiveApplication: (token: string, id: string) =>
     platformRequest<TenantApplication>(`/applications/${id}/archive`, { method: 'POST' }, token),
+
+  deleteApplication: (token: string, id: string) =>
+    platformRequest<void>(`/applications/${id}`, { method: 'DELETE' }, token),
+
+  setApplicationTenantLink: (token: string, id: string, tenantId: string | null) =>
+    platformRequest<TenantApplication>(`/applications/${id}/tenant-link`, {
+      method: 'PATCH',
+      body: JSON.stringify({ tenantId }),
+    }, token),
 
   listLegalPages: (token: string) =>
     platformRequest<{ items: PlatformLegalPageAdmin[] }>('/legal-pages', {}, token),

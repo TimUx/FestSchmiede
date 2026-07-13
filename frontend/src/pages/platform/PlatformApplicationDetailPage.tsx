@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import {
-  Alert, Box, Button, Checkbox, FormControlLabel, Paper, TextField, Typography, Chip, Stack,
+  Alert, Autocomplete, Box, Button, Checkbox, Dialog, DialogActions, DialogContent,
+  DialogContentText, DialogTitle, FormControlLabel, Link, Paper, TextField, Typography, Chip, Stack,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import DeleteIcon from '@mui/icons-material/Delete';
+import LinkOffIcon from '@mui/icons-material/LinkOff';
 import { usePlatformAuth } from '@/contexts/PlatformAuthContext';
-import { platformApi, type TenantApplication } from '@/services/platformApi';
+import { platformApi, type PlatformTenant, type TenantApplication } from '@/services/platformApi';
 
 const STATUS_LABELS: Record<string, string> = {
   NEW: 'Neu',
@@ -21,18 +24,36 @@ export function PlatformApplicationDetailPage() {
   const { token } = usePlatformAuth();
   const navigate = useNavigate();
   const [application, setApplication] = useState<TenantApplication | null>(null);
+  const [tenants, setTenants] = useState<PlatformTenant[]>([]);
+  const [selectedTenant, setSelectedTenant] = useState<PlatformTenant | null>(null);
   const [comment, setComment] = useState('');
   const [createTenant, setCreateTenant] = useState(true);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const load = () => {
     if (!token || !id) return;
     platformApi.getApplication(token, id).then((a) => {
       setApplication(a);
       setComment(a.adminComment ?? '');
+      if (a.linkedTenant) {
+        setSelectedTenant({
+          id: a.linkedTenant.id,
+          name: a.linkedTenant.name,
+          slug: a.linkedTenant.slug,
+          status: a.linkedTenant.status,
+        } as PlatformTenant);
+      } else {
+        setSelectedTenant(null);
+      }
     });
   };
+
+  useEffect(() => {
+    if (!token) return;
+    platformApi.listTenants(token, { page: 1 }).then((r) => setTenants(r.items));
+  }, [token]);
 
   useEffect(load, [token, id]);
 
@@ -48,7 +69,21 @@ export function PlatformApplicationDetailPage() {
     }
   };
 
+  const handleDelete = async () => {
+    setDeleteOpen(false);
+    if (!token || !id) return;
+    setError('');
+    try {
+      await platformApi.deleteApplication(token, id);
+      navigate('/platform/bewerbungen');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Fehler');
+    }
+  };
+
   if (!application) return <Typography>Laden…</Typography>;
+
+  const canReApprove = application.status === 'APPROVED' && !application.tenantId;
 
   return (
     <Box>
@@ -83,6 +118,52 @@ export function PlatformApplicationDetailPage() {
       </Paper>
 
       <Paper sx={{ p: 2, mb: 2 }}>
+        <Typography variant="h6" gutterBottom>Mandanten-Verknüpfung</Typography>
+        {application.linkedTenant ? (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Verknüpft mit{' '}
+            <Link component={RouterLink} to={`/platform/mandanten/${application.linkedTenant.id}`}>
+              {application.linkedTenant.name}
+            </Link>
+            {' '}({application.linkedTenant.slug})
+          </Alert>
+        ) : (
+          <Alert severity="warning" sx={{ mb: 2 }}>
+            Keine Verknüpfung mit einem Mandanten.
+            {canReApprove && ' Über „Genehmigen“ kann der Mandant erneut automatisch angelegt werden.'}
+          </Alert>
+        )}
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ sm: 'flex-start' }} sx={{ mb: 2 }}>
+          <Autocomplete
+            sx={{ flex: 1, minWidth: 280 }}
+            options={tenants}
+            getOptionLabel={(t) => `${t.name} (${t.slug})`}
+            value={selectedTenant}
+            onChange={(_, value) => setSelectedTenant(value)}
+            renderInput={(params) => <TextField {...params} label="Mandant auswählen" size="small" />}
+            isOptionEqualToValue={(opt, val) => opt.id === val.id}
+          />
+          <Button
+            variant="outlined"
+            disabled={!selectedTenant || selectedTenant.id === application.tenantId}
+            onClick={() => act(() => platformApi.setApplicationTenantLink(token!, id!, selectedTenant!.id))}
+          >
+            {application.tenantId ? 'Verknüpfung ändern' : 'Verknüpfen'}
+          </Button>
+          {application.tenantId && (
+            <Button
+              variant="outlined"
+              color="warning"
+              startIcon={<LinkOffIcon />}
+              onClick={() => act(() => platformApi.setApplicationTenantLink(token!, id!, null))}
+            >
+              Verknüpfung aufheben
+            </Button>
+          )}
+        </Stack>
+      </Paper>
+
+      <Paper sx={{ p: 2, mb: 2 }}>
         <TextField
           fullWidth
           multiline
@@ -108,7 +189,7 @@ export function PlatformApplicationDetailPage() {
             color="success"
             onClick={() => act(() => platformApi.approveApplication(token!, id!, { createTenant, adminComment: comment }))}
           >
-            Genehmigen
+            {canReApprove && createTenant ? 'Erneut genehmigen & Mandant anlegen' : 'Genehmigen'}
           </Button>
           <Button
             variant="contained"
@@ -120,13 +201,25 @@ export function PlatformApplicationDetailPage() {
           <Button variant="text" onClick={() => act(() => platformApi.archiveApplication(token!, id!))}>
             Archivieren
           </Button>
+          <Button variant="text" color="error" startIcon={<DeleteIcon />} onClick={() => setDeleteOpen(true)}>
+            Löschen
+          </Button>
         </Stack>
-        {application.tenantId && (
-          <Alert severity="info" sx={{ mt: 2 }}>
-            Verknüpfter Mandant: {application.tenantId}
-          </Alert>
-        )}
       </Paper>
+
+      <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)}>
+        <DialogTitle>Bewerbung löschen?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Die Bewerbung von „{application.organization}“ wird unwiderruflich gelöscht.
+            Dies kann nicht rückgängig gemacht werden.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteOpen(false)}>Abbrechen</Button>
+          <Button color="error" variant="contained" onClick={handleDelete}>Löschen</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

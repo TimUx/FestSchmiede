@@ -4,7 +4,7 @@ import { AppError } from '../middleware/errorHandler';
 
 vi.mock('../config/database', () => ({
   prisma: {
-    tenant: { findFirst: vi.fn() },
+    tenant: { findFirst: vi.fn(), findUnique: vi.fn() },
     tenantApplication: {
       findFirst: vi.fn(),
       create: vi.fn(),
@@ -12,6 +12,8 @@ vi.mock('../config/database', () => ({
       update: vi.fn(),
       findMany: vi.fn(),
       count: vi.fn(),
+      delete: vi.fn(),
+      updateMany: vi.fn(),
     },
   },
 }));
@@ -23,13 +25,17 @@ vi.mock('./notifications/platformNotificationService', () => ({
   },
 }));
 
+vi.mock('./TenantOnboardingService', () => ({
+  tenantOnboardingService: { onboardNewTenant: vi.fn() },
+}));
+
 import { prisma } from '../config/database';
 
 describe('TenantApplicationService', () => {
   const platformContext = {
     current: () => ({ registrationEnabled: true }),
   };
-  const tenantAdmin = { create: vi.fn(), activate: vi.fn() };
+  const tenantAdmin = { create: vi.fn(), activate: vi.fn(), getDetail: vi.fn() };
   const audit = { log: vi.fn() };
   let service: TenantApplicationService;
 
@@ -123,6 +129,73 @@ describe('TenantApplicationService', () => {
       expect.objectContaining({
         data: expect.objectContaining({ requestedSubdomain: 'mein-verein' }),
       })
+    );
+  });
+
+  it('re-approves and creates tenant when approved without link', async () => {
+    const app = {
+      id: 'app-1',
+      organization: 'Testverein',
+      requestedSubdomain: 'test-verein',
+      status: 'APPROVED',
+      tenantId: null,
+      contactName: 'Max',
+      email: 'test@example.com',
+      phone: null,
+      website: null,
+      reason: 'Grund',
+      street: 'S',
+      postalCode: '1',
+      city: 'C',
+      country: 'Deutschland',
+      adminComment: null,
+    };
+    vi.mocked(prisma.tenantApplication.findUnique).mockResolvedValue(app as never);
+    vi.mocked(tenantAdmin.create).mockResolvedValue({ id: 'tenant-1' } as never);
+    vi.mocked(tenantAdmin.activate).mockResolvedValue({ id: 'tenant-1' } as never);
+    vi.mocked(tenantAdmin.getDetail).mockResolvedValue({ id: 'tenant-1' } as never);
+    vi.mocked(prisma.tenantApplication.update).mockResolvedValue({
+      ...app,
+      tenantId: 'tenant-1',
+    } as never);
+
+    const result = await service.approveAndCreateTenant('app-1', 'actor-1', { createTenant: true });
+
+    expect(tenantAdmin.create).toHaveBeenCalled();
+    expect(result.tenantId).toBe('tenant-1');
+  });
+
+  it('unlinks tenant from application', async () => {
+    vi.mocked(prisma.tenantApplication.findUnique).mockResolvedValue({
+      id: 'app-1',
+      tenantId: 'tenant-1',
+    } as never);
+    vi.mocked(prisma.tenantApplication.update).mockResolvedValue({
+      id: 'app-1',
+      tenantId: null,
+    } as never);
+
+    const result = await service.setTenantLink('app-1', null, 'actor-1');
+
+    expect(prisma.tenantApplication.update).toHaveBeenCalledWith({
+      where: { id: 'app-1' },
+      data: { tenantId: null },
+    });
+    expect(result.tenantId).toBeNull();
+  });
+
+  it('deletes application', async () => {
+    vi.mocked(prisma.tenantApplication.findUnique).mockResolvedValue({
+      id: 'app-1',
+      organization: 'Test',
+      tenantId: null,
+    } as never);
+
+    await service.delete('app-1', 'actor-1');
+
+    expect(prisma.tenantApplication.delete).toHaveBeenCalledWith({ where: { id: 'app-1' } });
+    expect(audit.log).toHaveBeenCalledWith(
+      expect.objectContaining({ action: 'platform.application.deleted' })
     );
   });
 });
