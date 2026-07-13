@@ -3,6 +3,20 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.4.22 - 2026-07-13
+
+### Hinzugefügt
+
+- **Mandantenanträge:** Bewerbungen endgültig löschen (zusätzlich zu Archivieren).
+- **Mandantenanträge:** Verknüpfung mit bestehendem Mandant erstellen, ändern und aufheben.
+- **Mandantenanträge:** Erneutes Genehmigen mit automatischer Mandanten-Anlage, wenn keine Verknüpfung besteht.
+
+### Behoben
+
+- **Mandantenverwaltung:** Beim Löschen eines Mandanten wird die Verknüpfung im zugehörigen Antrag entfernt.
+
+---
+
 ## 2.4.21 - 2026-07-13
 
 ### Behoben

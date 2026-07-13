@@ -152,7 +152,18 @@ export class TenantApplicationService {
   }
 
   async getById(id: string) {
-    return prisma.tenantApplication.findUnique({ where: { id } });
+    const application = await prisma.tenantApplication.findUnique({ where: { id } });
+    if (!application) return null;
+
+    let linkedTenant: { id: string; name: string; slug: string; status: string } | null = null;
+    if (application.tenantId) {
+      linkedTenant = await prisma.tenant.findUnique({
+        where: { id: application.tenantId },
+        select: { id: true, name: true, slug: true, status: true },
+      });
+    }
+
+    return { ...application, linkedTenant };
   }
 
   async updateStatus(
@@ -190,11 +201,21 @@ export class TenantApplicationService {
   ) {
     const application = await prisma.tenantApplication.findUnique({ where: { id } });
     if (!application) throw new AppError(404, 'Bewerbung nicht gefunden');
-    if (application.status === 'APPROVED' && application.tenantId) {
-      return { application, tenantId: application.tenantId };
+
+    if (application.tenantId) {
+      const updated = await prisma.tenantApplication.update({
+        where: { id },
+        data: {
+          status: 'APPROVED',
+          adminComment: options.adminComment ?? application.adminComment,
+          reviewedBy: actorId,
+          reviewedAt: new Date(),
+        },
+      });
+      return { application: updated, tenantId: application.tenantId };
     }
 
-    let tenantId = application.tenantId;
+    let tenantId: string | null = null;
 
     if (options.createTenant !== false && !tenantId) {
       const tenant = await this.tenantAdmin.create(
@@ -257,5 +278,66 @@ export class TenantApplicationService {
 
   async archive(id: string, actorId: string) {
     return this.updateStatus(id, 'ARCHIVED', actorId);
+  }
+
+  async delete(id: string, actorId: string) {
+    const existing = await prisma.tenantApplication.findUnique({ where: { id } });
+    if (!existing) throw new AppError(404, 'Bewerbung nicht gefunden');
+
+    await prisma.tenantApplication.delete({ where: { id } });
+
+    await this.audit.log({
+      action: 'platform.application.deleted',
+      actorId,
+      tenantId: existing.tenantId ?? undefined,
+      details: { applicationId: id, organization: existing.organization },
+    });
+  }
+
+  async setTenantLink(id: string, tenantId: string | null, actorId: string) {
+    const application = await prisma.tenantApplication.findUnique({ where: { id } });
+    if (!application) throw new AppError(404, 'Bewerbung nicht gefunden');
+
+    if (tenantId === null) {
+      const updated = await prisma.tenantApplication.update({
+        where: { id },
+        data: { tenantId: null },
+      });
+      await this.audit.log({
+        action: 'platform.application.tenant_unlinked',
+        actorId,
+        details: { applicationId: id },
+      });
+      return updated;
+    }
+
+    const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+    if (!tenant) throw new AppError(404, 'Mandant nicht gefunden');
+
+    const otherLink = await prisma.tenantApplication.findFirst({
+      where: { tenantId, id: { not: id } },
+    });
+    if (otherLink) {
+      throw new AppError(409, 'Dieser Mandant ist bereits mit einer anderen Bewerbung verknüpft.');
+    }
+
+    const updated = await prisma.tenantApplication.update({
+      where: { id },
+      data: {
+        tenantId,
+        status: 'APPROVED',
+        reviewedBy: actorId,
+        reviewedAt: new Date(),
+      },
+    });
+
+    await this.audit.log({
+      action: 'platform.application.tenant_linked',
+      actorId,
+      tenantId,
+      details: { applicationId: id },
+    });
+
+    return updated;
   }
 }

@@ -12,6 +12,7 @@ import { validateBody, validateParams } from '../../middleware/validation';
 import {
   updateTenantApplicationStatusSchema,
   approveTenantApplicationSchema,
+  linkTenantApplicationSchema,
   updatePlatformLegalPageSchema,
   platformLegalPageTypeParamSchema,
   createPlatformTenantSchema,
@@ -284,6 +285,19 @@ router.post(
   requirePlatformPermission(PLATFORM_PERMISSIONS.TENANT_UPDATE, PLATFORM_PERMISSIONS.TENANT_MANAGE),
   validateParams(applicationIdParamSchema),
   platformController.archiveApplication
+);
+router.delete(
+  '/applications/:id',
+  requirePlatformPermission(PLATFORM_PERMISSIONS.TENANT_DELETE, PLATFORM_PERMISSIONS.TENANT_MANAGE),
+  validateParams(applicationIdParamSchema),
+  platformController.deleteApplication
+);
+router.patch(
+  '/applications/:id/tenant-link',
+  requirePlatformPermission(PLATFORM_PERMISSIONS.TENANT_UPDATE, PLATFORM_PERMISSIONS.TENANT_MANAGE),
+  validateParams(applicationIdParamSchema),
+  validateBody(linkTenantApplicationSchema),
+  platformController.setApplicationTenantLink
 );
 
 // Rechtliche Seiten (Plattform)
