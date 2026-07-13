@@ -1,5 +1,5 @@
 import { RoleName } from '@prisma/client';
-import { prisma } from '../config/database';
+import { prisma } from '../../config/database';
 
 export async function ensureSystemRole(name: RoleName) {
   return prisma.role.upsert({
