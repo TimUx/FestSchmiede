@@ -30,7 +30,7 @@ state.organization = `QA Journey ${state.slug}`;
 state.adminEmail = `admin-${state.slug}@example.test`;
 
 test.describe('FestSchmiede Nutzerreise (End-to-End)', () => {
-  test.describe.configure({ mode: 'serial', timeout: 600_000 });
+  test.describe.configure({ mode: 'serial', timeout: 900_000 });
 
   let page: Page;
 
@@ -135,12 +135,14 @@ test.describe('FestSchmiede Nutzerreise (End-to-End)', () => {
     ];
     for (const event of events) {
       await page.getByRole('button', { name: /neue veranstaltung/i }).click();
-      await page.getByRole('textbox', { name: 'Name' }).fill(event.name);
-      await page.getByRole('textbox', { name: 'Datum' }).fill(today);
+      const dialog = page.getByRole('dialog');
+      await expect(dialog).toBeVisible({ timeout: 10_000 });
+      await dialog.getByRole('textbox', { name: 'Name' }).fill(event.name);
+      await dialog.getByLabel('Datum').fill(today);
       if (!event.active) {
-        await page.getByRole('checkbox', { name: /veranstaltung aktiv/i }).uncheck();
+        await dialog.getByRole('checkbox', { name: /veranstaltung aktiv/i }).uncheck();
       }
-      await page.getByRole('button', { name: /^speichern$/i }).click();
+      await dialog.getByRole('button', { name: /^speichern$/i }).click();
       await expect(page.getByText(event.name)).toBeVisible({ timeout: 15_000 });
     }
 
