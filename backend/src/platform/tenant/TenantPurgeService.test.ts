@@ -5,16 +5,18 @@ import { TenantPurgeService, deleteTenantUploads } from './TenantPurgeService';
 const tenantId = '00000000-0000-0000-0000-000000000001';
 
 const tx = {
-  $executeRaw: vi.fn(),
   platformAuditLog: { deleteMany: vi.fn() },
   tenantApplication: { deleteMany: vi.fn() },
   tenant: { delete: vi.fn() },
 };
 
+const prismaMock = {
+  $executeRaw: vi.fn(),
+  $transaction: vi.fn(async (fn: (client: typeof tx) => Promise<void>) => fn(tx)),
+};
+
 vi.mock('../../config/database', () => ({
-  prisma: {
-    $transaction: vi.fn(async (fn: (client: typeof tx) => Promise<void>) => fn(tx)),
-  },
+  prisma: prismaMock,
 }));
 
 vi.mock('../../config', () => ({
@@ -28,7 +30,7 @@ describe('TenantPurgeService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     rmSpy = vi.spyOn(fs.promises, 'rm').mockResolvedValue(undefined);
-    tx.$executeRaw.mockResolvedValue(0);
+    prismaMock.$executeRaw.mockResolvedValue(0);
     tx.platformAuditLog.deleteMany.mockResolvedValue({ count: 2 });
     tx.tenantApplication.deleteMany.mockResolvedValue({ count: 1 });
     tx.tenant.delete.mockResolvedValue({ id: tenantId });
@@ -41,7 +43,7 @@ describe('TenantPurgeService', () => {
   it('removes payment data, audit logs, applications and tenant in one transaction', async () => {
     await service.purge(tenantId);
 
-    expect(tx.$executeRaw).toHaveBeenCalled();
+    expect(prismaMock.$executeRaw).toHaveBeenCalled();
     expect(tx.platformAuditLog.deleteMany).toHaveBeenCalledWith({ where: { tenantId } });
     expect(tx.tenantApplication.deleteMany).toHaveBeenCalledWith({ where: { tenantId } });
     expect(tx.tenant.delete).toHaveBeenCalledWith({ where: { id: tenantId } });
@@ -57,7 +59,7 @@ describe('TenantPurgeService', () => {
   });
 
   it('ignores missing payment schema during purge', async () => {
-    tx.$executeRaw.mockRejectedValueOnce({
+    prismaMock.$executeRaw.mockRejectedValueOnce({
       code: 'P2010',
       meta: { message: 'relation "payments" does not exist' },
     });
