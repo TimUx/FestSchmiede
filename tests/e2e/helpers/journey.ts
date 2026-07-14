@@ -84,14 +84,15 @@ export async function submitPublicOrder(
   page: Page,
   slug: string,
   customer: { firstName: string; lastName: string }
-): Promise<{ displayNumber: string }> {
+): Promise<{ displayNumber: string; customerLastName: string }> {
   await page.goto(tenantRoute(slug, '/public'));
   await expect(page.getByRole('button', { name: /menge erhöhen/i }).first()).toBeVisible({ timeout: 20_000 });
   await page.getByRole('button', { name: /menge erhöhen/i }).first().click();
   await page.getByRole('button', { name: /^weiter$/i }).click();
-  await expect(page.getByTestId('order-checkout-step')).toBeVisible({ timeout: 15_000 });
-  await page.getByLabel(/vorname/i).fill(customer.firstName);
-  await page.getByLabel(/nachname/i).fill(customer.lastName);
+  const checkout = page.getByTestId('order-checkout-step');
+  await expect(checkout).toBeVisible({ timeout: 15_000 });
+  await checkout.getByRole('textbox', { name: /vorname/i }).fill(customer.firstName);
+  await checkout.getByRole('textbox', { name: /nachname/i }).fill(customer.lastName);
   await page.waitForTimeout(3500);
   const submit = page.getByRole('button', { name: /bestellung absenden|bestellen und bezahlen/i });
   const orderResponse = page.waitForResponse(
@@ -105,10 +106,15 @@ export async function submitPublicOrder(
   await submit.click();
   const response = await orderResponse;
   expect(response.status()).toBe(201);
-  const created = (await response.json()) as { displayNumber: string };
+  const created = (await response.json()) as {
+    displayNumber: string;
+    customer?: { lastName?: string | null } | null;
+  };
   expect(created.displayNumber.length).toBeGreaterThan(0);
+  const customerLastName = (created.customer?.lastName ?? customer.lastName).trim();
+  expect(customerLastName.length).toBeGreaterThan(0);
   await expect(page).toHaveURL(/status/, { timeout: 15_000 });
-  return { displayNumber: created.displayNumber };
+  return { displayNumber: created.displayNumber, customerLastName };
 }
 
 export async function releaseOnlineOrderToKitchen(page: Page, displayNumber: string): Promise<void> {
@@ -137,9 +143,17 @@ export async function confirmPickup(
   expect(pickupNumber.length).toBeGreaterThan(0);
 
   await expect(page.getByLabel('Abholnummer')).toBeEnabled({ timeout: 15_000 });
+
+  const eventSelect = page.getByRole('combobox', { name: /veranstaltung/i });
+  if (/veranstaltung wählen/i.test((await eventSelect.textContent()) ?? '')) {
+    await eventSelect.click();
+    await page.getByRole('option').first().click();
+  }
+  await expect(eventSelect).not.toContainText(/veranstaltung wählen/i);
+
   await page.getByLabel('Abholnummer').fill(pickupNumber);
   if (lastName) {
-    await page.getByLabel(/nachname/i).fill(lastName);
+    await page.getByLabel(/nachname \(optional/i).fill(lastName);
   }
 
   const lookupResponse = page.waitForResponse(

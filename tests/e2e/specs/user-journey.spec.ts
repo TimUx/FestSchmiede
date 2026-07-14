@@ -22,6 +22,7 @@ const state = {
   adminEmail: '',
   adminPassword: '',
   onlineOrderNumber: '',
+  onlineCustomerLastName: '',
   cashierOrderNumber: '',
 };
 
@@ -178,6 +179,7 @@ test.describe('FestSchmiede Nutzerreise (End-to-End)', () => {
   test('6 · Online-Bestellungen (Public)', async () => {
     const first = await submitPublicOrder(page, state.slug, { firstName: 'Online', lastName: 'Gast1' });
     state.onlineOrderNumber = first.displayNumber;
+    state.onlineCustomerLastName = first.customerLastName;
     await submitPublicOrder(page, state.slug, { firstName: 'Online', lastName: 'Gast2' });
     expect(state.onlineOrderNumber.length).toBeGreaterThan(0);
   });
@@ -243,7 +245,7 @@ test.describe('FestSchmiede Nutzerreise (End-to-End)', () => {
     await expect(page.getByRole('heading', { name: /abholung bestätigen/i })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByLabel('Abholnummer')).toBeEnabled({ timeout: 15_000 });
 
-    await confirmPickup(page, state.onlineOrderNumber, 'Gast1');
+    await confirmPickup(page, state.onlineOrderNumber, state.onlineCustomerLastName);
     await confirmPickup(page, state.cashierOrderNumber);
   });
 
