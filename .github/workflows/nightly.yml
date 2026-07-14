@@ -50,6 +50,14 @@ jobs:
           (cd backend && npm run seed)
           npm run qa:seed:nightly
 
+      - name: Mandantenbewerbungen für Nutzerreise aktivieren
+        run: npm run qa:prepare-journey
+
+      - name: Backend neu starten (Plattform-Settings-Cache)
+        run: |
+          docker compose -f docker-compose.ci.yml restart backend
+          npm run qa:wait
+
       - name: Performance baseline
         run: npm run qa:performance
 

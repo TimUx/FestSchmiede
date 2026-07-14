@@ -180,6 +180,14 @@ jobs:
           npm run prisma:generate --prefix backend
           (cd backend && npm run seed)
 
+      - name: Mandantenbewerbungen für Nutzerreise aktivieren
+        run: npm run qa:prepare-journey
+
+      - name: Backend neu starten (Plattform-Settings-Cache)
+        run: |
+          docker compose -f docker-compose.ci.yml restart backend
+          npm run qa:wait
+
       - name: Install Playwright
         run: npx playwright install chromium --with-deps
 

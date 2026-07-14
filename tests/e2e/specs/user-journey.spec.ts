@@ -1,6 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { execSync } from 'child_process';
-import path from 'path';
 import { waitForTemporaryPassword } from '../helpers/mailpit';
 import {
   advanceOrderToReadyInKitchen,
@@ -17,7 +15,6 @@ import {
   tenantRoute,
 } from '../helpers/journey';
 
-const ROOT = path.resolve(__dirname, '../../..');
 const today = new Date().toISOString().split('T')[0];
 
 const state = {
@@ -31,20 +28,14 @@ const state = {
 
 test.describe.configure({ mode: 'serial', timeout: 360_000 });
 
-test.beforeAll(() => {
-  execSync('npm run qa:prepare-journey', {
-    cwd: ROOT,
-    stdio: 'inherit',
-    env: process.env,
-  });
-  state.organization = `QA Journey ${state.slug}`;
-  state.adminEmail = `admin-${state.slug}@example.test`;
-});
+state.organization = `QA Journey ${state.slug}`;
+state.adminEmail = `admin-${state.slug}@example.test`;
 
 test.describe('FestSchmiede Nutzerreise (End-to-End)', () => {
   test('1 · Mandant beantragen (öffentliche Bewerbung)', async ({ page }) => {
     await page.goto('/mandant-beantragen');
     await expect(page.getByRole('heading', { name: /mandant beantragen/i })).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByLabel('Organisation')).toBeVisible({ timeout: 20_000 });
 
     await page.getByLabel('Organisation').fill(state.organization);
     await page.getByLabel('Ansprechpartner').fill('QA Ansprechpartner');

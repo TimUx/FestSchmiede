@@ -66,6 +66,9 @@ jobs:
           docker compose -f docker-compose.ci.yml up -d --build
           npm run qa:wait
           (cd backend && npm run seed)
+          npm run qa:prepare-journey
+          docker compose -f docker-compose.ci.yml restart backend
+          npm run qa:wait
           npx playwright install chromium --with-deps
           npm run qa:e2e:journey
           npm run qa:security
