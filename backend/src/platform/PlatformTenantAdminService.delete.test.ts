@@ -44,7 +44,7 @@ describe('PlatformTenantAdminService.delete', () => {
   it('purges tenant data and writes platform audit without tenant reference', async () => {
     await service.delete(tenantId, actorId);
 
-    expect(tenantPurgeService.purge).toHaveBeenCalledWith(tenantId);
+    expect(tenantPurgeService.purge).toHaveBeenCalledWith(tenantId, 'demo');
     expect(audit.log).toHaveBeenCalledWith({
       action: 'platform.tenant.delete',
       actorId,
