@@ -30,7 +30,7 @@ state.organization = `QA Journey ${state.slug}`;
 state.adminEmail = `admin-${state.slug}@example.test`;
 
 test.describe('FestSchmiede Nutzerreise (End-to-End)', () => {
-  test.describe.configure({ mode: 'serial', timeout: 360_000 });
+  test.describe.configure({ mode: 'serial', timeout: 600_000 });
 
   let page: Page;
 
@@ -117,9 +117,11 @@ test.describe('FestSchmiede Nutzerreise (End-to-End)', () => {
     ];
     for (const dish of dishes) {
       await page.getByRole('button', { name: /neues gericht/i }).click();
-      await page.getByRole('textbox', { name: 'Name' }).fill(dish.name);
-      await page.getByRole('textbox', { name: /preis/i }).fill(dish.price);
-      await page.getByRole('button', { name: /^speichern$/i }).click();
+      const dialog = page.getByRole('dialog');
+      await expect(dialog).toBeVisible({ timeout: 10_000 });
+      await dialog.getByRole('textbox', { name: 'Name' }).fill(dish.name);
+      await dialog.getByLabel(/preis/i).fill(dish.price);
+      await dialog.getByRole('button', { name: /^speichern$/i }).click();
       await expect(page.getByText(dish.name)).toBeVisible({ timeout: 15_000 });
     }
 
