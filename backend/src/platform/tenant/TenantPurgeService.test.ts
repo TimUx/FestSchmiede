@@ -5,9 +5,17 @@ import { TenantPurgeService, deleteTenantUploads } from './TenantPurgeService';
 const tenantId = '00000000-0000-0000-0000-000000000001';
 
 const { tx, prismaMock } = vi.hoisted(() => {
+  const deleteMany = vi.fn().mockResolvedValue({ count: 0 });
   const transactionClient = {
-    platformAuditLog: { deleteMany: vi.fn() },
-    tenantApplication: { deleteMany: vi.fn() },
+    platformAuditLog: { deleteMany },
+    tenantApplication: { deleteMany },
+    moduleMigration: { deleteMany },
+    tenantModule: { deleteMany },
+    order: { deleteMany },
+    event: { deleteMany },
+    foodItem: { deleteMany },
+    customer: { deleteMany },
+    user: { deleteMany },
     tenant: { delete: vi.fn() },
   };
 
