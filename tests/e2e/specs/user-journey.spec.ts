@@ -8,7 +8,6 @@ import {
   loginPlatformAdmin,
   loginTenantAdmin,
   loginTenantStaff,
-  readDisplayedPickupNumber,
   releaseOnlineOrderToKitchen,
   STAFF_PASSWORD,
   submitPublicOrder,
