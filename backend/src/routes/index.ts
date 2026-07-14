@@ -341,7 +341,7 @@ router.get('/public/payment/methods', async (_req, res) => {
         supportedMethods: supportedPaymentMethods,
       })),
     });
-  } catch (err) {
+  } catch {
     res.json({ allowCashOnSite: true, methods: [] });
   }
 });

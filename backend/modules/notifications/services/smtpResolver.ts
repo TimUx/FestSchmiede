@@ -47,9 +47,9 @@ export async function resolveSmtpConfig(
   }
 
   return {
+    ...tenantBranding,
     enabled: false,
     source: 'platform' as const,
-    ...tenantBranding,
     from: String(tenantBranding.from ?? '').trim() || undefined,
     senderName: String(tenantBranding.senderName ?? '').trim() || undefined,
     replyTo: String(tenantBranding.replyTo ?? '').trim() || undefined,

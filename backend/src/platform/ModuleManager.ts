@@ -395,7 +395,7 @@ export class ModuleManager {
     const manifest = moduleRegistry.getManifest(moduleId);
     if (!mod || !manifest) throw new AppError(404, 'Modul nicht gefunden');
 
-    const row = persist ? await moduleRegistry.getDbRow(moduleId) : await tenantModuleRepository.findFirstInstalled(moduleId);
+    let row = persist ? await moduleRegistry.getDbRow(moduleId) : await tenantModuleRepository.findFirstInstalled(moduleId);
     if (persist && !row?.available) {
       throw new AppError(403, 'Modul steht diesem Mandanten nicht zur Verfügung');
     }
