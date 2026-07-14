@@ -30,6 +30,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { StaffEventSelect } from '@/components/StaffEventSelect';
+import { useStaffEvent } from '@/contexts/StaffEventContext';
 import { useClub } from '@/contexts/ClubContext';
 import { getImageUrl } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
@@ -117,6 +119,8 @@ export function StaffLayout({ children, title, fullWidth = false }: StaffLayoutP
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { club } = useClub();
   const logoUrl = getImageUrl(club.logoUrl || undefined);
+  const { events, selectedEventId, setSelectedEventId, loading: eventsLoading, error: eventsError } = useStaffEvent();
+  const showEventSelect = events.length > 0 || eventsLoading;
 
   useEffect(() => {
     setMenuOpen(!isFocusModePath(location.pathname));
@@ -250,6 +254,17 @@ export function StaffLayout({ children, title, fullWidth = false }: StaffLayoutP
                 </IconButton>
               </>
             )}
+            {showEventSelect && (
+              <Box sx={{ mr: 2, display: { xs: 'none', md: 'block' }, flexShrink: 0 }}>
+                <StaffEventSelect
+                  events={events}
+                  value={selectedEventId}
+                  onChange={setSelectedEventId}
+                  labelId="staff-header-event"
+                  compact
+                />
+              </Box>
+            )}
             <Typography variant="body2" sx={{ mr: 2, display: { xs: 'none', sm: 'block' }, flexShrink: 0 }}>
               {user?.firstName} {user?.lastName}
             </Typography>
@@ -263,6 +278,29 @@ export function StaffLayout({ children, title, fullWidth = false }: StaffLayoutP
           <Alert severity={banner.severity} sx={{ borderRadius: 0 }}>
             {banner.text}
           </Alert>
+        )}
+
+        {eventsError && (
+          <Alert severity="warning" sx={{ borderRadius: 0 }}>
+            {eventsError}
+          </Alert>
+        )}
+
+        {events.length > 1 && !selectedEventId && (
+          <Alert severity="info" sx={{ borderRadius: 0 }}>
+            Bitte oben eine Veranstaltung auswählen.
+          </Alert>
+        )}
+
+        {showEventSelect && (
+          <Box sx={{ display: { xs: 'block', md: 'none' }, px: 2, pt: 2 }}>
+            <StaffEventSelect
+              events={events}
+              value={selectedEventId}
+              onChange={setSelectedEventId}
+              labelId="staff-mobile-event"
+            />
+          </Box>
         )}
 
         <Container

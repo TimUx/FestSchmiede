@@ -15,20 +15,17 @@ import SearchIcon from '@mui/icons-material/Search';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import { StaffLayout } from '@/components/StaffLayout';
 import { StaffKioskActions } from '@/components/StaffKioskActions';
-import { StaffEventSelect } from '@/components/StaffEventSelect';
 import { Numpad } from '@/components/Numpad';
 import { StatusChip } from '@/components/StatusChip';
 import { useAuth } from '@/contexts/AuthContext';
+import { useStaffEvent } from '@/contexts/StaffEventContext';
 import { api, formatPrice } from '@/services/api';
 import { Order } from '@/types';
-import { resolvePreferredEventId } from '@/utils/eventSelection';
 import { touchFieldSx, touchPrimaryButtonSx, touchIconButtonSx } from '@/theme/touch';
 
 export function AbholungPage() {
   const { token } = useAuth();
-  const [pickupEvents, setPickupEvents] = useState<import('@/types').PublicEvent[]>([]);
-  const [selectedEventId, setSelectedEventId] = useState('');
-  const [eventsLoading, setEventsLoading] = useState(true);
+  const { selectedEventId, loading: eventsLoading, isPickupOrderable } = useStaffEvent();
   const [orderNumber, setOrderNumber] = useState('');
   const [lastName, setLastName] = useState('');
   const [order, setOrder] = useState<Order | null>(null);
@@ -37,18 +34,14 @@ export function AbholungPage() {
   const [confirming, setConfirming] = useState(false);
 
   useEffect(() => {
-    if (!token) return;
-    api.getPickupEvents(token)
-      .then((events) => {
-        setPickupEvents(events);
-        setSelectedEventId(resolvePreferredEventId(events));
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setEventsLoading(false));
-  }, [token]);
+    setOrder(null);
+    setError('');
+  }, [selectedEventId]);
+
+  const pickupReady = Boolean(selectedEventId && isPickupOrderable(selectedEventId));
 
   const handleLookup = async () => {
-    if (!token || !selectedEventId || !orderNumber) return;
+    if (!token || !pickupReady || !orderNumber) return;
     setLoading(true);
     setError('');
     setOrder(null);
@@ -104,30 +97,19 @@ export function AbholungPage() {
         Abholung bestätigen
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 2, fontSize: '1.1rem' }}>
-        Veranstaltung wählen, Abholnummer eingeben und Abholung bestätigen.
+        Abholnummer eingeben und Abholung bestätigen. Die Veranstaltung wählen Sie oben im Kopfbereich.
       </Typography>
 
-      {pickupEvents.length === 0 ? (
+      {!selectedEventId && !eventsLoading && (
         <Alert severity="info" sx={{ mb: 2 }}>
-          Derzeit sind keine Veranstaltungen für Abholungen verfügbar.
+          Bitte wählen Sie oben eine Veranstaltung aus.
         </Alert>
-      ) : (
-        <StaffEventSelect
-          labelId="pickup-event-label"
-          events={pickupEvents}
-          value={selectedEventId}
-          onChange={(eventId) => {
-            setSelectedEventId(eventId);
-            setOrder(null);
-            setError('');
-          }}
-          sx={{ mb: 3, maxWidth: 560 }}
-        />
       )}
 
-      {!selectedEventId && pickupEvents.length > 0 && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          Bitte wählen Sie zuerst eine Veranstaltung aus.
+      {selectedEventId && !isPickupOrderable(selectedEventId) && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          Für die gewählte Veranstaltung sind Abholungen derzeit nicht möglich (inaktiv oder Bestellungen geschlossen).
+          Bitte wählen Sie oben eine andere Veranstaltung.
         </Alert>
       )}
 
@@ -141,7 +123,7 @@ export function AbholungPage() {
               placeholder="z.B. 042"
               fullWidth
               autoFocus
-              disabled={!selectedEventId}
+              disabled={!pickupReady}
               onKeyDown={(e) => e.key === 'Enter' && void handleLookup()}
               sx={touchFieldSx}
               inputProps={{ style: { fontSize: '1.75rem', textAlign: 'center', fontWeight: 700 }, inputMode: 'numeric' }}
@@ -149,7 +131,7 @@ export function AbholungPage() {
             <Button
               variant="contained"
               onClick={() => void handleLookup()}
-              disabled={loading || !selectedEventId || !orderNumber}
+              disabled={loading || !pickupReady || !orderNumber}
               aria-label="Suchen"
               sx={{ ...touchIconButtonSx, minWidth: 72, minHeight: 72, width: 72, height: 72, flexShrink: 0 }}
             >
@@ -161,7 +143,7 @@ export function AbholungPage() {
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             fullWidth
-            disabled={!selectedEventId}
+            disabled={!pickupReady}
             sx={touchFieldSx}
             onKeyDown={(e) => e.key === 'Enter' && void handleLookup()}
             helperText="Bei Online-Bestellungen zur Verifikation erforderlich"

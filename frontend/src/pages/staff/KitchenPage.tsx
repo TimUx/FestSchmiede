@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { StaffLayout } from '@/components/StaffLayout';
 import { useAuth } from '@/contexts/AuthContext';
+import { useStaffEvent } from '@/contexts/StaffEventContext';
 import { api, formatTime } from '@/services/api';
 import { subscribeEventOrders } from '@/services/realtime/channels';
 import { Order, OrderStatus } from '@/types';
@@ -22,39 +23,39 @@ import { StatusChip } from '@/components/StatusChip';
 
 export function KitchenPage() {
   const { token } = useAuth();
+  const { selectedEventId, loading: eventsLoading } = useStaffEvent();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [eventId, setEventId] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showReady, setShowReady] = useState(false);
   const [showPickedUp, setShowPickedUp] = useState(false);
 
+  useEffect(() => {
+    if (eventsLoading) return;
+    setLoading(false);
+  }, [eventsLoading]);
+
   const loadOrders = () => {
-    if (!token || !eventId) return;
+    if (!token || !selectedEventId) return;
     const statuses: OrderStatus[] = ['NEW', 'IN_PROGRESS'];
     if (showReady) statuses.push('READY');
     if (showPickedUp) statuses.push('PICKED_UP');
-    api.getOrders(token, eventId, statuses.join(','), true)
+    api.getOrders(token, selectedEventId, statuses.join(','), true)
       .then(setOrders)
-      .catch((err) => setError(err.message));
+      .catch((err) => setError(err instanceof Error ? err.message : 'Fehler'));
   };
 
   useEffect(() => {
-    if (!token) return;
-    api.getActiveEvent(token)
-      .then((event) => setEventId(event.id))
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [token]);
-
-  useEffect(() => {
-    if (!token || !eventId) return;
+    if (!token || !selectedEventId) {
+      setOrders([]);
+      return;
+    }
     loadOrders();
     const statuses: OrderStatus[] = ['NEW', 'IN_PROGRESS'];
     if (showReady) statuses.push('READY');
     if (showPickedUp) statuses.push('PICKED_UP');
-    return subscribeEventOrders(token, eventId, statuses.join(','), setOrders, 'high', { kitchenOnly: true });
-  }, [eventId, token, showReady, showPickedUp]);
+    return subscribeEventOrders(token, selectedEventId, statuses.join(','), setOrders, 'high', { kitchenOnly: true });
+  }, [selectedEventId, token, showReady, showPickedUp]);
 
   const handleAction = async (order: Order) => {
     if (!token) return;
@@ -71,7 +72,7 @@ export function KitchenPage() {
     }
   };
 
-  if (loading) {
+  if (loading || eventsLoading) {
     return (
       <StaffLayout title="Küche" fullWidth>
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>

@@ -1,7 +1,23 @@
-import type { PublicEvent } from '@/types';
+import type { Event, PublicEvent } from '@/types';
 
 export function eventDateKey(date: string): string {
   return date.split('T')[0];
+}
+
+export function eventToPublicEvent(event: Event): PublicEvent {
+  const parsed = new Date(event.date);
+  const eventDateLabel = Number.isNaN(parsed.getTime())
+    ? event.date
+    : parsed.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  return {
+    id: event.id,
+    name: event.name,
+    description: event.description,
+    date: event.date,
+    eventDateLabel,
+    startTime: event.startTime,
+    endTime: event.endTime,
+  };
 }
 
 export function findTodayEvents(events: PublicEvent[]): PublicEvent[] {

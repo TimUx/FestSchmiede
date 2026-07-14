@@ -12,27 +12,25 @@ import {
 import SaveIcon from '@mui/icons-material/Save';
 import { StaffLayout } from '@/components/StaffLayout';
 import { StaffKioskActions } from '@/components/StaffKioskActions';
-import { StaffEventSelect } from '@/components/StaffEventSelect';
 import { FoodItemCard } from '@/components/FoodItemCard';
 import { PaymentMethodSelector } from '@/components/PaymentMethodSelector';
 import { PosPaymentDialog } from '@/components/PosPaymentDialog';
 import { useAuth } from '@/contexts/AuthContext';
+import { useStaffEvent } from '@/contexts/StaffEventContext';
 import { api, formatPrice } from '@/services/api';
-import { FoodItem, Order, PublicEvent } from '@/types';
+import { FoodItem, Order } from '@/types';
 import type { PaymentChoiceId, PaymentMethodsResponse } from '@/types/payment';
 import { buildPosPaymentSelection, isOnlineChoice } from '@/utils/paymentSelection';
-import { resolvePreferredEventId } from '@/utils/eventSelection';
 import { touchPrimaryButtonSx } from '@/theme/touch';
 
 export function BestellungPage() {
   const { token } = useAuth();
+  const { selectedEventId, selectedEvent, loading: eventsLoading, isCashierOrderable } = useStaffEvent();
   const [items, setItems] = useState<FoodItem[]>([]);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
-  const [loading, setLoading] = useState(true);
+  const [itemsLoading, setItemsLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const [cashierEvents, setCashierEvents] = useState<PublicEvent[]>([]);
-  const [selectedEventId, setSelectedEventId] = useState('');
   const [lastOrderNumber, setLastOrderNumber] = useState<string | null>(null);
 
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodsResponse | null>(null);
@@ -43,22 +41,11 @@ export function BestellungPage() {
   const [changeMethodMode, setChangeMethodMode] = useState(false);
 
   useEffect(() => {
-    if (!token) return;
-    api.getCashierEvents(token)
-      .then((events) => {
-        setCashierEvents(events);
-        const todayEvent = resolvePreferredEventId(events);
-        setSelectedEventId(todayEvent);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [token]);
-
-  useEffect(() => {
-    if (!token || !selectedEventId) {
+    if (!token || !selectedEventId || !isCashierOrderable(selectedEventId)) {
       setItems([]);
       return;
     }
+    setItemsLoading(true);
     api.getFoodItems(token, selectedEventId)
       .then((foodItems) => {
         setItems(foodItems.filter((i) => i.active));
@@ -66,8 +53,9 @@ export function BestellungPage() {
         foodItems.forEach((i) => { initial[i.id] = 0; });
         setQuantities(initial);
       })
-      .catch((err) => setError(err.message));
-  }, [token, selectedEventId]);
+      .catch((err) => setError(err.message))
+      .finally(() => setItemsLoading(false));
+  }, [token, selectedEventId, isCashierOrderable]);
 
   const loadPaymentMethods = useCallback(async () => {
     if (paymentMethods !== null || paymentMethodsLoading) return;
@@ -120,7 +108,7 @@ export function BestellungPage() {
   };
 
   const handleSubmit = async () => {
-    if (!token || !selectedEventId || selectedItems.length === 0) return;
+    if (!token || !selectedEventId || !isCashierOrderable(selectedEventId) || selectedItems.length === 0) return;
     setSubmitting(true);
     setError('');
     try {
@@ -195,7 +183,7 @@ export function BestellungPage() {
     }
   };
 
-  if (loading) {
+  if (eventsLoading) {
     return (
       <StaffLayout title="Bestellung" fullWidth>
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
@@ -242,7 +230,7 @@ export function BestellungPage() {
     );
   }
 
-  const selectedEvent = cashierEvents.find((event) => event.id === selectedEventId);
+  const cashierReady = Boolean(selectedEventId && isCashierOrderable(selectedEventId));
 
   return (
     <StaffLayout title="Bestellung" fullWidth>
@@ -250,22 +238,21 @@ export function BestellungPage() {
         Bestellung vor Ort
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 2, fontSize: '1.1rem' }}>
-        Veranstaltung wählen und Gerichte auswählen.
+        Gerichte auswählen und Bestellung speichern. Die Veranstaltung wählen Sie oben im Kopfbereich.
       </Typography>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-      <StaffEventSelect
-        labelId="cashier-event-label"
-        events={cashierEvents}
-        value={selectedEventId}
-        onChange={setSelectedEventId}
-        sx={{ mb: 3 }}
-      />
-
-      {!selectedEventId && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          Bitte wählen Sie zuerst eine Veranstaltung aus.
+      {selectedEventId && !cashierReady && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          Für die gewählte Veranstaltung ist die Kasse derzeit nicht aktiv (inaktiv, Kasse deaktiviert oder Bestellungen geschlossen).
+          Bitte wählen Sie oben eine andere Veranstaltung.
         </Alert>
+      )}
+
+      {itemsLoading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+          <CircularProgress size={28} />
+        </Box>
       )}
 
       {changeMethodMode && pendingOrder && (
@@ -295,7 +282,7 @@ export function BestellungPage() {
       )}
 
       <Grid container spacing={2} sx={{ mb: 12 }}>
-        {items.map((item) => (
+        {cashierReady && items.map((item) => (
           <Grid key={item.id} size={{ xs: 12, sm: 6, md: 4 }}>
             <FoodItemCard
               item={item}
@@ -353,7 +340,7 @@ export function BestellungPage() {
           <Button
             variant="contained"
             onClick={handleSubmit}
-            disabled={submitting || !selectedEventId || totalCount === 0 || paymentMethodsLoading || posPaymentOpen}
+            disabled={submitting || !cashierReady || totalCount === 0 || paymentMethodsLoading || posPaymentOpen}
             sx={{
               ...touchPrimaryButtonSx,
               minHeight: 72,

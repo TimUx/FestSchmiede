@@ -8,17 +8,18 @@ type StaffEventSelectProps = {
   value: string;
   onChange: (eventId: string) => void;
   labelId: string;
+  compact?: boolean;
   sx?: SxProps<Theme>;
 };
 
-export function StaffEventSelect({ events, value, onChange, labelId, sx }: StaffEventSelectProps) {
+export function StaffEventSelect({ events, value, onChange, labelId, compact = false, sx }: StaffEventSelectProps) {
   const formSx: SxProps<Theme> = [
-    touchSelectSx,
+    compact ? { minWidth: { xs: 140, sm: 220 }, maxWidth: 320 } : touchSelectSx,
     ...(sx === undefined ? [] : Array.isArray(sx) ? sx : [sx]),
   ];
 
   return (
-    <FormControl fullWidth sx={formSx}>
+    <FormControl fullWidth={!compact} size={compact ? 'small' : 'medium'} sx={formSx}>
       <InputLabel id={labelId} shrink>
         Veranstaltung
       </InputLabel>
@@ -31,13 +32,16 @@ export function StaffEventSelect({ events, value, onChange, labelId, sx }: Staff
         renderValue={(selected) => {
           if (!selected) {
             return (
-              <Typography component="span" color="text.secondary" sx={{ fontSize: '1.15rem' }}>
+              <Typography component="span" color="text.secondary" sx={{ fontSize: compact ? '0.875rem' : '1.15rem' }}>
                 Veranstaltung wählen
               </Typography>
             );
           }
           const event = events.find((item) => item.id === selected);
-          return event ? `${event.name} · ${event.eventDateLabel}` : selected;
+          if (!event) return selected;
+          return compact
+            ? event.name
+            : `${event.name} · ${event.eventDateLabel}`;
         }}
       >
         {events.map((event) => (

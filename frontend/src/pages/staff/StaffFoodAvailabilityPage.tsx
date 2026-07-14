@@ -11,34 +11,15 @@ import {
   Chip,
 } from '@mui/material';
 import { StaffLayout } from '@/components/StaffLayout';
-import { StaffEventSelect } from '@/components/StaffEventSelect';
 import { useAuth } from '@/contexts/AuthContext';
+import { useStaffEvent } from '@/contexts/StaffEventContext';
 import { api, formatPrice } from '@/services/api';
-import { Event, FoodItem, PublicEvent } from '@/types';
-import { resolvePreferredEventId } from '@/utils/eventSelection';
-
-function toPublicEvent(event: Event): PublicEvent {
-  const date = new Date(event.date);
-  const eventDateLabel = Number.isNaN(date.getTime())
-    ? event.date
-    : date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  return {
-    id: event.id,
-    name: event.name,
-    description: event.description,
-    date: event.date,
-    eventDateLabel,
-    startTime: event.startTime,
-    endTime: event.endTime,
-  };
-}
+import { FoodItem } from '@/types';
 
 export function StaffFoodAvailabilityPage() {
   const { token } = useAuth();
-  const [events, setEvents] = useState<PublicEvent[]>([]);
-  const [selectedEventId, setSelectedEventId] = useState('');
+  const { selectedEventId, events, loading: eventsLoading } = useStaffEvent();
   const [items, setItems] = useState<FoodItem[]>([]);
-  const [eventsLoading, setEventsLoading] = useState(true);
   const [itemsLoading, setItemsLoading] = useState(false);
   const [error, setError] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -56,18 +37,6 @@ export function StaffFoodAvailabilityPage() {
       setItemsLoading(false);
     }
   }, [token, selectedEventId]);
-
-  useEffect(() => {
-    if (!token) return;
-    api.getEvents(token)
-      .then((loadedEvents) => {
-        const mapped = loadedEvents.map(toPublicEvent);
-        setEvents(mapped);
-        setSelectedEventId(resolvePreferredEventId(mapped));
-      })
-      .catch((err) => setError(err instanceof Error ? err.message : 'Veranstaltungen konnten nicht geladen werden'))
-      .finally(() => setEventsLoading(false));
-  }, [token]);
 
   useEffect(() => {
     if (!selectedEventId) {
@@ -111,27 +80,10 @@ export function StaffFoodAvailabilityPage() {
         Markieren Sie Gerichte als ausverkauft. Die Einstellung gilt jeweils für die gewählte Veranstaltung.
       </Typography>
 
-      {events.length === 0 ? (
+      {events.length === 0 && (
         <Alert severity="info" sx={{ mb: 2 }}>
           Derzeit sind keine Veranstaltungen angelegt. Legen Sie zuerst unter Veranstaltungen eine Veranstaltung an
           und ordnen Sie dort Speisen zu.
-        </Alert>
-      ) : (
-        <StaffEventSelect
-          labelId="availability-event-label"
-          events={events}
-          value={selectedEventId}
-          onChange={(eventId) => {
-            setSelectedEventId(eventId);
-            setError('');
-          }}
-          sx={{ mb: 3, maxWidth: 560 }}
-        />
-      )}
-
-      {!selectedEventId && events.length > 0 && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          Bitte wählen Sie zuerst eine Veranstaltung aus.
         </Alert>
       )}
 

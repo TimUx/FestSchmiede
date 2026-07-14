@@ -3,6 +3,19 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.4.39 - 2026-07-14
+
+### Behoben
+
+- **Mitarbeiter Bestellungen:** Dashboard, Bestellungen und Küche nutzen die explizit gewählte Veranstaltung statt einer automatisch ermittelten „aktiven“ Veranstaltung — bei mehreren Events werden Bestellungen wieder korrekt angezeigt.
+
+### Geändert
+
+- **Mitarbeiterbereich:** Zentrale Veranstaltungsauswahl im Kopfbereich (Header/Mobile), tenant-spezifisch gespeichert und für alle Subseiten gültig (Dashboard, Bestellungen, Küche, Abholung, Kasse, Verfügbarkeit).
+- **Kasse & Abholung:** Hinweis, wenn die gewählte Veranstaltung dort nicht aktiv ist (Kasse deaktiviert, Bestellungen geschlossen o. ä.).
+
+---
+
 ## 2.4.38 - 2026-07-14
 
 ### Behoben

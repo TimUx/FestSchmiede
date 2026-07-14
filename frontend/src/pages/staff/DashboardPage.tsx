@@ -16,6 +16,7 @@ import TimerIcon from '@mui/icons-material/Timer';
 import { StaffLayout } from '@/components/StaffLayout';
 import { StaffKioskActions } from '@/components/StaffKioskActions';
 import { useAuth } from '@/contexts/AuthContext';
+import { useStaffEvent } from '@/contexts/StaffEventContext';
 import { api, formatPrice } from '@/services/api';
 import { DashboardStats } from '@/types';
 import { subscribeEventStats } from '@/services/realtime/channels';
@@ -51,28 +52,28 @@ function StatCard({ title, value, icon, color }: StatCardProps) {
 
 export function DashboardPage() {
   const { token } = useAuth();
+  const { selectedEventId, loading: eventsLoading } = useStaffEvent();
   const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [eventId, setEventId] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!token) return;
-    api.getActiveEvent(token)
-      .then((event) => setEventId(event.id))
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [token]);
+    if (eventsLoading) return;
+    setLoading(false);
+  }, [eventsLoading]);
 
   useEffect(() => {
-    if (!token || !eventId) return;
-    api.getStats(token, eventId)
+    if (!token || !selectedEventId) {
+      setStats(null);
+      return;
+    }
+    api.getStats(token, selectedEventId)
       .then(setStats)
       .catch((err) => setError(err instanceof Error ? err.message : 'Fehler'));
-    return subscribeEventStats(token, eventId, setStats, 'normal');
-  }, [eventId, token]);
+    return subscribeEventStats(token, selectedEventId, setStats, 'normal');
+  }, [selectedEventId, token]);
 
-  if (loading) {
+  if (loading || eventsLoading) {
     return (
       <StaffLayout title="Dashboard">
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
