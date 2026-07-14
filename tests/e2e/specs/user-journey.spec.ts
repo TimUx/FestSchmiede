@@ -170,6 +170,7 @@ test.describe('FestSchmiede Nutzerreise (End-to-End)', () => {
     await dialog.getByRole('textbox', { name: 'Benutzername' }).fill('kasse1');
     await dialog.getByRole('textbox', { name: /passwort/i }).fill(STAFF_PASSWORD);
     await dialog.getByRole('checkbox', { name: /Kasse/i }).check();
+    await dialog.getByRole('checkbox', { name: /Abholung/i }).check();
     await expect(dialog.getByRole('checkbox', { name: /Küche/i })).toBeChecked();
     await dialog.getByRole('button', { name: /^speichern$/i }).click();
     await expect(page.getByText('kasse1')).toBeVisible({ timeout: 15_000 });
@@ -230,8 +231,10 @@ test.describe('FestSchmiede Nutzerreise (End-to-End)', () => {
   });
 
   test('11 · Abholung bestätigen', async () => {
+    await loginTenantStaff(page, state.slug, 'kasse1', STAFF_PASSWORD);
     await page.goto(tenantRoute(state.slug, '/mitarbeiter/abholung'));
     await expect(page.getByRole('heading', { name: /abholung bestätigen/i })).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByLabel('Abholnummer')).toBeEnabled({ timeout: 15_000 });
 
     await confirmPickup(page, state.onlineOrderNumber, 'Gast1');
     await confirmPickup(page, state.cashierOrderNumber);

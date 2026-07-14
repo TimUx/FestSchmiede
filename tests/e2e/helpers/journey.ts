@@ -132,11 +132,26 @@ export async function confirmPickup(
   displayNumber: string,
   lastName?: string
 ): Promise<void> {
-  await page.getByLabel('Abholnummer').fill(displayNumber.replace(/^#/, ''));
+  const pickupNumber = displayNumber.replace(/\D/g, '');
+  expect(pickupNumber.length).toBeGreaterThan(0);
+
+  await expect(page.getByLabel('Abholnummer')).toBeEnabled({ timeout: 15_000 });
+  await page.getByLabel('Abholnummer').fill(pickupNumber);
   if (lastName) {
     await page.getByLabel(/nachname/i).fill(lastName);
   }
+
+  const lookupResponse = page.waitForResponse(
+    (res) => res.url().includes('/staff/orders/lookup') && res.request().method() === 'POST',
+    { timeout: 15_000 },
+  );
   await page.getByRole('button', { name: /^suchen$/i }).click();
+  const response = await lookupResponse;
+  if (!response.ok()) {
+    const alertText = (await page.locator('[role="alert"]').first().textContent())?.trim() ?? '';
+    throw new Error(`Abholung-Suche fehlgeschlagen (${response.status()}): ${alertText || await response.text()}`);
+  }
+
   await expect(page.getByRole('button', { name: /abholung bestätigen/i })).toBeVisible({ timeout: 15_000 });
   await page.getByRole('button', { name: /abholung bestätigen/i }).click();
   await expect(page.getByText(/abholung bestätigt/i)).toBeVisible({ timeout: 15_000 });
