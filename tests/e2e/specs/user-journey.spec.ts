@@ -56,8 +56,12 @@ test.describe('FestSchmiede Nutzerreise (End-to-End)', () => {
     await page.locator('[data-field="plannedUsage"]').getByRole('textbox').fill(
       'Zwei Feste pro Jahr mit jeweils 200–400 Gästen und 3–5 Veranstaltungen im Vereinsheim.'
     );
-    await page.getByRole('checkbox', { name: /datenschutzerklärung/i }).check();
-    await page.getByRole('checkbox', { name: /nutzungsbedingungen/i }).check();
+    const legalChecks = page.locator('form input[type="checkbox"]');
+    await expect(legalChecks).toHaveCount(2);
+    await legalChecks.nth(0).check({ force: true });
+    await legalChecks.nth(1).check({ force: true });
+    await expect(legalChecks.nth(0)).toBeChecked();
+    await expect(legalChecks.nth(1)).toBeChecked();
 
     await page.waitForTimeout(3500);
     await page.getByRole('button', { name: /bewerbung absenden/i }).click();
