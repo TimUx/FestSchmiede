@@ -164,7 +164,7 @@ export class PlatformTenantAdminService {
     const tenant = await this.tenantService.findById(id);
     if (!tenant) throw new AppError(404, 'Mandant nicht gefunden');
 
-    await tenantPurgeService.purge(id);
+    await tenantPurgeService.purge(id, tenant.slug);
 
     await this.audit.log({
       action: 'platform.tenant.delete',

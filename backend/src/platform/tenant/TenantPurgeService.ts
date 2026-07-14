@@ -7,9 +7,13 @@ import { logger } from '../../utils/logger';
 
 async function purgePaymentModuleData(tenantId: string): Promise<void> {
   const deletes = [
-    () => prisma.$executeRaw`DELETE FROM payment_audit WHERE tenant_id = ${tenantId}`,
-    () => prisma.$executeRaw`DELETE FROM payments WHERE tenant_id = ${tenantId}`,
     () => prisma.$executeRaw`DELETE FROM payment_events WHERE tenant_id = ${tenantId}`,
+    () => prisma.$executeRaw`DELETE FROM payment_audit WHERE tenant_id = ${tenantId}`,
+    () => prisma.$executeRaw`
+      DELETE FROM payment_audit
+      WHERE payment_id IN (SELECT id FROM payments WHERE tenant_id = ${tenantId})
+    `,
+    () => prisma.$executeRaw`DELETE FROM payments WHERE tenant_id = ${tenantId}`,
     () => prisma.$executeRaw`DELETE FROM payment_provider_config WHERE tenant_id = ${tenantId}`,
   ];
 
@@ -37,13 +41,17 @@ export async function deleteTenantUploads(tenantId: string): Promise<void> {
 }
 
 export class TenantPurgeService {
-  async purge(tenantId: string): Promise<void> {
+  async purge(tenantId: string, slug?: string): Promise<void> {
     await purgePaymentModuleData(tenantId);
 
     await prisma.$transaction(
       async (tx) => {
         await tx.platformAuditLog.deleteMany({ where: { tenantId } });
-        await tx.tenantApplication.deleteMany({ where: { tenantId } });
+        await tx.tenantApplication.deleteMany({
+          where: slug
+            ? { OR: [{ tenantId }, { requestedSubdomain: slug }] }
+            : { tenantId },
+        });
         await tx.tenant.delete({ where: { id: tenantId } });
       },
       { timeout: 120_000 }
