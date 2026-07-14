@@ -55,6 +55,14 @@ cd ~/festschmiede   # oder Ihr Installationsverzeichnis
 ./install.sh --update
 ```
 
+Bestimmte Release-Version (überschreibt `IMAGE_TAG` in `.env`):
+
+```bash
+IMAGE_TAG=v2.4.36 ./install.sh --update
+```
+
+Alternativ `IMAGE_TAG=v2.4.36` dauerhaft in `.env` setzen.
+
 Der Assistent führt automatisch aus:
 
 1. **Konfigurations-Backup** (`.installer-state/backups/`)

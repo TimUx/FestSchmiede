@@ -3,6 +3,29 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.4.36 - 2026-07-14
+
+### Hinzugefügt
+
+- **E2E-Nutzerreise:** Playwright-Test von Mandantenbewerbung über Einrichtung, Veranstaltungen, Gerichte, Online-/Kassenbestellungen, Küche, Abholung und Admin-Dashboard bis zur DSGVO-Mandanten-Löschung.
+- **DSGVO-Mandanten-Löschung:** `TenantPurgeService` entfernt Zahlungsdaten, Audit-Logs, Bewerbungen, DB-Cascade und Upload-Dateien vollständig.
+- **Veranstaltungen löschen:** `DELETE /staff/events/:id` mit UI-Button (409 bei vorhandenen Bestellungen).
+- **CI:** Eigener Workflow-Job für die realistische Nutzerreise; Nightly und Release-Validation fokussiert auf Lasttest + Journey.
+
+### Behoben
+
+- **Bestellungen/Payment:** Fehlertolerante Payment-Abfragen und `isAvailable()` ohne 500 bei fehlender `payments`-Tabelle.
+- **Speisen löschen:** 409 statt 500 wenn Bestellungen referenzieren.
+- **Installer:** `IMAGE_TAG` aus Shell überschreibt `.env`; sichererer Swarm-Deploy und Rollback ohne aggressives `stack rm`.
+- **Admin-UI:** Sponsor-Links aus Admin-Navigation entfernt.
+
+### Geändert
+
+- **Plattform:** Klarer DSGVO-Hinweis beim Mandanten-Löschen.
+- **QA:** Smoke-E2E und Nutzerreise getrennt (`qa:e2e` / `qa:e2e:journey`).
+
+---
+
 ## 2.4.35 - 2026-07-14
 
 ### Behoben
