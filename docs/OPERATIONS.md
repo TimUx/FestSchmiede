@@ -162,6 +162,34 @@ Im Log muss vor dem Image-Pull stehen: `Shell-Override: IMAGE_TAG=v2.4.36` und `
 
 **Hinweis:** Automatischer Datenbank-Rollback erfolgt nur mit `FESTSCHMIEDE_AUTO_DB_ROLLBACK=1` — bei reinem Deploy-Fehler bleibt die DB unverändert.
 
+### 502 auf `/api/public/routing-config` (Seite lädt nicht)
+
+**Symptom:** Browser zeigt „Routing-Konfiguration konnte nicht geladen werden“, API antwortet mit HTTP 502. Frontend-Logs zeigen `GET /` mit 200, Backend-Logs ohne externe API-Treffer.
+
+**Ursache:** Nginx im Frontend-Container cached den Upstream `backend:3001` beim Start. Startet das Frontend vor dem Backend (typisch bei Swarm), bleibt der Proxy leer.
+
+**Sofort-Hilfe** (ohne Image-Update):
+
+```bash
+# 1. Backend muss laufen
+docker service ps festschmiede_backend
+docker service logs festschmiede_backend --tail 20
+
+# 2. Fehlgeschlagene Backend-Tasks bereinigen (nur 1 Replica auf Single-Node)
+docker service scale festschmiede_backend=1
+
+# 3. Frontend neu starten (nginx löst backend erneut auf)
+docker service update --force festschmiede_frontend
+
+# 4. Proxy testen (aus laufendem Frontend-Container)
+CID=$(docker ps -q -f name=festschmiede_frontend | head -1)
+docker exec "$CID" wget -qO- http://backend:3001/api/health
+```
+
+Erwartung Schritt 4: JSON mit `"status":"ok"`. Danach Browser-Reload.
+
+Ab Frontend-Image **v2.4.37** (nginx mit Docker-DNS-Resolver) ist Schritt 3 nach Installation automatisch.
+
 ---
 
 ## Wiederherstellung aus Backup

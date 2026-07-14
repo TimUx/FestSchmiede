@@ -60,12 +60,13 @@ services:
     networks:
       - internal
     deploy:
-      replicas: 2
+      replicas: 1
       restart_policy:
         condition: on-failure
       update_config:
         parallelism: 1
         delay: 10s
+        order: start-first
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3001/api/health"]
       interval: 15s
@@ -82,7 +83,7 @@ services:
       - internal
       - public
     deploy:
-      replicas: 2
+      replicas: 1
       restart_policy:
         condition: on-failure
       labels:

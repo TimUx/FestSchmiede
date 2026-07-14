@@ -167,6 +167,7 @@ wait_for_swarm_health() {
     backend_cid=$(swarm_task_container_id "$backend_svc" || true)
     if container_health_ok_by_id "$backend_cid"; then
       log_info "Backend bereit nach ${i}s (Service: ${backend_svc})"
+      refresh_swarm_frontend_proxy || true
       break
     fi
     [[ $i -eq $timeout ]] && { log_error "Backend-Timeout (Service: ${backend_svc})"; return 1; }
@@ -184,7 +185,17 @@ wait_for_swarm_health() {
   done
 
   log_warn "Frontend-Service nicht healthy (${frontend_svc}) — prüfen Sie Traefik/DNS falls Reverse Proxy aktiv"
+  refresh_swarm_frontend_proxy || true
   return 0
+}
+
+# nginx cached den Upstream-Host beim Start; nach Backend-Ready Frontend neu starten.
+refresh_swarm_frontend_proxy() {
+  deployment_uses_swarm || return 0
+  local svc
+  svc="$(swarm_service_name frontend)"
+  log_info "Frontend-Proxy neu starten (nginx → Backend-DNS): ${svc}"
+  docker service update --force --detach=true "$svc" >>"$LOG_FILE" 2>&1
 }
 
 reset_postgres_volume_if_requested() {
