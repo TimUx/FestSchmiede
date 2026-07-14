@@ -51,6 +51,7 @@ export function errorHandler(
       res.status(409).json({
         error: 'Der Datensatz wird noch verwendet und kann nicht gelöscht werden.',
         code: 'FOREIGN_KEY_CONSTRAINT',
+        ...(process.env.FESTSCHMIEDE_CI === '1' ? { detail: err.meta } : {}),
       });
       return;
     }

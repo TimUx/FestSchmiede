@@ -52,6 +52,13 @@ export class TenantPurgeService {
             ? { OR: [{ tenantId }, { requestedSubdomain: slug }] }
             : { tenantId },
         });
+        await tx.moduleMigration.deleteMany({ where: { tenantId } });
+        await tx.tenantModule.deleteMany({ where: { tenantId } });
+        await tx.order.deleteMany({ where: { tenantId } });
+        await tx.event.deleteMany({ where: { tenantId } });
+        await tx.foodItem.deleteMany({ where: { tenantId } });
+        await tx.customer.deleteMany({ where: { tenantId } });
+        await tx.user.deleteMany({ where: { tenantId } });
         await tx.tenant.delete({ where: { id: tenantId } });
       },
       { timeout: 120_000 }
