@@ -120,6 +120,17 @@ describe('isMissingPaymentsSchema', () => {
     expect(isMissingPaymentsSchema(err)).toBe(true);
   });
 
+  it('ignoriert fehlende tenant_id-Spalte in payment_audit', () => {
+    const err = {
+      name: 'PrismaClientKnownRequestError',
+      code: 'P2010',
+      message: 'Invalid `prisma.$executeRaw()` invocation:',
+      meta: { code: '42703', message: 'column "tenant_id" does not exist' },
+    };
+
+    expect(isMissingPaymentsSchema(err)).toBe(true);
+  });
+
   it('ignoriert fremde Datenbankfehler', () => {
     const err = {
       name: 'PrismaClientKnownRequestError',

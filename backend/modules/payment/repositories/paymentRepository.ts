@@ -26,7 +26,7 @@ export function isMissingPaymentsSchema(err: unknown): boolean {
   if (code === 'P2021' || code === 'P2022') return true;
 
   const message = prismaErrorText(err);
-  return /relation "payments" does not exist|relation "payment_sessions" does not exist|column "(released_to_kitchen|payment_status|tenant_id)" does not exist on relation "payments"|payments does not exist/i.test(
+  return /relation "(payments|payment_sessions|payment_audit|payment_events|payment_provider_config)" does not exist|column "(released_to_kitchen|payment_status|tenant_id)" does not exist|column .* does not exist on relation "(payments|payment_audit|payment_events|payment_provider_config)"|payments does not exist/i.test(
     message
   );
 }
