@@ -170,8 +170,11 @@ export async function confirmPickup(
   await expect(eventSelect).toContainText(eventName);
 
   await enterPickupNumber(page, order.orderNumber);
+  const lastNameField = page.getByLabel(/nachname \(optional/i);
   if (order.lastName) {
-    await page.getByLabel(/nachname \(optional/i).fill(order.lastName);
+    await lastNameField.fill(order.lastName);
+  } else {
+    await lastNameField.clear();
   }
 
   const lookupResponse = page.waitForResponse(
