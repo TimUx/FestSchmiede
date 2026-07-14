@@ -11,42 +11,39 @@ import { OrderCard } from '@/components/OrderCard';
 import { OrderEditDialog } from '@/components/OrderEditDialog';
 import { OrdersExportActions } from '@/components/OrdersExportActions';
 import { useAuth } from '@/contexts/AuthContext';
+import { useStaffEvent } from '@/contexts/StaffEventContext';
 import { api } from '@/services/api';
 import { subscribeEventOrders } from '@/services/realtime/channels';
 import { Order, OrderStatus } from '@/types';
 
 export function OrdersPage() {
   const { token } = useAuth();
+  const { selectedEventId, selectedEvent, loading: eventsLoading } = useStaffEvent();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [eventId, setEventId] = useState('');
-  const [eventName, setEventName] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
 
   useEffect(() => {
-    if (!token) return;
-    api.getActiveEvent(token)
-      .then((event) => {
-        setEventId(event.id);
-        setEventName(event.name);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [token]);
+    if (eventsLoading) return;
+    setLoading(false);
+  }, [eventsLoading]);
 
   const loadOrders = () => {
-    if (!token || !eventId) return;
-    api.getOrders(token, eventId)
+    if (!token || !selectedEventId) return;
+    api.getOrders(token, selectedEventId)
       .then(setOrders)
       .catch((err) => setError(err instanceof Error ? err.message : 'Fehler'));
   };
 
   useEffect(() => {
-    if (!token || !eventId) return;
+    if (!token || !selectedEventId) {
+      setOrders([]);
+      return;
+    }
     loadOrders();
-    return subscribeEventOrders(token, eventId, '', setOrders, 'normal');
-  }, [eventId, token]);
+    return subscribeEventOrders(token, selectedEventId, '', setOrders, 'normal');
+  }, [selectedEventId, token]);
 
   const handleStatusChange = async (orderId: string, status: OrderStatus) => {
     if (!token) return;
@@ -68,7 +65,7 @@ export function OrdersPage() {
     }
   };
 
-  if (loading) {
+  if (loading || eventsLoading) {
     return (
       <StaffLayout title="Bestellungen">
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
@@ -81,11 +78,12 @@ export function OrdersPage() {
   return (
     <StaffLayout title="Bestellungen">
       {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>{error}</Alert>}
-      {token && eventId && (
+
+      {token && selectedEventId && (
         <OrdersExportActions
           token={token}
-          eventId={eventId}
-          eventName={eventName}
+          eventId={selectedEventId}
+          eventName={selectedEvent?.name ?? ''}
           onError={setError}
         />
       )}
@@ -105,7 +103,7 @@ export function OrdersPage() {
         <OrderEditDialog
           open={editingOrder !== null}
           order={editingOrder}
-          eventId={eventId}
+          eventId={selectedEventId}
           token={token}
           onClose={() => setEditingOrder(null)}
           onSaved={(updated) => {
@@ -113,9 +111,9 @@ export function OrdersPage() {
           }}
         />
       )}
-      {orders.length === 0 && (
+      {selectedEventId && orders.length === 0 && (
         <Typography color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
-          Keine Bestellungen
+          Keine Bestellungen für diese Veranstaltung
         </Typography>
       )}
     </StaffLayout>

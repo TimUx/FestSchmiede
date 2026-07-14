@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
-import { ProtectedRoute } from '@/components/StaffLayout';
+import { StaffArea } from '@/components/StaffArea';
 import { AdminRoute } from '@/components/AdminLayout';
 import { BrandingHead } from '@/components/BrandingHead';
 import { MaintenanceGate } from '@/components/MaintenanceGate';
@@ -77,12 +77,14 @@ export function TenantRoutes() {
         <Route path="/abholboard" element={<Lazy><PickupBoardPage /></Lazy>} />
 
         <Route path="/mitarbeiter/login" element={<Lazy><LoginPage /></Lazy>} />
-        <Route path="/mitarbeiter" element={<Lazy><ProtectedRoute><DashboardPage /></ProtectedRoute></Lazy>} />
-        <Route path="/mitarbeiter/bestellungen" element={<Lazy><ProtectedRoute><OrdersPage /></ProtectedRoute></Lazy>} />
-        <Route path="/mitarbeiter/kueche" element={<Lazy><ProtectedRoute><KitchenPage /></ProtectedRoute></Lazy>} />
-        <Route path="/mitarbeiter/abholung" element={<Lazy><ProtectedRoute><AbholungPage /></ProtectedRoute></Lazy>} />
-        <Route path="/mitarbeiter/bestellung" element={<Lazy><ProtectedRoute><BestellungPage /></ProtectedRoute></Lazy>} />
-        <Route path="/mitarbeiter/speisen" element={<Lazy><ProtectedRoute><StaffFoodAvailabilityPage /></ProtectedRoute></Lazy>} />
+        <Route path="/mitarbeiter" element={<StaffArea />}>
+          <Route index element={<Lazy><DashboardPage /></Lazy>} />
+          <Route path="bestellungen" element={<Lazy><OrdersPage /></Lazy>} />
+          <Route path="kueche" element={<Lazy><KitchenPage /></Lazy>} />
+          <Route path="abholung" element={<Lazy><AbholungPage /></Lazy>} />
+          <Route path="bestellung" element={<Lazy><BestellungPage /></Lazy>} />
+          <Route path="speisen" element={<Lazy><StaffFoodAvailabilityPage /></Lazy>} />
+        </Route>
 
         <Route path="/admin/login" element={<Lazy><LoginPage /></Lazy>} />
         <Route path="/admin/profil" element={<Lazy><AdminRoute><AdminUiScope><AdminProfilePage /></AdminUiScope></AdminRoute></Lazy>} />
