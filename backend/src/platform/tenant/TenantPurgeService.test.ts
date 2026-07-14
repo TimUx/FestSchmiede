@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'fs';
 import { TenantPurgeService, deleteTenantUploads } from './TenantPurgeService';
 
@@ -21,27 +21,21 @@ vi.mock('../../config', () => ({
   config: { uploadsDir: '/tmp/festschmiede-uploads-test' },
 }));
 
-vi.mock('fs', async () => {
-  const actual = await vi.importActual<typeof import('fs')>('fs');
-  return {
-    ...actual,
-    promises: {
-      ...actual.promises,
-      rm: vi.fn(),
-    },
-  };
-});
-
 describe('TenantPurgeService', () => {
   const service = new TenantPurgeService();
+  let rmSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    rmSpy = vi.spyOn(fs.promises, 'rm').mockResolvedValue(undefined);
     tx.$executeRaw.mockResolvedValue(0);
     tx.platformAuditLog.deleteMany.mockResolvedValue({ count: 2 });
     tx.tenantApplication.deleteMany.mockResolvedValue({ count: 1 });
     tx.tenant.delete.mockResolvedValue({ id: tenantId });
-    vi.mocked(fs.promises.rm).mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    rmSpy.mockRestore();
   });
 
   it('removes payment data, audit logs, applications and tenant in one transaction', async () => {
@@ -56,7 +50,7 @@ describe('TenantPurgeService', () => {
   it('deletes tenant upload directory after database purge', async () => {
     await service.purge(tenantId);
 
-    expect(fs.promises.rm).toHaveBeenCalledWith(
+    expect(rmSpy).toHaveBeenCalledWith(
       `/tmp/festschmiede-uploads-test/${tenantId}`,
       { recursive: true, force: true }
     );
@@ -74,14 +68,20 @@ describe('TenantPurgeService', () => {
 });
 
 describe('deleteTenantUploads', () => {
+  let rmSpy: ReturnType<typeof vi.spyOn>;
+
   beforeEach(() => {
-    vi.mocked(fs.promises.rm).mockResolvedValue(undefined);
+    rmSpy = vi.spyOn(fs.promises, 'rm').mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    rmSpy.mockRestore();
   });
 
   it('removes upload directory for tenant', async () => {
     await deleteTenantUploads(tenantId);
 
-    expect(fs.promises.rm).toHaveBeenCalledWith(
+    expect(rmSpy).toHaveBeenCalledWith(
       `/tmp/festschmiede-uploads-test/${tenantId}`,
       { recursive: true, force: true }
     );

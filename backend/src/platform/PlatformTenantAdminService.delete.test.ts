@@ -1,20 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { PlatformTenantAdminService } from '../PlatformTenantAdminService';
-import type { TenantService } from '../tenant/TenantService';
-import type { TenantRepository } from '../../repositories/tenantRepository';
-import type { PlatformContext } from '../tenant/PlatformContext';
-import type { ModuleRegistry } from '../ModuleRegistry';
+import { PlatformTenantAdminService } from './PlatformTenantAdminService';
+import type { TenantService } from './tenant/TenantService';
+import type { TenantRepository } from '../repositories/tenantRepository';
+import type { PlatformContext } from './tenant/PlatformContext';
+import type { ModuleRegistry } from './ModuleRegistry';
 
 const tenantId = '00000000-0000-0000-0000-000000000001';
 const actorId = '00000000-0000-0000-0000-000000000099';
 
-vi.mock('../tenant/TenantPurgeService', () => ({
+vi.mock('./tenant/TenantPurgeService', () => ({
   tenantPurgeService: {
     purge: vi.fn(),
   },
 }));
 
-import { tenantPurgeService } from '../tenant/TenantPurgeService';
+import { tenantPurgeService } from './tenant/TenantPurgeService';
 
 describe('PlatformTenantAdminService.delete', () => {
   const tenantService = {
