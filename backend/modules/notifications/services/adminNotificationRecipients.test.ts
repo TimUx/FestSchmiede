@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-const findAdminNotificationSubscribers = vi.fn();
+const { findAdminNotificationSubscribers } = vi.hoisted(() => ({
+  findAdminNotificationSubscribers: vi.fn(),
+}));
 
 vi.mock('../../../src/repositories', () => ({
   userRepository: {
