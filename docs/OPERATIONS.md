@@ -16,11 +16,11 @@ Ausführlichere Admin-Themen: [Admin Guide](ADMIN_GUIDE.md) · Einführung ohne 
 4. **`.env` sichern** — Datei mit Passwörtern und Secrets kopieren (USB-Stick oder Passwort-Manager), nicht ins öffentliche Git legen.
 5. **Backup erstellen** — siehe [Backup](#backup-vor-updates-und-regelmäßig).
 6. **Aktive Veranstaltung(en)** — Im Admin: gewünschte Events mit **Veranstaltung aktiv** einschalten; Datum und Uhrzeiten prüfen.
-7. **Speisekatalog & Zuordnung** — Gerichte unter **Speisen** pflegen; pro Veranstaltung unter **Veranstaltungen → Speisen** zuordnen.
+7. **Speisen & Getränke** — Katalog unter **Speisen & Getränke** pflegen; pro Veranstaltung unter **Veranstaltungen → Speisen & Getränke** zuordnen.
 8. **Online-Bestellung** — Schalter „Online-Bestellungen“ am Event eingeschaltet (falls gewünscht).
 9. **Mitarbeiter** — Konten für Küche, Kasse und Abholung angelegt, **keine Demo-Passwörter** in Produktion.
 10. **Testbestellung** — Einmal von Handy/Tablet bestellen und in der Küche sichtbar?
-11. **Abholboard** — Monitor unter `/abholboard` im Vollbild, WLAN stabil.
+11. **Abholboard** — Monitor unter `/abholboard` im Vollbild (auch über Service-Menü → Abholboard), WLAN stabil.
 12. **HTTPS** — Öffentliche URL nur über verschlüsselte Verbindung (Reverse Proxy), siehe [Admin Guide — Reverse Proxy](ADMIN_GUIDE.md#reverse-proxy-https).
 
 ---

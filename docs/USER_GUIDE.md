@@ -54,8 +54,10 @@ Nach der Anmeldung sehen Sie das **Dashboard** mit aktuellen Zahlen:
 | Bestellungen | Alle | Alle Bestellungen einsehen |
 | Küche | Küchenteam | Bestellungen bearbeiten |
 | Abholung | Ausgabe | Abholung per Nummer bestätigen |
+| Abholboard | Küche / Ausgabe | Monitor mit fertigen Abholnummern öffnen (`/abholboard`) |
 | Bestellung | Vor Ort | Neue Bestellung aufgeben |
-| Administration | Nur Admin | Link zum Admin-Bereich (Verein, Benutzer, Events) |
+| Verfügbarkeit | Küche / Verwaltung | Speisen & Getränke als ausverkauft markieren |
+| Administration | Nur Admin | Link zum Admin-Bereich (Verein, Team, Events) |
 
 ---
 
@@ -206,7 +208,7 @@ Wenn das Modul **Rechtliche Informationen** aktiviert ist, erscheinen zusätzlic
 
 ### Abholboard für Gäste
 
-Separater Monitor unter `/abholboard` – kein Login nötig. Bei mehreren aktiven Veranstaltungen zuerst die richtige Veranstaltung wählen.
+Separater Monitor unter `/abholboard` – kein Login nötig. Im Service-Menü gibt es den Eintrag **Abholboard**. Bei mehreren aktiven Veranstaltungen zuerst die richtige Veranstaltung wählen.
 
 ![Abholboard](screenshots/04-abholboard-monitor.png)
 

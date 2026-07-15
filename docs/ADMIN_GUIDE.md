@@ -80,7 +80,7 @@ Neue Mandanten durchlaufen beim ersten Admin-Login automatisch den Einrichtungsa
 7. [E-Mail-Benachrichtigungen](#e-mail-benachrichtigungen)
 8. [Veranstaltungen verwalten](#veranstaltungen-verwalten)
 9. [Vorausbestellungen aktivieren](#vorausbestellungen-aktivieren)
-10. [Speisen verwalten](#speisen-verwalten)
+10. [Speisen & Getränke verwalten](#speisen--getränke-verwalten)
 11. [Bestellungen überwachen](#bestellungen-überwachen)
 12. [Mitarbeiter & Rollen](#mitarbeiter--rollen)
 13. [Schalter & Einstellungen](#schalter--einstellungen)
@@ -138,7 +138,7 @@ Alle drei Dienste (`postgres`, `backend`, `frontend`) sollten den Status **runni
 | Bestellseite | http://localhost:5173/ | Kundenbestellungen |
 | Kontakt | http://localhost:5173/kontakt | Vereinskontakt |
 | Abholboard | http://localhost:5173/abholboard | Monitor-Anzeige |
-| Mitarbeiter-Login | http://localhost:5173/service/login | Admin- und Mitarbeiterbereich |
+| Service-Login | http://localhost:5173/service/login | Admin und Service |
 | API (intern) | http://localhost:3001/api/health | Gesundheitscheck |
 
 ### Docker-Images aus der Registry (optional)
@@ -544,7 +544,8 @@ sudo systemctl reload caddy
 
 Navigieren Sie zu **Veranstalter** (`/admin/verein`) und tragen Sie ein:
 
-- Name des Veranstalters und Logo
+- Name des Veranstalters und Logo (erscheint auf der öffentlichen Bestell- und Kontaktseite)
+- **Primärfarbe** für Buttons, Links und Header der öffentlichen Seiten
 - Kontaktdaten für die öffentliche Kontaktseite und Bestätigungs-E-Mails
 
 ![Veranstalter](screenshots/13-vereinseinstellungen.png)
@@ -567,7 +568,7 @@ Unter `/admin/benutzer` legen Sie Mitarbeiter mit **Rollenvorlagen** an — kein
 | Küche | Küchenmonitor, Bondruck |
 | Abholung | Bestellungen aushändigen |
 | Kasse | Bestellung vor Ort, Zahlungsstatus |
-| Speisenpflege | Speisekarte und Veranstaltungen |
+| Speisen & Getränke | Katalog und Veranstaltungen |
 | Finanzen | Zahlungen und Auswertungen |
 | Rechtliches | Impressum und AGB |
 
@@ -575,14 +576,16 @@ Administratoren erhalten weiterhin Vollzugriff. Eine Kassenkraft kann weder Team
 
 ![Team](screenshots/17-benutzerverwaltung.png)
 
+Administratoren können optional **E-Mail-Benachrichtigungen** aktivieren (Spalte **E-Mail-Info** in der Team-Tabelle oder unter dem eigenen Profil: *E-Mail-Benachrichtigungen erhalten*). Dann erhalten sie Infos zu neuen Bestellungen, Stornierungen und weiteren Ereignissen – unabhängig von den Kunden-Mails über SMTP.
+
 ### 5. Erste Veranstaltung anlegen
 
 Unter **Veranstaltungen** (`/admin/veranstaltungen`) eine Veranstaltung mit korrektem **Veranstaltungsdatum** anlegen und den Schalter **Veranstaltung aktiv** einschalten.
 
-### 6. Speisen pflegen
+### 6. Speisen & Getränke pflegen
 
-1. Unter **Speisen** (`/admin/speisen`) Gerichte im **mandantenweiten Katalog** anlegen.
-2. Unter **Veranstaltungen → Speisen** festlegen, welche Gerichte bei der Veranstaltung angeboten werden.
+1. Unter **Speisen & Getränke** (`/admin/speisen`) Einträge im **mandantenweiten Katalog** anlegen.
+2. Unter **Veranstaltungen → Speisen & Getränke** festlegen, welche Einträge bei der Veranstaltung angeboten werden.
 
 ### 7. Testbestellung durchführen
 
@@ -592,16 +595,16 @@ Unter **Veranstaltungen** (`/admin/veranstaltungen`) eine Veranstaltung mit korr
 
 ## Administrationsbereich
 
-Der **Administrationsbereich** (`/admin`) ist vom Mitarbeiterbereich getrennt und nur für Administratoren zugänglich.
+Der **Administrationsbereich** (`/admin`) ist vom Service getrennt und nur für Administratoren zugänglich.
 
 | Route | Funktion |
 |-------|----------|
 | `/admin/login` | Admin-Anmeldung |
 | `/admin` | Übersicht |
-| `/admin/verein` | Veranstalter: Name, Logo, Kontaktdaten |
+| `/admin/verein` | Veranstalter: Name, Logo, Primärfarbe, Kontaktdaten |
 | `/admin/benutzer` | Team: Administratoren und Mitarbeiter verwalten |
 | `/admin/veranstaltungen` | Veranstaltungen verwalten |
-| `/admin/speisen` | Speisekarte pflegen |
+| `/admin/speisen` | Speisen & Getränke-Katalog pflegen |
 | `/admin/bestellung` | Pflichtfelder & Stornierungsfrist |
 | `/admin/settings/module.notifications` | E-Mail & Benachrichtigungskanäle |
 | `/admin/module` | Funktionen (Zahlung, Benachrichtigungen, Druck ein-/ausschalten) |
@@ -610,7 +613,7 @@ Der **Administrationsbereich** (`/admin`) ist vom Mitarbeiterbereich getrennt un
 
 Legacy-Weiterleitungen: `/admin/email` → Benachrichtigungen · `/admin/module/payment` → `/admin/payment`
 
-Der **Mitarbeiterbereich** (`/service`) bleibt für den operativen Betrieb: Dashboard, Küche, Abholung, Bestellung, Bestellübersicht.
+Der **Service** (`/service`) bleibt für den operativen Betrieb: Dashboard, Küche, Abholung, Abholboard, Bestellung, Bestellübersicht, Verfügbarkeit.
 
 ![Admin-Übersicht](screenshots/16-admin-uebersicht.png)
 
@@ -621,7 +624,7 @@ Der **Mitarbeiterbereich** (`/service`) bleibt für den operativen Betrieb: Dash
 | Bestell-Einstellungen | ![Bestellung](screenshots/18-bestell-einstellungen.png) |
 | Team | ![Team](screenshots/17-benutzerverwaltung.png) |
 | Veranstaltungen | ![Veranstaltungen](screenshots/12-veranstaltungen.png) |
-| Speisen | ![Speisen](screenshots/11-speisenverwaltung.png) |
+| Speisen & Getränke | ![Speisen & Getränke](screenshots/11-speisenverwaltung.png) |
 | Funktionen | ![Funktionen](screenshots/20-modulverwaltung.png) |
 | Payment-Admin | ![Payment-Admin](screenshots/21-payment-admin.png) |
 | Payment-Einstellungen | ![Payment-Einstellungen](screenshots/22-payment-einstellungen.png) |
@@ -729,11 +732,11 @@ Eine aktive Veranstaltung nimmt Bestellungen entgegen, wenn zusätzlich gilt:
 
 ### Speisen je Veranstaltung zuordnen
 
-1. Klicken Sie bei der Veranstaltung auf **Speisen**
-2. Wählen Sie die Gerichte aus dem Katalog per Checkbox
+1. Klicken Sie bei der Veranstaltung auf **Speisen & Getränke**
+2. Wählen Sie die Einträge aus dem Katalog per Checkbox
 3. Speichern
 
-Nicht jede Veranstaltung muss alle definierten Speisen anbieten.
+Nicht jede Veranstaltung muss alle Katalogeinträge anbieten.
 
 ### Mehrere Veranstaltungen parallel
 
@@ -755,7 +758,7 @@ Kunden können **Tage oder Wochen vor** der Veranstaltung bestellen.
 
 1. Legen Sie die Veranstaltung mit dem **korrekten Veranstaltungsdatum** an
 2. Schalten Sie **Veranstaltung aktiv** ein
-3. Ordnen Sie unter **Veranstaltungen → Speisen** die gewünschten Gerichte zu
+3. Ordnen Sie unter **Veranstaltungen → Speisen & Getränke** die gewünschten Einträge zu
 4. Schalten Sie **Onlinebestellungen aktiv** ein
 5. Stellen Sie sicher, dass **Bestellungen geschlossen** aus ist
 
@@ -782,15 +785,15 @@ Die Bestellseite ist für Touch-Bedienung auf Smartphone und Tablet optimiert:
 
 ---
 
-## Speisen verwalten
+## Speisen & Getränke verwalten
 
-Navigieren Sie zu **Speisen** (`/admin/speisen`).
+Navigieren Sie zu **Speisen & Getränke** (`/admin/speisen`).
 
-![Speisenverwaltung](screenshots/11-speisenverwaltung.png)
+![Speisen & Getränke](screenshots/11-speisenverwaltung.png)
 
-Der **Speisen-Katalog** ist mandantenweit. Welche Gerichte bei einer Veranstaltung angeboten werden, legen Sie unter **Veranstaltungen → Speisen** fest.
+Der **Katalog für Speisen & Getränke** ist mandantenweit. Welche Einträge bei einer Veranstaltung angeboten werden, legen Sie unter **Veranstaltungen → Speisen & Getränke** fest.
 
-### Gericht anlegen
+### Eintrag anlegen
 
 | Feld | Beschreibung |
 |------|-------------|
@@ -798,14 +801,14 @@ Der **Speisen-Katalog** ist mandantenweit. Welche Gerichte bei einer Veranstaltu
 | Beschreibung | Kurzbeschreibung für Kunden |
 | Preis | in Euro |
 | Reihenfolge | Sortierung (1 = oben) |
-| Aktiv | Im Katalog verfügbar (inaktive Gerichte können keiner Veranstaltung zugeordnet werden) |
+| Aktiv | Im Katalog verfügbar (inaktive Einträge können keiner Veranstaltung zugeordnet werden) |
 | Max. Bestellmenge | Optional, pro Bestellung |
 
-**Ausverkauft** markieren Sie pro Veranstaltung unter **Mitarbeiter → Verfügbarkeit** (nicht im Katalog).
+**Ausverkauft** markieren Sie pro Veranstaltung unter **Service → Verfügbarkeit** (nicht im Katalog).
 
 ### Bild hochladen
 
-Klicken Sie beim Gericht auf das Kamera-Symbol und wählen Sie ein Bild (JPEG, PNG, WebP, max. 5 MB).
+Klicken Sie beim Eintrag auf das Kamera-Symbol und wählen Sie ein Bild (JPEG, PNG, WebP, max. 5 MB).
 
 ---
 
@@ -854,7 +857,7 @@ Neu → In Bearbeitung → Fertig → Abgeholt
 | Küche | Küchenmonitor, Bestellungen lesen |
 | Abholung | Abholung bestätigen |
 | Kasse | Kasse, Zahlungsstatus lesen — **kein** Team, **keine** Payment-Konfiguration |
-| Speisenpflege | Speisen und Veranstaltungen pflegen |
+| Speisen & Getränke | Katalog und Veranstaltungen pflegen |
 | Finanzen | Zahlungen, Statistiken, Rückerstattungen |
 | Rechtliches | Impressum, Datenschutz, AGB |
 
@@ -1042,13 +1045,13 @@ Die Bestellung bleibt in der Datenbank, erreicht aber nicht die Küche, bis die 
 
 ## Abholboard einrichten
 
-Das Abholboard (`/abholboard`) ist für Fernseher oder Monitore gedacht.
+Das Abholboard (`/abholboard`) ist für Fernseher oder Monitore gedacht. Im **Service**-Menü gibt es den Eintrag **Abholboard** – so müssen Helfer die Adresse nicht manuell eintippen.
 
 ![Abholboard](screenshots/04-abholboard-monitor.png)
 
 ### Einrichtung
 
-1. Öffnen Sie `/abholboard` auf dem Monitor-PC
+1. Öffnen Sie `/abholboard` auf dem Monitor-PC (oder klicken Sie im Service auf **Abholboard**)
 2. Vollbildmodus aktivieren (F11)
 3. Die Anzeige aktualisiert sich automatisch per WebSocket
 
@@ -1146,7 +1149,7 @@ Nein. Module sind optional. Vereine mit reiner Barzahlung können alle Module de
 | Keine Veranstaltung aktiv | Veranstaltung anlegen und **Veranstaltung aktiv** einschalten |
 | Onlinebestellungen aus | Schalter **Onlinebestellungen aktiv** einschalten |
 | Bestellungen geschlossen | Schalter **Bestellungen geschlossen** ausschalten |
-| Keine Speisen zugeordnet | Katalog unter **Speisen** pflegen, dann **Veranstaltungen → Speisen** |
+| Keine Speisen zugeordnet | Katalog unter **Speisen & Getränke** pflegen, dann **Veranstaltungen → Speisen & Getränke** |
 | Mehrere Veranstaltungen | Gäste müssen die Veranstaltung auf der Bestellseite auswählen |
 
 ### Login funktioniert nicht
@@ -1176,7 +1179,7 @@ Nein. Module sind optional. Vereine mit reiner Barzahlung können alle Module de
 3. Logs prüfen: `docker compose logs backend | grep -i mail`
 4. Spam-Ordner des Empfängers prüfen
 
-### Bilder von Speisen werden nicht angezeigt
+### Bilder von Katalogeinträgen werden nicht angezeigt
 
 1. Dateiformat: JPEG, PNG oder WebP, max. 5 MB
 2. Upload-Volume prüfen: `docker volume ls | grep uploads`

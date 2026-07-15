@@ -434,7 +434,7 @@ const mockAdminUi = {
       })),
     {
       id: 'staff-area',
-      label: 'Mitarbeiterbereich',
+      label: 'Service',
       description: 'Küche, Abholung, Bestellungen',
       path: '/service',
       icon: 'Storefront',
@@ -452,9 +452,9 @@ const mockAdminUi = {
 };
 
 const mockUsers = [
-  { id: 'u1', email: 'admin@verein.local', firstName: 'Admin', lastName: 'Verein', role: 'ADMIN', active: true, createdAt: '2026-01-01T00:00:00.000Z' },
-  { id: 'u2', email: 'kueche@verein.local', firstName: 'Küche', lastName: 'Team', role: 'STAFF', active: true, createdAt: '2026-01-02T00:00:00.000Z' },
-  { id: 'u3', email: 'service@verein.local', firstName: 'Service', lastName: 'Muster', role: 'STAFF', active: false, createdAt: '2026-02-15T00:00:00.000Z' },
+  { id: 'u1', email: 'admin@verein.local', firstName: 'Admin', lastName: 'Verein', role: 'ADMIN', active: true, notificationEmailsEnabled: true, createdAt: '2026-01-01T00:00:00.000Z' },
+  { id: 'u2', email: 'kueche@verein.local', firstName: 'Küche', lastName: 'Team', role: 'STAFF', active: true, roleTemplates: ['kueche'], notificationEmailsEnabled: false, createdAt: '2026-01-02T00:00:00.000Z' },
+  { id: 'u3', email: 'service@verein.local', firstName: 'Service', lastName: 'Muster', role: 'STAFF', active: false, roleTemplates: ['abholung'], notificationEmailsEnabled: false, createdAt: '2026-02-15T00:00:00.000Z' },
 ];
 
 function mockApi(pathname: string, method: string, body?: string, searchParams?: URLSearchParams): unknown {
@@ -526,6 +526,12 @@ function mockApi(pathname: string, method: string, body?: string, searchParams?:
   if (pathname === '/api/public/menu') {
     return { event: mockEvent, items: mockFoodItems, preOrderInfo: 'Vorbestellung möglich' };
   }
+  if (pathname === '/api/public/events' || pathname === '/api/public/events/pickup') {
+    return [mockEvent];
+  }
+  if (pathname === '/api/public/order-settings') {
+    return mockOrderSettings;
+  }
   if (pathname === '/api/public/event') return mockEvent;
   if (pathname.match(/^\/api\/public\/orders\/status\/[^/]+$/)) {
     const token = decodeURIComponent(pathname.split('/').pop() ?? '');
@@ -554,6 +560,9 @@ function mockApi(pathname: string, method: string, body?: string, searchParams?:
   if (pathname === '/api/auth/login') {
     return { token: 'mock-token', refreshToken: 'mock-refresh-token', user: mockUser };
   }
+  if (pathname === '/api/setup/status') {
+    return { completed: true, currentStep: 7, data: {} };
+  }
   if (pathname === '/api/auth/refresh') {
     return { token: 'mock-token', refreshToken: 'mock-refresh-token' };
   }
@@ -572,9 +581,19 @@ function mockApi(pathname: string, method: string, body?: string, searchParams?:
       available: [
         { key: 'orders.view', description: 'Bestellungen einsehen' },
         { key: 'orders.manage', description: 'Bestellungen bearbeiten' },
+        { key: 'food.view', description: 'Speisen & Getränke einsehen' },
+        { key: 'food.edit', description: 'Speisen & Getränke bearbeiten' },
         { key: 'payment.view', description: 'Zahlungsübersicht einsehen' },
       ],
       staff: ['orders.view', 'orders.manage'],
+      templates: [
+        { id: 'kueche', label: 'Küche', description: 'Küchenmonitor und Bondruck', permissions: ['orders.kitchen', 'orders.view'] },
+        { id: 'abholung', label: 'Abholung', description: 'Abholung bestätigen', permissions: ['orders.pickup', 'orders.view'] },
+        { id: 'kasse', label: 'Kasse', description: 'Bestellung vor Ort', permissions: ['orders.manage', 'orders.view'] },
+        { id: 'speisenpflege', label: 'Speisen & Getränke', description: 'Katalog Speisen & Getränke und Veranstaltungen pflegen', permissions: ['food.view', 'food.edit', 'events.manage'] },
+        { id: 'finanzen', label: 'Finanzen', description: 'Zahlungen und Auswertungen', permissions: ['payment.view'] },
+        { id: 'rechtliches', label: 'Rechtliches', description: 'Impressum und AGB', permissions: ['legal.view'] },
+      ],
     };
   }
   if (pathname === '/api/admin/modules' && method === 'GET') return mockModules;
@@ -656,12 +675,11 @@ async function setupPage(page: Page, auth = false) {
 }
 
 async function prepareOrderPage(page: Page) {
-  await page.getByTestId('order-customer-form').scrollIntoViewIfNeeded();
-  await page.getByLabel(/^Vorname/).fill('Max');
-  await page.getByLabel(/^Nachname/).fill('Mustermann');
   const dishesScroll = page.getByTestId('order-dishes-scroll');
+  await dishesScroll.waitFor({ timeout: 30000 });
   await dishesScroll.evaluate((el) => { el.scrollTop = 0; });
   const increaseButtons = page.locator('button[aria-label="Menge erhöhen"]');
+  await increaseButtons.first().waitFor({ timeout: 15000 });
   await increaseButtons.first().click({ force: true });
   await increaseButtons.first().click({ force: true });
   await increaseButtons.nth(1).click({ force: true });
@@ -673,10 +691,6 @@ async function prepareOrderPageForDevice(page: Page, device: keyof typeof DEVICE
   await prepareOrderPage(page);
 
   if (device === 'monitor') {
-    // Im 720px-Monitor-Viewport: Formular ausblenden, damit Gerichte sichtbar sind
-    await page.getByTestId('order-customer-form').evaluate((el) => {
-      (el as HTMLElement).style.display = 'none';
-    });
     await page.getByRole('heading', { name: 'Gerichte', exact: true }).scrollIntoViewIfNeeded();
     await page.getByTestId('order-dishes-scroll').evaluate((el) => { el.scrollTop = 0; });
   }
@@ -769,7 +783,7 @@ async function waitForPageReady(page: Page, spec: PageSpec) {
       const t = document.body.innerText;
       return t.includes('Echtzeit-Verbindung')
         || t.includes('Funktionsstatus')
-        || (t.includes('Veranstaltungen') && t.includes('Mitarbeiterbereich') && t.includes('Online-Zahlung'));
+        || (t.includes('Veranstaltungen') && t.includes('Service') && t.includes('Online-Zahlung'));
     }, { timeout: 90000 });
     return;
   }
@@ -953,6 +967,30 @@ async function main() {
   }
 
   await browser.close();
+
+  const publicDir = join(process.cwd(), 'frontend', 'public', 'screenshots');
+  const publicNames = [
+    '01-bestellseite-monitor.png',
+    '02-kundenstatus.png',
+    '04-abholboard-monitor.png',
+    '06-dashboard.png',
+    '07-kuechenansicht-tablet.png',
+    '08-abholung.png',
+    '09-bestellung.png',
+    '16-admin-uebersicht.png',
+    '20-modulverwaltung.png',
+    '21-payment-admin.png',
+  ];
+  mkdirSync(publicDir, { recursive: true });
+  const { copyFileSync } = await import('fs');
+  for (const name of publicNames) {
+    const src = join(OUT_DIR, name);
+    if (existsSync(src)) {
+      copyFileSync(src, join(publicDir, name));
+      console.log(`✓ public/screenshots/${name}`);
+    }
+  }
+
   console.log(`\nScreenshots gespeichert in ${OUT_DIR} (1920×1080)`);
   process.exit(0);
 }

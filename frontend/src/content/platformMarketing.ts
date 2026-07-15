@@ -5,7 +5,7 @@ export const PLATFORM_FEATURES = [
   { title: 'Online-Zahlungen', description: 'Flexible Zahlungsanbieter für bargeldlose Abwicklung vor Ort und online.' },
   { title: 'Benachrichtigungen', description: 'E-Mail-Benachrichtigungen für Bestellungen, Status und Verwaltung.' },
   { title: 'Auswertungen', description: 'Dashboard und Statistiken für fundierte Entscheidungen während der Veranstaltung.' },
-  { title: 'Veranstaltungsorganisation', description: 'Veranstaltungen, Speisen, Module und Einstellungen zentral verwalten.' },
+  { title: 'Veranstaltungsorganisation', description: 'Veranstaltungen, Speisen & Getränke, Funktionen und Einstellungen zentral verwalten.' },
 ];
 
 export const PLATFORM_BENEFITS = [
@@ -89,7 +89,7 @@ export const SCREENSHOTS = [
   { src: '/screenshots/07-kuechenansicht-tablet.png', title: 'Küche', alt: 'Küchenansicht auf dem Tablet' },
   { src: '/screenshots/21-payment-admin.png', title: 'Zahlungen', alt: 'Zahlungseinstellungen in der Administration' },
   { src: '/screenshots/16-admin-uebersicht.png', title: 'Administration', alt: 'Administrationsübersicht' },
-  { src: '/screenshots/20-modulverwaltung.png', title: 'Module', alt: 'Modulverwaltung' },
+  { src: '/screenshots/20-modulverwaltung.png', title: 'Funktionen', alt: 'Funktionsverwaltung' },
 ];
 
 export const ORGANIZATION_TYPES = [
