@@ -3,6 +3,14 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.5.1 - 2026-07-15
+
+### Behoben
+
+- **Admin-Übersicht:** Sponsor-Hinweis (Buy Me a Coffee / PayPal) wieder unten auf der Übersichtsseite.
+
+---
+
 ## 2.5.0 - 2026-07-15
 
 ### Hinzugefügt

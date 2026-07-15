@@ -17,6 +17,7 @@ import { renderWidget } from '@/admin/widgetRegistry';
 import { canAccessPermission } from '@/utils/permissions';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
+import { SponsorLinks } from '@/components/SponsorLinks';
 
 const healthIcons = {
   healthy: <CheckCircleIcon fontSize="small" color="success" />,
@@ -140,6 +141,10 @@ export function AdminDashboardPage() {
               </Stack>
             </AccordionDetails>
           </Accordion>
+
+          <Box sx={{ mt: 4 }}>
+            <SponsorLinks variant="banner" />
+          </Box>
         </>
       )}
     </AdminLayout>
