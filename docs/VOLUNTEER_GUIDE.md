@@ -44,7 +44,8 @@ Kurzfassung — ausführlich in [OPERATIONS.md](OPERATIONS.md#vor-dem-sommerfest
 - [ ] Backup erstellt (`./scripts/backup/postgres-backup.sh`)
 - [ ] Richtige Veranstaltung(en) sind **aktiv** (Schalter im Admin)
 - [ ] Speisen & Getränke dem Event unter **Veranstaltungen → Speisen & Getränke** zugeordnet
-- [ ] Küchen-Tablet und Abhol-Monitor getestet
+- [ ] Küchen-Tablet und Abhol-Monitor getestet (Service → Abholboard)
+- [ ] Verfügbarkeit / Ausverkauft-Schalter unter `/service/speisen` geprüft
 - [ ] Kein Software-Update am Festtag selbst
 
 ---

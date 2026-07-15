@@ -31,6 +31,8 @@ Ausführlichere Admin-Themen: [Admin Guide](ADMIN_GUIDE.md) · Einführung ohne 
 2. Küche: Tablet auf `/service/kueche` — Lautstärke/Bildschirm an.
 3. Abholung: `/service/abholung` bereit halten.
 4. Bei Bedarf: Kasse `/service/bestellung` für Bestellungen vor Ort.
+5. Verfügbarkeit: `/service/speisen` – ausverkaufte Speisen & Getränke markieren.
+6. Abholboard über Service-Menü oder `/abholboard` im Vollbild.
 5. **WLAN-Probleme?** Seite neu laden; Bestellungen bleiben in der Datenbank.
 6. **Kein Panik bei Updates** — Am Veranstaltungstag **kein** `docker compose pull` / Update durchführen.
 

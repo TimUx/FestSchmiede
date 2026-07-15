@@ -20,8 +20,13 @@ Anleitung für Administratoren der FestSchmiede-Plattform mit Vollzugriff auf al
 | Rechtliches | `/platform/rechtliches` | Impressum, Datenschutz, Nutzungsbedingungen (Plattformebene) |
 | Einstellungen | `/platform/einstellungen` | Plattformweite Konfiguration inkl. Bewerbungen & Kontakt |
 | **E-Mail** | `/platform/email` | **Zentraler SMTP**, Testmail, Mail-Queue, Authentifizierungsmodi (v2.1) |
-| Monitoring | `/platform/monitoring` | CPU, RAM, Speicher |
+| Health | `/platform/health` | Diagnose / Systemzustand |
+| Backups | `/platform/backups` | Backup-Verwaltung |
+| Benutzer | `/platform/benutzer` | Plattform-Benutzer |
+| Profil | `/platform/profil` | Eigenes Plattform-Profil |
 | Logs | `/platform/logs` | Audit-Log mit Mandanten-Filter |
+
+> **Hinweis:** `/platform/monitoring` leitet auf das Dashboard `/platform` weiter.
 
 **Impersonation:** Plattformadmins können sich temporär als Mandanten-Administrator anmelden. Ein gelbes Banner zeigt den aktiven Impersonation-Modus an.
 
@@ -66,8 +71,11 @@ Der Plattformadministrator konfiguriert unter `/platform/email` den Authentifizi
 
 ### Initial-Setup-Assistent (v2.1)
 
-Neue Mandanten durchlaufen beim ersten Admin-Login automatisch den Einrichtungsassistenten unter `/admin/einrichtung`. Der Assistent kann in der Administration über die API (`POST /api/setup/reset`) neu gestartet werden.
+Neue Mandanten durchlaufen beim ersten Admin-Login automatisch den Einrichtungsassistenten unter `/admin/einrichtung`.
 
+![Einrichtungsassistent](screenshots/28-einrichtungsassistent.png)
+
+Schritte: Willkommen → Organisation → Kontakt → Rechtliches → Administrator → Veranstaltung → Abschluss. Der Assistent kann über die API (`POST /api/setup/reset`) neu gestartet werden.
 
 ---
 
@@ -81,15 +89,16 @@ Neue Mandanten durchlaufen beim ersten Admin-Login automatisch den Einrichtungsa
 8. [Veranstaltungen verwalten](#veranstaltungen-verwalten)
 9. [Vorausbestellungen aktivieren](#vorausbestellungen-aktivieren)
 10. [Speisen & Getränke verwalten](#speisen--getränke-verwalten)
-11. [Bestellungen überwachen](#bestellungen-überwachen)
-12. [Mitarbeiter & Rollen](#mitarbeiter--rollen)
-13. [Schalter & Einstellungen](#schalter--einstellungen)
-14. [Funktionen](#funktionen)
-15. [Online-Zahlung (Payment)](#online-zahlung-payment)
-16. [Abholboard einrichten](#abholboard-einrichten)
-17. [Checkliste am Veranstaltungstag](#checkliste-am-veranstaltungstag)
-18. [FAQ](#faq)
-19. [Troubleshooting](#troubleshooting)
+11. [Mein Profil](#mein-profil)
+12. [Bestellungen überwachen](#bestellungen-überwachen)
+13. [Mitarbeiter & Rollen](#mitarbeiter--rollen)
+14. [Schalter & Einstellungen](#schalter--einstellungen)
+15. [Funktionen](#funktionen)
+16. [Online-Zahlung (Payment)](#online-zahlung-payment)
+17. [Abholboard einrichten](#abholboard-einrichten)
+18. [Checkliste am Veranstaltungstag](#checkliste-am-veranstaltungstag)
+19. [FAQ](#faq)
+20. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -600,6 +609,8 @@ Der **Administrationsbereich** (`/admin`) ist vom Service getrennt und nur für 
 | Route | Funktion |
 |-------|----------|
 | `/admin/login` | Admin-Anmeldung |
+| `/admin/einrichtung` | Einrichtungsassistent (nur solange Setup offen) |
+| `/admin/profil` | Eigenes Profil: Anmeldung & Admin-E-Mails |
 | `/admin` | Übersicht |
 | `/admin/verein` | Veranstalter: Name, Logo, Primärfarbe, Kontaktdaten |
 | `/admin/benutzer` | Team: Administratoren und Mitarbeiter verwalten |
@@ -629,6 +640,10 @@ Der **Service** (`/service`) bleibt für den operativen Betrieb: Dashboard, Küc
 | Payment-Admin | ![Payment-Admin](screenshots/21-payment-admin.png) |
 | Payment-Einstellungen | ![Payment-Einstellungen](screenshots/22-payment-einstellungen.png) |
 | Rechtliche Informationen | ![Legal-Admin](screenshots/23-legal-admin.png) |
+| Mein Profil | ![Profil](screenshots/27-admin-profil.png) |
+| Einrichtungsassistent | ![Setup](screenshots/28-einrichtungsassistent.png) |
+| Payment-Zahlungsarten | ![Zahlungsarten](screenshots/29-payment-zahlungsarten.png) |
+| Legal-Einstellungen | ![Legal-Settings](screenshots/30-legal-einstellungen.png) |
 
 ---
 
@@ -804,11 +819,27 @@ Der **Katalog für Speisen & Getränke** ist mandantenweit. Welche Einträge bei
 | Aktiv | Im Katalog verfügbar (inaktive Einträge können keiner Veranstaltung zugeordnet werden) |
 | Max. Bestellmenge | Optional, pro Bestellung |
 
-**Ausverkauft** markieren Sie pro Veranstaltung unter **Service → Verfügbarkeit** (nicht im Katalog).
+**Ausverkauft** markieren Sie pro Veranstaltung unter **Service → Verfügbarkeit** (`/service/speisen`, nicht im Katalog). Siehe auch [User Guide — Verfügbarkeit](USER_GUIDE.md#verfügbarkeit-ausverkauft).
 
 ### Bild hochladen
 
 Klicken Sie beim Eintrag auf das Kamera-Symbol und wählen Sie ein Bild (JPEG, PNG, WebP, max. 5 MB).
+
+---
+
+## Mein Profil
+
+Unter **Mein Profil** (`/admin/profil`) pflegen Administratoren ihre persönlichen Daten und Anmeldemethoden.
+
+![Mein Profil](screenshots/27-admin-profil.png)
+
+| Einstellung | Bedeutung |
+|-------------|-----------|
+| Name, E-Mail, Benutzername | Kontaktdaten für Login und Anzeige |
+| Magic-Link / Passwort | Welche Anmeldemethoden erlaubt sind |
+| **E-Mail-Benachrichtigungen erhalten** | Opt-in für Infos zu Bestellungen, Stornierungen, Zahlungen u. a. |
+
+Dieselbe Opt-in-Option steht in der Team-Tabelle als Spalte **E-Mail-Info** zur Verfügung.
 
 ---
 
@@ -946,6 +977,10 @@ Eine Seite wird nur öffentlich angezeigt, wenn das Modul aktiv ist, die Seite a
 
 ![Rechtliche Informationen – Seiten bearbeiten](screenshots/24-legal-seiten.png)
 
+Unter **Einstellungen** konfigurieren Sie u. a. den Footer der Bestellseite:
+
+![Rechtliche Informationen – Einstellungen](screenshots/30-legal-einstellungen.png)
+
 Öffentliche Rechtsseite (Beispiel Impressum):
 
 ![Impressum](screenshots/25-impressum.png)
@@ -964,11 +999,16 @@ Das Payment-Modul ermöglicht **Onlinezahlungen** bei Vorbestellungen und im Kas
 
 ### Admin-Bereich Payment
 
+Beim Öffnen erscheint zuerst der Tab **Zahlungsarten** (Voreinstellungen: nur Bar, Bar+Karte oder Online):
+
+![Payment-Zahlungsarten](screenshots/29-payment-zahlungsarten.png)
+
 | Tab | Inhalt |
 |-----|--------|
+| **Zahlungsarten** | Einfache Voreinstellung, wie Gäste bezahlen können (Standardansicht) |
 | **Übersicht** | Dashboard: Umsatz, offene/fehlgeschlagene Zahlungen, Health |
 | **Provider** | Stripe & weitere Anbieter, Verbindung testen, aktivieren |
-| **Zahlungsarten** | Welche Methoden Besuchern angezeigt werden (Smart Payment) |
+| **Methoden** | Einzelne Zahlungsmethoden feinjustieren |
 | **Einstellungen** | API-Schlüssel (verschlüsselt, maskiert) |
 | **Zahlungen** | Liste, Filter, Detail, Export |
 | **Refunds** | Rückerstattungen mit Audit-Log |

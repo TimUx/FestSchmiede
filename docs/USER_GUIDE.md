@@ -10,8 +10,9 @@ Anleitung für Mitarbeiter in Küche, Abholung und Service – ohne Administrato
 4. [Abholung](#abholung)
 5. [Bestellung vor Ort](#bestellung-vor-ort)
 6. [Bestellungen verwalten](#bestellungen-verwalten)
-7. [Vorausbestellungen am Event-Tag](#vorausbestellungen-am-event-tag)
-8. [Tipps & häufige Fragen](#tipps--häufige-fragen)
+7. [Verfügbarkeit (Ausverkauft)](#verfügbarkeit-ausverkauft)
+8. [Vorausbestellungen am Event-Tag](#vorausbestellungen-am-event-tag)
+9. [Tipps & häufige Fragen](#tipps--häufige-fragen)
 
 ---
 
@@ -154,6 +155,20 @@ Zeigt alle Bestellungen mit Abholnummer, Uhrzeit, Gerichten, Quelle (Online / Vo
 | In Bearbeitung | Küche hat begonnen |
 | Fertig | Bereit zur Abholung |
 | Stornieren | Bestellung storniert |
+
+---
+
+## Verfügbarkeit (Ausverkauft)
+
+**Adresse:** `/service/speisen`
+
+![Verfügbarkeit](screenshots/26-verfuegbarkeit.png)
+
+Pro Veranstaltung können Sie Speisen & Getränke als **ausverkauft** markieren. Die Einstellung gilt nur für die oben gewählte Veranstaltung und erscheint sofort auf der öffentlichen Bestellseite.
+
+1. Veranstaltung im Kopfbereich wählen
+2. Schalter auf **Ausverkauft** stellen (oder zurück auf **Verfügbar**)
+3. Fertig – kein Speichern-Button nötig
 
 ---
 
