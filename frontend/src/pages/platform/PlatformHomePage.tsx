@@ -14,7 +14,11 @@ export function PlatformHomePage() {
   return (
     <PlatformPublicLayout>
       <BrandingHead
-        description="FestSchmiede ist eine moderne Open-Source-Plattform zur Organisation von Veranstaltungen für Vereine und gemeinnützige Organisationen."
+        titleSuffix="Software für Vereinsfeste & Veranstaltungen"
+        description="FestSchmiede ist Open-Source-Software für Vereinsfeste: digitale Essensbestellung, Küchenmonitor, Abholnummern und Veranstaltungsorganisation für Vereine."
+        path="/"
+        breadcrumbs={[{ name: 'Start', path: '/' }]}
+        ogImagePath="/screenshots/01-bestellseite-monitor.png"
       />
       <MarketingHero
         showLogo
@@ -81,8 +85,11 @@ export function PlatformHomePage() {
                   component="img"
                   src={s.src}
                   alt={s.alt}
-                  sx={{ width: '100%', display: 'block', borderBottom: 1, borderColor: 'divider' }}
                   loading="lazy"
+                  decoding="async"
+                  width={800}
+                  height={600}
+                  sx={{ width: '100%', height: 'auto', display: 'block', borderBottom: 1, borderColor: 'divider' }}
                 />
                 <CardContent>
                   <Typography fontWeight={600}>{s.title}</Typography>
@@ -112,6 +119,9 @@ export function PlatformHomePage() {
             <Typography key={g}>• {g}</Typography>
           ))}
         </Stack>
+        <Button component={Link} to="/themen" sx={{ mt: 2 }}>
+          Themen & Ratgeber entdecken
+        </Button>
       </MarketingSection>
 
       <MarketingSection title="Open Source" subtitle="Transparent, erweiterbar und unabhängig.">

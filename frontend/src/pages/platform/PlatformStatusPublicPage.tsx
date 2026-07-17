@@ -8,7 +8,7 @@ export function PlatformStatusPublicPage() {
 
   return (
     <PlatformPublicLayout>
-      <BrandingHead titleSuffix="Status" />
+      <BrandingHead titleSuffix="Status" path="/plattform-status" description="Aktueller Betriebsstatus der FestSchmiede-Plattform." />
       <Container maxWidth="md" sx={{ py: 4 }}>
         <Typography variant="h4" fontWeight={700} gutterBottom>
           Plattformstatus

@@ -8,7 +8,7 @@ export function PlatformDownloadPage() {
 
   return (
     <PlatformPublicLayout>
-      <BrandingHead titleSuffix="Download" />
+      <BrandingHead titleSuffix="Download" path="/download" description="FestSchmiede herunterladen und selbst hosten – Open-Source-Veranstaltungsplattform für Vereine." />
       <Container maxWidth="md" sx={{ py: 4 }}>
         <Typography variant="h4" fontWeight={700} gutterBottom>
           Download

@@ -16,6 +16,26 @@ const WWW_MARKETING_PREFIXES = [
   '/dokumentation',
   '/download',
   '/plattform-status',
+  '/themen',
+  // SEO-/LLMO-Landingpages (www)
+  '/software-fuer-vereinsfeste',
+  '/vereinssoftware',
+  '/veranstaltungssoftware',
+  '/festsoftware',
+  '/festverwaltung',
+  '/essensbestellung-verein',
+  '/digitale-essensbestellung',
+  '/online-vorbestellung-vereinsfest',
+  '/kuechenmonitor',
+  '/abholnummern',
+  '/helferplanung-verein',
+  '/getraenkeabrechnung-verein',
+  '/feuerwehrfest-organisieren',
+  '/schuetzenfest-organisieren',
+  '/kirmes-organisieren',
+  '/dorffest-organisieren',
+  '/strassenfest-organisieren',
+  '/vereinsveranstaltung-digitalisieren',
 ];
 
 function isWwwMarketingPath(pathname: string): boolean {

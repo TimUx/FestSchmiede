@@ -15,7 +15,7 @@ export function PlatformDocsPage() {
 
   return (
     <PlatformPublicLayout>
-      <BrandingHead titleSuffix="Dokumentation" />
+      <BrandingHead titleSuffix="Dokumentation" path="/dokumentation" description="Dokumentation und Guides für FestSchmiede – Installation, Betrieb und Nutzung der Open-Source-Veranstaltungsplattform." />
       <Container maxWidth="md" sx={{ py: 4 }}>
         <Typography variant="h4" fontWeight={700} gutterBottom>
           Dokumentation
