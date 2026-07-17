@@ -9,10 +9,28 @@ import { getImageUrl } from '@/services/api';
 const DEFAULT_DESCRIPTION =
   'FestSchmiede ist eine moderne Open-Source-Plattform zur Organisation von Veranstaltungen – für Vereine, Schulen und gemeinnützige Organisationen.';
 
+export interface BrandingHeadBreadcrumb {
+  name: string;
+  path: string;
+}
+
+export interface BrandingHeadFaq {
+  q: string;
+  a: string;
+}
+
 interface BrandingHeadProps {
   titleSuffix?: string;
   description?: string;
   path?: string;
+  /** Indexierungssteuerung, Standard: index,follow für www */
+  robots?: string;
+  /** Zusätzliche JSON-LD-Graph-Knoten (werden mit Basisdaten gemerged) */
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  breadcrumbs?: BrandingHeadBreadcrumb[];
+  faqs?: BrandingHeadFaq[];
+  ogType?: string;
+  ogImagePath?: string;
 }
 
 function upsertMeta(name: string, content: string, attr: 'name' | 'property' = 'name') {
@@ -25,7 +43,24 @@ function upsertMeta(name: string, content: string, attr: 'name' | 'property' = '
   el.content = content;
 }
 
-export function BrandingHead({ titleSuffix, description, path }: BrandingHeadProps) {
+function absoluteUrl(origin: string, pathOrUrl: string): string {
+  if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl;
+  const base = origin.replace(/\/$/, '');
+  const path = pathOrUrl.startsWith('/') ? pathOrUrl : `/${pathOrUrl}`;
+  return `${base}${path}`;
+}
+
+export function BrandingHead({
+  titleSuffix,
+  description,
+  path,
+  robots,
+  jsonLd,
+  breadcrumbs,
+  faqs,
+  ogType = 'website',
+  ogImagePath,
+}: BrandingHeadProps) {
   const { routing } = useRouting();
   const { tenant } = useTenant();
   const { platform } = usePlatform();
@@ -41,7 +76,7 @@ export function BrandingHead({ titleSuffix, description, path }: BrandingHeadPro
           ? routing.appUrl
           : (routing.tenantUrl || routing.appUrl || (typeof window !== 'undefined' ? window.location.origin : ''));
     const pagePath = path ?? (typeof window !== 'undefined' ? window.location.pathname : '/');
-    const canonical = `${origin.replace(/\/$/, '')}${pagePath}`;
+    const canonical = absoluteUrl(origin, pagePath);
 
     if (isPlatformSurfaceScope(routing.scope)) {
       title = platform.name;
@@ -69,13 +104,19 @@ export function BrandingHead({ titleSuffix, description, path }: BrandingHeadPro
       routing.scope === 'tenant' ? tenant.locale : platform.defaultLocale ?? 'de-DE'
     ).split('-')[0];
 
+    const defaultRobots = routing.scope === 'www' ? 'index, follow, max-image-preview:large' : undefined;
+    if (robots ?? defaultRobots) {
+      upsertMeta('robots', robots ?? defaultRobots!);
+    }
     upsertMeta('description', desc);
     upsertMeta('og:title', document.title, 'property');
     upsertMeta('og:description', desc, 'property');
-    upsertMeta('og:type', 'website', 'property');
+    upsertMeta('og:type', ogType, 'property');
     upsertMeta('og:url', canonical, 'property');
     upsertMeta('og:site_name', platform.name, 'property');
-    const defaultOgImage = `${origin.replace(/\/$/, '')}${FESTSCHMIEDE_LOGO_URL}`;
+    upsertMeta('og:locale', 'de_DE', 'property');
+
+    const defaultOgImage = absoluteUrl(origin, ogImagePath ?? FESTSCHMIEDE_LOGO_URL);
     const ogImage = isPlatformSurfaceScope(routing.scope)
       ? defaultOgImage
       : (getImageUrl(tenant.logoUrl ?? undefined) ?? defaultOgImage);
@@ -93,6 +134,94 @@ export function BrandingHead({ titleSuffix, description, path }: BrandingHeadPro
     }
     canonicalEl.href = canonical;
 
+    const graph: Record<string, unknown>[] = [];
+
+    if (routing.scope === 'www') {
+      const orgId = `${origin.replace(/\/$/, '')}/#organization`;
+      const websiteId = `${origin.replace(/\/$/, '')}/#website`;
+      const appId = `${origin.replace(/\/$/, '')}/#software`;
+
+      graph.push({
+        '@type': 'Organization',
+        '@id': orgId,
+        name: platform.name,
+        url: origin.replace(/\/$/, ''),
+        logo: absoluteUrl(origin, FESTSCHMIEDE_LOGO_URL),
+        sameAs: ['https://github.com/TimUx/FestSchmiede'],
+      });
+
+      graph.push({
+        '@type': 'WebSite',
+        '@id': websiteId,
+        name: platform.name,
+        url: origin.replace(/\/$/, ''),
+        inLanguage: 'de-DE',
+        publisher: { '@id': orgId },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: `${origin.replace(/\/$/, '')}/faq?q={search_term_string}`,
+          'query-input': 'required name=search_term_string',
+        },
+      });
+
+      graph.push({
+        '@type': ['SoftwareApplication', 'Product'],
+        '@id': appId,
+        name: platform.name,
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web',
+        description: desc,
+        url: canonical,
+        image: ogImage,
+        brand: { '@id': orgId },
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'EUR',
+          availability: 'https://schema.org/InStock',
+          url: absoluteUrl(origin, '/mandant-beantragen'),
+        },
+      });
+
+      if (breadcrumbs && breadcrumbs.length > 0) {
+        graph.push({
+          '@type': 'BreadcrumbList',
+          itemListElement: breadcrumbs.map((crumb, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: crumb.name,
+            item: absoluteUrl(origin, crumb.path),
+          })),
+        });
+      }
+
+      if (faqs && faqs.length > 0) {
+        graph.push({
+          '@type': 'FAQPage',
+          mainEntity: faqs.map((item) => ({
+            '@type': 'Question',
+            name: item.q,
+            acceptedAnswer: { '@type': 'Answer', text: item.a },
+          })),
+        });
+      }
+    } else {
+      graph.push({
+        '@type': 'SoftwareApplication',
+        name: platform.name,
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web',
+        description: desc,
+        url: canonical,
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+      });
+    }
+
+    if (jsonLd) {
+      const extra = Array.isArray(jsonLd) ? jsonLd : [jsonLd];
+      graph.push(...extra);
+    }
+
     const existing = document.getElementById('fm-structured-data');
     existing?.remove();
     const script = document.createElement('script');
@@ -100,13 +229,7 @@ export function BrandingHead({ titleSuffix, description, path }: BrandingHeadPro
     script.type = 'application/ld+json';
     script.textContent = JSON.stringify({
       '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
-      name: platform.name,
-      applicationCategory: 'BusinessApplication',
-      operatingSystem: 'Web',
-      description: desc,
-      url: canonical,
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+      '@graph': graph,
     });
     document.head.appendChild(script);
   }, [
@@ -121,6 +244,12 @@ export function BrandingHead({ titleSuffix, description, path }: BrandingHeadPro
     titleSuffix,
     description,
     path,
+    robots,
+    jsonLd,
+    breadcrumbs,
+    faqs,
+    ogType,
+    ogImagePath,
   ]);
 
   return null;

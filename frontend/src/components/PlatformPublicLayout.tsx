@@ -44,6 +44,7 @@ const NAV_GROUPS = [
       { label: 'Bestellprozess', path: '/#bestellprozess' },
       { label: 'Funktionen', path: '/funktionen' },
       { label: 'Screenshots', path: '/screenshots' },
+      { label: 'Themen & Ratgeber', path: '/themen' },
     ],
   },
   {
@@ -255,6 +256,26 @@ export function PlatformPublicLayout({ children }: PlatformPublicLayoutProps) {
               {platform.footerText}
             </Typography>
           )}
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center', mb: 2 }}>
+            <Typography component={Link} to="/funktionen" variant="body2" color="text.secondary" sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+              Funktionen
+            </Typography>
+            <Typography component={Link} to="/themen" variant="body2" color="text.secondary" sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+              Themen & Ratgeber
+            </Typography>
+            <Typography component={Link} to="/fuer-vereine" variant="body2" color="text.secondary" sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+              Für Vereine
+            </Typography>
+            <Typography component={Link} to="/faq" variant="body2" color="text.secondary" sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+              FAQ
+            </Typography>
+            <Typography component={Link} to="/kontakt" variant="body2" color="text.secondary" sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+              Kontakt
+            </Typography>
+            <Typography component={Link} to="/mandant-beantragen" variant="body2" color="text.secondary" sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+              Mandant beantragen
+            </Typography>
+          </Box>
           {legalLinks.length > 0 && (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center' }}>
               {legalLinks.map((link) => (

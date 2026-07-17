@@ -3,6 +3,19 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.5.4 - 2026-07-17
+
+### Hinzugefügt
+
+- **Marketing-Website (www):** 18 SEO-/LLMO-Themenlandingpages inkl. Themenübersicht `/themen`, erweiterte FAQ und strukturierte Daten.
+- **SEO-Infrastruktur:** `robots.txt`, generierbare `sitemap.xml` (`npm run seo:sitemap`), Canonicals, OpenGraph/Twitter und JSON-LD (Organization, WebSite, SoftwareApplication, FAQ, Breadcrumbs).
+
+### Geändert
+
+- **Homepage & Navigation:** stärkere Meta-Defaults, Breadcrumbs, Footer-/Menü-Links zu Themen und Ratgebern; Bild-Attribute für bessere Core Web Vitals.
+
+---
+
 ## 2.5.3 - 2026-07-16
 
 ### Behoben

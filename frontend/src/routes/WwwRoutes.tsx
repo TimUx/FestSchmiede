@@ -14,11 +14,16 @@ import { PlatformContactPage } from '@/pages/platform/PlatformContactPage';
 import { PlatformApplyPage } from '@/pages/platform/PlatformApplyPage';
 import { PlatformApplyConfirmPage } from '@/pages/platform/PlatformApplyConfirmPage';
 import { PlatformDynamicLegalPage } from '@/pages/platform/PlatformDynamicLegalPage';
+import { PlatformThemenPage } from '@/pages/platform/PlatformThemenPage';
+import { SeoLandingPageRoute } from '@/pages/platform/SeoLandingPage';
 import { PlatformNotFoundPage } from '@/pages/errors/PlatformNotFoundPage';
 import { MaintenanceGate } from '@/components/MaintenanceGate';
+import { listSeoSlugs } from '@/content/seo';
 
 /** Öffentliche Homepage unter www.&lt;platform-domain&gt; */
 export function WwwRoutes() {
+  const seoSlugs = listSeoSlugs();
+
   return (
     <MaintenanceGate>
       <Routes>
@@ -33,10 +38,14 @@ export function WwwRoutes() {
         <Route path="/mandant-beantragen/bestaetigung" element={<PlatformApplyConfirmPage />} />
         <Route path="/faq" element={<PlatformFaqPage />} />
         <Route path="/kontakt" element={<PlatformContactPage />} />
+        <Route path="/themen" element={<PlatformThemenPage />} />
         <Route path="/rechtliches/:slug" element={<PlatformDynamicLegalPage />} />
         <Route path="/dokumentation" element={<PlatformDocsPage />} />
         <Route path="/download" element={<PlatformDownloadPage />} />
         <Route path="/plattform-status" element={<PlatformStatusPublicPage />} />
+        {seoSlugs.map((slug) => (
+          <Route key={slug} path={`/${slug}`} element={<SeoLandingPageRoute slug={slug} />} />
+        ))}
         <Route path="*" element={<PlatformNotFoundPage />} />
       </Routes>
     </MaintenanceGate>

@@ -81,6 +81,9 @@ export function OrderProcessFlow() {
                 src={step.screenshot}
                 alt={step.screenshotAlt}
                 loading="lazy"
+                decoding="async"
+                width={800}
+                height={600}
                 sx={{
                   width: '100%',
                   display: 'block',
@@ -120,6 +123,9 @@ export function OrderProcessFlow() {
                 src={step.screenshot}
                 alt={step.screenshotAlt}
                 loading="lazy"
+                decoding="async"
+                width={800}
+                height={600}
                 sx={{ width: '100%', display: 'block' }}
               />
             </Card>

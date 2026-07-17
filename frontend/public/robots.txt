@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Marketing-Website (www.festschmiede.de)
+# Geschützte Plattformbereiche liegen unter app.* und werden hier nicht indexiert.
+
+Sitemap: https://www.festschmiede.de/sitemap.xml

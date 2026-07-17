@@ -21,6 +21,7 @@
     "qa:load": "k6 run scripts/qa/load-test.k6.js",
     "qa:report": "npx tsx scripts/qa/generate-report.ts",
     "screenshots": "npx tsx scripts/capture-screenshots.ts",
+    "seo:sitemap": "npx tsx scripts/seo/generate-sitemap.ts",
     "qa:prepare-journey": "NODE_PATH=backend/node_modules npx tsx scripts/qa/prepare-user-journey.ts",
     "qa:e2e": "playwright test --config tests/e2e/playwright.config.ts --grep-invert Nutzerreise",
     "qa:e2e:journey": "playwright test --config tests/e2e/playwright.config.ts tests/e2e/specs/user-journey.spec.ts",
