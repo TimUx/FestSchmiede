@@ -3,6 +3,15 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## 2.5.6 - 2026-07-17
+
+### Geändert
+
+- **Marketing-Homepage (www):** problemorientierter Aufbau (Papierchaos, Schlangen, Küche, Helfer), Hero mit Vorteilsliste, Definitionen, Veranstaltungsarten, Vergleichstabelle und EEAT-Abschnitte – ohne Plattform-Änderungen.
+- **FAQ:** auf über 50 Fragen erweitert (Organisation, Vorbestellung, Geräte, typische Fehler).
+
+---
+
 ## 2.5.5 - 2026-07-17
 
 ### Geändert

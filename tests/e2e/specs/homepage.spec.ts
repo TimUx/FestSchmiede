@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('FestSchmiede Homepage (Plattform)', () => {
   test('Landingpage zeigt Hero und Navigation', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('heading', { name: /veranstaltungen organisieren/i })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole('heading', { name: /digitale organisation für vereinsfeste/i })).toBeVisible({ timeout: 30_000 });
     await expect(page.getByRole('link', { name: /start/i }).first()).toBeVisible();
     await expect(page.getByRole('link', { name: /mandant beantragen|beantragen/i }).first()).toBeVisible();
 

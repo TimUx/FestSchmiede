@@ -4,8 +4,26 @@ import { PlatformPublicLayout } from '@/components/PlatformPublicLayout';
 import { BrandingHead } from '@/components/BrandingHead';
 import { MarketingHero, MarketingSection, CtaBand } from '@/components/marketing/MarketingLayout';
 import { OrderProcessFlow } from '@/components/marketing/OrderProcessFlow';
+import {
+  ComparisonTable,
+  DefinitionGrid,
+  EventTypeGrid,
+  HeroBenefitList,
+  ProblemSolutionBlocks,
+} from '@/components/marketing/HomeKnowledgeBlocks';
 import { usePlatform } from '@/contexts/PlatformProvider';
-import { PLATFORM_BENEFITS, PLATFORM_FEATURES, SCREENSHOTS, TARGET_GROUPS } from '@/content/platformMarketing';
+import { SCREENSHOTS } from '@/content/platformMarketing';
+import {
+  HOME_COMPARISON,
+  HOME_DEFINITIONS,
+  HOME_EEAT,
+  HOME_EVENT_TYPES,
+  HOME_HERO,
+  HOME_PROBLEMS,
+  HOME_QUICK_BENEFITS,
+  HOME_SUMMARY,
+  HOME_TOPIC_LINKS,
+} from '@/content/homePageContent';
 import { SponsorLinks } from '@/components/SponsorLinks';
 
 export function PlatformHomePage() {
@@ -14,69 +32,88 @@ export function PlatformHomePage() {
   return (
     <PlatformPublicLayout>
       <BrandingHead
-        titleSuffix="Software für Vereinsfeste & Veranstaltungen"
-        description="FestSchmiede ist Open-Source-Software für Vereinsfeste: digitale Essensbestellung, Küchenmonitor, Abholnummern und Veranstaltungsorganisation für Vereine."
+        titleSuffix="Digitale Organisation für Vereinsfeste"
+        description="FestSchmiede digitalisiert Bestellung, Küche und Abholung am Vereinsfest – Open Source für Feuerwehrfeste, Schützenfeste, Dorffeste und ähnliche Veranstaltungen."
         path="/"
         breadcrumbs={[{ name: 'Start', path: '/' }]}
         ogImagePath="/screenshots/01-bestellseite-monitor.png"
       />
-      <MarketingHero
-        showLogo
-        title="Veranstaltungen organisieren – einfach, digital, gemeinschaftlich"
-        subtitle="FestSchmiede ist eine moderne Open-Source-Plattform zur Organisation von Veranstaltungen. Sie unterstützt Veranstalter bei Bestellungen, Küche, Abholung, Online-Zahlungen, Benachrichtigungen, Auswertungen und Veranstaltungsorganisation."
-      >
+
+      <MarketingHero showLogo title={HOME_HERO.title} subtitle={HOME_HERO.subtitle}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-          <Button component={Link} to="/funktionen" variant="contained" size="large">
-            Funktionen entdecken
+          <Button component={Link} to={HOME_HERO.primaryCta.to} variant="contained" size="large">
+            {HOME_HERO.primaryCta.label}
           </Button>
           {platform.registrationEnabled ? (
-            <Button component={Link} to="/mandant-beantragen" variant="outlined" size="large">
-              Mandant beantragen
+            <Button component={Link} to={HOME_HERO.secondaryCtaApply.to} variant="outlined" size="large">
+              {HOME_HERO.secondaryCtaApply.label}
             </Button>
           ) : (
-            <Button component={Link} to="/kontakt" variant="outlined" size="large">
-              Kontakt aufnehmen
+            <Button component={Link} to={HOME_HERO.secondaryCtaContact.to} variant="outlined" size="large">
+              {HOME_HERO.secondaryCtaContact.label}
             </Button>
           )}
+          <Button
+            component="a"
+            href={platform.githubUrl ?? 'https://github.com/TimUx/FestSchmiede'}
+            target="_blank"
+            rel="noopener noreferrer"
+            variant="text"
+            size="large"
+          >
+            GitHub
+          </Button>
         </Stack>
+        <HeroBenefitList items={HOME_QUICK_BENEFITS} />
       </MarketingHero>
 
       <MarketingSection
-        title="Was ist FestSchmiede?"
-        subtitle="FestSchmiede wurde insbesondere für Vereine und gemeinnützige Organisationen entwickelt, eignet sich jedoch ebenso für Schulen, Feuerwehren, Hilfsorganisationen, Kommunen und kleinere Veranstaltungen."
+        title="Probleme am Vereinsfest – und digitale Antworten"
+        subtitle="Nicht Feature-Listen entscheiden, sondern konkrete Engpässe: Zettel, Schlangen, Küchenchaos und unklare Übergaben."
       >
-        <Typography sx={{ maxWidth: 800, lineHeight: 1.7 }}>
-          Ob Schützenfest, Vereinsabend oder Spendenaktion – FestSchmiede bündelt Bestellungen, Küchenabläufe,
-          Abholung und Auswertungen in einer übersichtlichen Plattform. Jede Organisation kann als eigener Mandant
-          arbeiten und nur die Module nutzen, die wirklich gebraucht werden.
-        </Typography>
+        <ProblemSolutionBlocks items={HOME_PROBLEMS} />
       </MarketingSection>
 
       <MarketingSection
         id="bestellprozess"
-        title="So läuft der Bestellprozess"
-        subtitle="Vom ersten Klick bis zur Abholung am Tresen – FestSchmiede begleitet Gäste und Helfer durch jeden Schritt."
+        title="So läuft der Ablauf"
+        subtitle="Gast bestellt → Küche erhält die Bestellung → Küche meldet fertig → Abholnummer erscheint → Gast holt ab."
         sx={{ bgcolor: 'background.paper' }}
       >
         <OrderProcessFlow />
       </MarketingSection>
 
-      <MarketingSection title="Wichtigste Funktionen" subtitle="Alles, was Veranstalter im Alltag brauchen – modular und erweiterbar.">
-        <Grid container spacing={2}>
-          {PLATFORM_FEATURES.map((f) => (
-            <Grid key={f.title} size={{ xs: 12, sm: 6, md: 4 }}>
-              <Card variant="outlined" sx={{ height: '100%' }}>
-                <CardContent>
-                  <Typography variant="h6" fontWeight={700} gutterBottom>{f.title}</Typography>
-                  <Typography color="text.secondary">{f.description}</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+      <MarketingSection
+        title={HOME_COMPARISON.title}
+        subtitle="Ein Überblick für Vorstände und Festleitungen, die den Unterschied greifbar machen wollen."
+      >
+        <ComparisonTable
+          caption={HOME_COMPARISON.title}
+          headers={HOME_COMPARISON.headers}
+          rows={HOME_COMPARISON.rows}
+        />
       </MarketingSection>
 
-      <MarketingSection title="Einblicke in die Plattform" subtitle="Aktuelle Screenshots aus FestSchmiede.">
+      <MarketingSection
+        title="Begriffe kurz erklärt"
+        subtitle="Definitionen für Suche und Praxis – jeweils mit weiterführendem Ratgeber."
+        sx={{ bgcolor: 'background.paper' }}
+      >
+        <DefinitionGrid items={HOME_DEFINITIONS} />
+      </MarketingSection>
+
+      <MarketingSection
+        title="Veranstaltungsarten"
+        subtitle="Jede Festform hat eigene Engpässe. Hier die typischen Herausforderungen – ohne Copy-Paste."
+      >
+        <EventTypeGrid items={HOME_EVENT_TYPES} />
+      </MarketingSection>
+
+      <MarketingSection
+        title="Einblicke in die Praxis"
+        subtitle="Screenshots aus Bestellung, Küche und Organisation."
+        sx={{ bgcolor: 'background.paper' }}
+      >
         <Grid container spacing={2}>
           {SCREENSHOTS.slice(0, 3).map((s) => (
             <Grid key={s.src} size={{ xs: 12, md: 4 }}>
@@ -103,31 +140,75 @@ export function PlatformHomePage() {
         </Button>
       </MarketingSection>
 
-      <MarketingSection title="Vorteile" subtitle="Warum FestSchmiede für ehrenamtliche Veranstaltungen passt.">
-        <Grid container spacing={1}>
-          {PLATFORM_BENEFITS.map((b) => (
-            <Grid key={b} size={{ xs: 12, md: 6 }}>
-              <Typography sx={{ py: 0.5 }}>• {b}</Typography>
-            </Grid>
-          ))}
-        </Grid>
-      </MarketingSection>
-
-      <MarketingSection title="Zielgruppen">
-        <Stack spacing={1}>
-          {TARGET_GROUPS.map((g) => (
-            <Typography key={g}>• {g}</Typography>
-          ))}
+      <MarketingSection title={HOME_EEAT.whyTitle} subtitle="Herkunft, Zielgruppe und Abgrenzung – sachlich."
+      >
+        <Stack spacing={3} sx={{ maxWidth: 820 }}>
+          <Box>
+            <Typography paragraph sx={{ lineHeight: 1.75 }}>{HOME_EEAT.whyBody}</Typography>
+          </Box>
+          <Box>
+            <Typography variant="h3" component="h3" fontWeight={700} sx={{ fontSize: '1.15rem', mb: 1 }}>
+              {HOME_EEAT.whoTitle}
+            </Typography>
+            <Typography paragraph sx={{ lineHeight: 1.75 }}>{HOME_EEAT.whoBody}</Typography>
+          </Box>
+          <Box>
+            <Typography variant="h3" component="h3" fontWeight={700} sx={{ fontSize: '1.15rem', mb: 1 }}>
+              {HOME_EEAT.whenTitle}
+            </Typography>
+            <Typography paragraph sx={{ lineHeight: 1.75 }}>{HOME_EEAT.whenBody}</Typography>
+          </Box>
+          <Box>
+            <Typography variant="h3" component="h3" fontWeight={700} sx={{ fontSize: '1.15rem', mb: 1 }}>
+              {HOME_EEAT.diffTitle}
+            </Typography>
+            <Typography paragraph sx={{ lineHeight: 1.75 }}>{HOME_EEAT.diffBody}</Typography>
+          </Box>
         </Stack>
-        <Button component={Link} to="/themen" sx={{ mt: 2 }}>
-          Themen & Ratgeber entdecken
+        <Button component={Link} to="/ueber-das-projekt" sx={{ mt: 1 }}>
+          Mehr über das Projekt
         </Button>
       </MarketingSection>
 
-      <MarketingSection title="Open Source" subtitle="Transparent, erweiterbar und unabhängig.">
+      <MarketingSection
+        title="Themencluster"
+        subtitle="Weiterlesen nach Suchintention – Software, Organisation und Veranstaltungen."
+        sx={{ bgcolor: 'background.paper' }}
+      >
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+          {HOME_TOPIC_LINKS.map((item) => (
+            <Button key={item.to} component={Link} to={item.to} variant="outlined" size="small">
+              {item.label}
+            </Button>
+          ))}
+        </Box>
+      </MarketingSection>
+
+      <MarketingSection title={HOME_SUMMARY.title}>
+        <Box component="ul" sx={{ pl: 3, maxWidth: 820 }}>
+          {HOME_SUMMARY.points.map((point) => (
+            <Typography key={point} component="li" sx={{ mb: 1, lineHeight: 1.7 }}>
+              {point}
+            </Typography>
+          ))}
+        </Box>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 2 }}>
+          <Button component={Link} to="/faq" variant="outlined">
+            FAQ öffnen
+          </Button>
+          <Button component={Link} to="/funktionen" variant="text">
+            Funktionen im Überblick
+          </Button>
+        </Stack>
+      </MarketingSection>
+
+      <MarketingSection
+        title="Open Source"
+        subtitle="Transparent, erweiterbar und unabhängig von einem geschlossenen Anbieter."
+      >
         <Typography sx={{ maxWidth: 760, mb: 2, lineHeight: 1.7 }}>
           FestSchmiede ist Open Source. Der Quellcode ist einsehbar, Mitarbeit ist willkommen und Organisationen
-          bleiben unabhängig von einzelnen Anbietern.
+          bleiben unabhängig. Das ist Vertrauensbasis – kein Marketingversprechen.
         </Typography>
         <Button
           component="a"
@@ -142,7 +223,7 @@ export function PlatformHomePage() {
 
       <MarketingSection
         title="Projekt unterstützen"
-        subtitle="FestSchmiede ist Open Source – freiwillige Unterstützung hilft bei Weiterentwicklung und Betrieb."
+        subtitle="Freiwillige Unterstützung hilft bei Weiterentwicklung und Betrieb."
         sx={{ bgcolor: 'background.default' }}
       >
         <Box sx={{ maxWidth: 720 }}>
@@ -151,8 +232,8 @@ export function PlatformHomePage() {
       </MarketingSection>
 
       <CtaBand
-        title="Bereit für Ihr nächstes Fest?"
-        subtitle="Stellen Sie eine Mandantenbewerbung oder informieren Sie sich über Self-Hosting und Funktionen."
+        title="Nächstes Fest ruhiger organisieren?"
+        subtitle="Mandant beantragen, Themen nachlesen oder den Ablauf mit dem Team durchspielen – ohne Feature-Theater."
       >
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
           {platform.registrationEnabled && (
@@ -162,6 +243,9 @@ export function PlatformHomePage() {
           )}
           <Button component={Link} to="/fuer-vereine" variant="outlined" size="large">
             Für Vereine
+          </Button>
+          <Button component={Link} to="/kontakt" variant="text" size="large">
+            Kontakt
           </Button>
         </Stack>
       </CtaBand>
