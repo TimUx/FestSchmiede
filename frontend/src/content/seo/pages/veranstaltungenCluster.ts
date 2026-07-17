@@ -113,7 +113,7 @@ export const VERANSTALTUNGEN_CLUSTER_PAGES: SeoLandingPage[] = [
     },
     {
       heading: 'Best Practices fürs Feuerwehrfest',
-      body: 'Erfolgreiche Wehren halten Vorbereitung und Festbetrieb pragmatisch:',
+      body: 'Erfolgreiche Wehren halten Vorbereitung und Festbetrieb pragmatisch und trennen Festleitung von Bewirtungsleitung, damit Sicherheit und Programm nicht mit Küchenentscheidungen kollidieren. Ein schlankes Menü, sichtbares Abholboard und ein geprüfter Netzbetrieb entlasten Stoßzeiten spürbar. Online-Zahlung kann Kassenengpässe reduzieren, ersetzt aber keine klare Ausgabeorganisation. Nach dem Fest liefern Auswertungen die Grundlage für Einkauf und Retro – ohne dass Kameradschaft oder Genehmigungen digitalisiert werden müssten. Die folgenden Regeln haben sich in der Praxis bewährt:',
       bullets: [
         'Festleitung und Bewirtungsleitung als getrennte Rollen benennen',
         'Menü eine Woche vorher finalisieren und testbestellen',
@@ -311,7 +311,7 @@ export const VERANSTALTUNGEN_CLUSTER_PAGES: SeoLandingPage[] = [
     },
     {
       heading: 'Best Practices',
-      body: 'Pragmatische Regeln, die sich an Schützenfesten bewährt haben:',
+      body: 'Pragmatische Regeln, die sich an Schützenfesten bewährt haben, verbinden Tradition mit ruhiger Bewirtung: Bewirtungsleitung bleibt feste Rolle, Menü folgt den Programmtagen, und das Abholboard steht außerhalb der lautesten Zone. Verfügbarkeit wird aktiv gepflegt, Netz und Ladekabel vor Einlass geprüft. Online-Zahlung und Vor-Ort-Bestellung können parallel laufen, solange Ausgabe und Küche denselben Status sehen. Sonntags liefern Auswertungen Stoff für den Ausschuss – ohne Zeremonie oder Schießbetrieb anzufassen. Konkret hilft:',
       bullets: [
         'Bewirtungsleitung als feste Rolle im Ausschuss',
         'Menü an Programmtage anpassen – leichte Speisen mittags, Klassiker abends',
@@ -536,7 +536,7 @@ export const VERANSTALTUNGEN_CLUSTER_PAGES: SeoLandingPage[] = [
     },
     {
       heading: 'Best Practices',
-      body: 'So bleibt die Kirmes entspannt und zahlungskräftig:',
+      body: 'So bleibt die Kirmes entspannt und zahlungskräftig: Ein Bewirtungsverantwortlicher über alle Schichten hält Preise und Artikel einheitlich, Probeläufe decken Netz- und Menüfehler vor dem Publikum auf, und das Abholboard hält Wege frei. Ausverkauft wird konsequent geschaltet, damit Küche und Bestellung nicht auseinanderlaufen. Nach der Kirmes teilt ihr Zahlen und passt Mengen an – genau dort entsteht der Mehrjahresnutzen von FestSchmiede als Open-Source-Veranstaltungsplattform für Bestellungen, Küche, Abholung und Auswertungen. Im Alltag zählen:',
       bullets: [
         'Einen Bewirtungsverantwortlichen über alle Schichten',
         'Einheitliche Preise und Artikelbezeichnungen',
@@ -759,7 +759,7 @@ export const VERANSTALTUNGEN_CLUSTER_PAGES: SeoLandingPage[] = [
     },
     {
       heading: 'Best Practices',
-      body: 'Pragmatische Regeln für ruhige Dorffeste:',
+      body: 'Pragmatische Regeln für ruhige Dorffeste setzen auf Kooperation statt Parallelwelten: Ein Bewirtungs-Owner, einheitliche Artikel an gemeinsamen Ständen und eine Kurzschulung vor Einlass reichen oft. Abholboard und Wartebereich werden bewusst geplant, Ausverkauft ernst genommen. Montags folgen Zahlen und zwei Verbesserungen – so lernen Vereine gemeinsam, ohne dass FestSchmiede Mitgliederverwaltung oder Helferlisten ersetzen müsste. Bewährt haben sich:',
       bullets: [
         'Eine Person als Bewirtungs-Owner über alle Schichten',
         'Einheitliche Artikel und Preise an gemeinsamen Ständen',
@@ -991,7 +991,7 @@ export const VERANSTALTUNGEN_CLUSTER_PAGES: SeoLandingPage[] = [
     },
     {
       heading: 'Best Practices',
-      body: 'So bleibt der Straßenbetrieb beherrschbar:',
+      body: 'So bleibt der Straßenbetrieb beherrschbar: Ausgabezone und Abholboard gehören in den Platzplan, das Menü bleibt schlank, Strom und Netz werden vor Aufbau abgenommen. Jede Schicht kennt die Ausverkauft-Regel; bei Regen gibt es einen Backup für Geräte. Online-Zahlung entlastet Stoßzeiten, ersetzt aber keine markierte Warteschlange. Nach dem Fest sichern Zahlen und zwei Prozessverbesserungen den Lernfortschritt fürs Folgejahr. Konkret:',
       bullets: [
         'Ausgabezone und Abholboard im Platzplan verankern',
         'Menü schlank halten – schnelle Ausgabe schlägt Vielfalt',
@@ -1075,7 +1075,8 @@ export const VERANSTALTUNGEN_CLUSTER_PAGES: SeoLandingPage[] = [
       heading: 'Zusammenfassung',
       body: [
     'Straßenfest organisieren verbindet Behördenarbeit, Nachbarschaft und Festbetrieb. Digitale Unterstützung lohnt sich vor allem an Bewirtungsständen mit Platzmangel und getrennten Stationen.',
-    'FestSchmiede hilft als Open-Source-Veranstaltungsplattform bei Bestellungen, Küche, Abholung, Abholboard, Online-Zahlung und Auswertungen – damit das Straßenfest lebendig bleibt, ohne im Stau vor dem Grill zu enden. Mit klarer Fläche, schlankem Menü und getestetem Netz wird daraus ein wiederholbarer Betriebsstandard statt jedes Jahr dasselbe Improvisationstheater für Helfer und Gäste.'
+    'FestSchmiede hilft als Open-Source-Veranstaltungsplattform bei Bestellungen, Küche, Abholung, Abholboard, Online-Zahlung und Auswertungen – damit das Straßenfest lebendig bleibt, ohne im Stau vor dem Grill zu enden. Mit klarer Fläche, schlankem Menü und getestetem Netz wird daraus ein wiederholbarer Betriebsstandard statt jedes Jahr dasselbe Improvisationstheater für Helfer und Gäste.',
+    'Organisation auf der Straße bleibt Handwerk: Genehmigungen, Nachbarschaft und Wetter sind eigene Themen. Digitalisierung entlastet nur die Bewirtungskette – und genau dort spüren Helfer und Gäste den Unterschied. Wer Probelauf, Ausverkauft-Pflege und eine kurze Retro fest verankert, baut Kompetenz auf, die Auflagenwechsel übersteht. So bleibt das Straßenfest lebendig, geordnet und wiederholbar.'
   ].join('\n\n'),
     },
     ],
@@ -1218,12 +1219,13 @@ export const VERANSTALTUNGEN_CLUSTER_PAGES: SeoLandingPage[] = [
       body: [
     'Helferplanung und Getränkeabrechnung als Automatik erwarten: FestSchmiede unterstützt Helfer über Bestell-, Küchen- und Service-Oberflächen und liefert Umsatzzahlen über Bestellungen – ist aber kein dediziertes Schichtplan- oder Getränkeabrechnungs-Modul.',
     'Zu viele Sonderfälle vor dem ersten Einsatz. Erst Standard stabil, dann Ausnahmen.',
-    'Keine Kommunikation an Gäste: Sagt klar, wo bestellt und wo abgeholt wird – sonst entsteht Parallelverkehr am alten Tresen.'
+    'Keine Kommunikation an Gäste: Sagt klar, wo bestellt und wo abgeholt wird – sonst entsteht Parallelverkehr am alten Tresen.',
+    'Ebenso häufig: zu späte Einführung ohne Owner. Dann liegt niemand fest, wer Menü pflegt, Geräte lädt und Ausverkauft schaltet. Digitalisierung ohne Verantwortlichkeit wird zur Geisteraufgabe. Ein weiterer Fehler ist, nach dem ersten Fest keine Retro zu machen – dann bleiben dieselben Stolpersteine. Wer Auswertungen ignoriert, verschenkt den Lernzyklus zwischen den Jahren. Startet schlank, testet zweimal und dokumentiert zwei Verbesserungen; das schlägt jedes Feature-Versprechen ohne Praxis.'
   ].join('\n\n'),
     },
     {
       heading: 'Best Practices',
-      body: 'So bleibt Digitalisierung im Verein nachhaltig:',
+      body: 'So bleibt Digitalisierung im Verein nachhaltig: Ein Prozess und eine Wahrheit im System schlagen Parallelzettel. Kurzschulung ersetzt lange Handbücher; Verfügbarkeit und Ausverkauft werden aktiv gepflegt. Nach jedem Fest kommen Zahlen plus maximal zwei Änderungen, und der nächste Festleiter findet eine kurze Dokumentation vor. Module bleiben schlank – Bestellungen, Küche, Abholung, Abholboard, Online-Zahlung und Auswertungen genügen für den ersten großen Nutzen. Im Alltag:',
       bullets: [
         'Ein Prozess – eine Wahrheit, also Status im System',
         'Kurzschulung schlägt langes Handbuch',
@@ -1238,7 +1240,8 @@ export const VERANSTALTUNGEN_CLUSTER_PAGES: SeoLandingPage[] = [
       body: [
     'Ein Sportverein digitalisiert zuerst nur Grill und Ausgabe. Der erste Probelauf deckt auf, dass zwei Artikel falsch benannt waren und das Abholboard zu weit weg hing. Am Festtag läuft es akzeptabel; am zweiten Fest ruhig und klar.',
     'Entscheidend war nicht mehr Software, sondern Fokus, Test und Retro. Die Auswertungen halfen zudem, das Menü im Folgejahr zu kürzen – weniger Stress, ähnliche Erlöse.',
-    'Andere Vereine im Ort übernahmen später denselben Ablauf für Dorffest und Straßenfest – mit dem Wissensvorsprung aus dem ersten Jahr.'
+    'Andere Vereine im Ort übernahmen später denselben Ablauf für Dorffest und Straßenfest – mit dem Wissensvorsprung aus dem ersten Jahr.',
+    'Entscheidend war die ehrliche Kommunikation im Vorstand: FestSchmiede als Open-Source-Veranstaltungsplattform für Bestellungen, Küche, Abholung, Abholboard, Online-Zahlung und Auswertungen – nicht als Ersatz für Helferlisten oder Getränkeabrechnung. Genau diese Begrenzung schuf Vertrauen. Am zweiten Fest brauchten neue Helfer nur eine Kurzschulung, weil Status sichtbar und Rollen klar waren. Die Auswertungen steuerten Einkauf und Menü; der Stress an der Ausgabe sank spürbar. Digitalisierung wirkte als Entlastung, nicht als Modernisierungsbefehl.'
   ].join('\n\n'),
     },
 
@@ -1297,7 +1300,8 @@ export const VERANSTALTUNGEN_CLUSTER_PAGES: SeoLandingPage[] = [
       heading: 'Zusammenfassung',
       body: [
     'Vereinsveranstaltung digitalisieren gelingt, wenn ihr Engpässe statt Ideologien adressiert. Die Bewirtungskette Bestellung, Küche und Abholung ist der Hebel mit dem größten Alltagsnutzen.',
-    'FestSchmiede bietet dafür als Open-Source-Veranstaltungsplattform Bestellungen, Küche, Abholung, Abholboard, Online-Zahlung und Auswertungen – ehrlich begrenzt, dafür praxistauglich für ehrenamtliche Teams.'
+    'FestSchmiede bietet dafür als Open-Source-Veranstaltungsplattform Bestellungen, Küche, Abholung, Abholboard, Online-Zahlung und Auswertungen – ehrlich begrenzt, dafür praxistauglich für ehrenamtliche Teams.',
+    'Wer digitalisiert, sollte Erfolg an ruhigeren Schichten und belastbaren Zahlen messen – nicht an der Länge der Feature-Liste. Probelauf, schlankes Menü und dokumentierte Retro machen den Unterschied zwischen einmaligem Experiment und nachhaltigem Standard. Helferplanung und Mitgliederverwaltung bleiben analog oder in bestehenden Tools; die Bewirtungskette wird nachvollziehbar. Mit dieser Haltung bleibt Digitalisierung im Verein anschlussfähig – auch für skeptische Ehrenamtliche.'
   ].join('\n\n'),
     },
     ],
