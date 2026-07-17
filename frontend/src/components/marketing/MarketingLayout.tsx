@@ -24,7 +24,7 @@ export function MarketingSection({ title, subtitle, children, id, sx, dark }: Ma
       }}
     >
       <Container maxWidth="lg">
-        <Typography variant="h4" fontWeight={800} gutterBottom>
+        <Typography variant="h4" component="h2" fontWeight={800} gutterBottom>
           {title}
         </Typography>
         {subtitle && (

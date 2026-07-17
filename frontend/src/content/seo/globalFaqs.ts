@@ -257,4 +257,80 @@ export const SEO_GLOBAL_FAQS: SeoFaqItem[] = [
     q: 'Wie sicher sind die Daten / wie steht es um Datenschutz?',
     a: 'Mandanten sind voneinander getrennt. Beim Plattformbetrieb gelten die kommunizierten Betriebs- und Datenschutzregeln; beim Self-Hosting liegen Verantwortung und Absicherung bei euch. Bestelldaten dienen der Abwicklung und werden gemäß Datenschutzerklärung behandelt.',
   },
+
+  {
+    category: 'allgemein',
+    q: 'Wie organisiert man ein Vereinsfest digital sinnvoll?',
+    a: 'Zuerst den Engpass benennen: Bestellung, Küche oder Ausgabe. Dann einen Probelauf mit dem Team, schlankes Menü und klare Rollen. Digitalisierung ersetzt keine Festleitung – sie macht Übergaben sichtbar.',
+  },
+  {
+    category: 'allgemein',
+    q: 'Kann eine Feuerwehr FestSchmiede nutzen?',
+    a: 'Ja. Feuerwehrfeste mit Essens- und Getränkeverkauf gehören zu den typischen Einsatzfällen: Stoßzeiten, Schichtwechsel und getrennte Stationen profitieren von Bestellung, Küchenmonitor und Abholboard.',
+  },
+  {
+    category: 'allgemein',
+    q: 'Kann ein Schützenverein FestSchmiede nutzen?',
+    a: 'Ja. Besonders bei mehrtägigen Schützenfesten helfen einheitliche Artikel, sichtbarer Bestellstatus und Auswertungen über die Festtage hinweg.',
+  },
+  {
+    category: 'allgemein',
+    q: 'Was kostet eine Vereinssoftware typischerweise?',
+    a: 'Klassische Vereinssoftware wird oft als Abo oder Lizenz verkauft. FestSchmiede ist Open Source: Kosten entstehen vor allem durch Hosting oder durch den Betrieb eines Plattform-Mandanten – für gemeinnützige Organisationen kann ein kostenloser Mandant beantragt werden.',
+  },
+  {
+    category: 'bestaellung-ablauf',
+    q: 'Wie funktioniert eine Essensvorbestellung?',
+    a: 'Gäste wählen Speisen und Getränke vorab über die öffentliche Bestellseite. Die Bestellung landet im System; am Festtag bereitet die Küche vor und die Ausgabe erfolgt über Abholnummer bzw. Status – weniger Warteschlange am Tresen.',
+  },
+  {
+    category: 'bestaellung-ablauf',
+    q: 'Brauchen Gäste einen Account?',
+    a: 'Nein. Die öffentliche Bestellung ist für Gäste ohne Vereins-Login gedacht. Status und Abholnummer reichen für den Ablauf; Details hängen von der Mandanten-Konfiguration ab.',
+  },
+  {
+    category: 'bestaellung-ablauf',
+    q: 'Wie funktioniert ein Küchenmonitor in der Praxis?',
+    a: 'Offene Bestellungen erscheinen auf Tablet oder Monitor. Helfer nehmen Aufträge in Arbeit, markieren fertig und übergeben damit an Abholung und Abholboard – ohne Zurufkette.',
+  },
+  {
+    category: 'bestaellung-ablauf',
+    q: 'Wie funktioniert eine digitale Abholnummer?',
+    a: 'Jede Bestellung erhält eine Nummer. Gäste sehen sie im Status, die Ausgabe bestätigt die Übergabe damit, und das Abholboard zeigt öffentlich, welche Nummern bereitliegen.',
+  },
+  {
+    category: 'mandant-start',
+    q: 'Wie verwaltet man mehrere Veranstaltungen?',
+    a: 'Veranstaltungen lassen sich zentral anlegen. Speisen, Getränke und Einstellungen können pro Event gepflegt werden – auch wenn ihr im Jahr mehrere Feste plant.',
+  },
+  {
+    category: 'helfer-alltag',
+    q: 'Was sind typische Fehler bei der Einführung?',
+    a: 'Zu viele Module auf einmal, kein Probelauf, unklare Verantwortlichkeit für Menü und Ausverkauft, und fehlende Kommunikation an Gäste, wo bestellt und abgeholt wird.',
+  },
+  {
+    category: 'helfer-alltag',
+    q: 'Bleibt die Schichtplanung analog?',
+    a: 'Ja, wenn ihr das wollt. FestSchmiede ist kein Schichtplan-Tool. Es entlastet Helfer über klare Abläufe und Oberflächen – ergänzend zu eurer bestehenden Planung.',
+  },
+  {
+    category: 'technik-hosting',
+    q: 'Funktioniert FestSchmiede offline?',
+    a: 'Der Betrieb setzt auf eine Netzverbindung zwischen Geräten und Server. Für den Festtag solltet ihr Hotspot oder Kabelverbindung für Küche und Bestellgeräte einplanen.',
+  },
+  {
+    category: 'technik-hosting',
+    q: 'Welche Geräte brauchen wir am Festtag?',
+    a: 'Mindestens ein Gerät für Bestellung/Kasse und eines für die Küche (Tablet oder Monitor). Optional ein Display fürs Abholboard. Smartphones der Gäste reichen für Online-Bestellung.',
+  },
+  {
+    category: 'zahlung',
+    q: 'Müssen Gäste online bezahlen?',
+    a: 'Nein. Online-Zahlung ist optional und konfigurierbar. Viele Vereine kombinieren Online-Zahlung mit Zahlung bei Abholung.',
+  },
+  {
+    category: 'datenschutz',
+    q: 'Welche Daten werden von Gästen erhoben?',
+    a: 'Es werden die für die Bestellabwicklung nötigen Daten verarbeitet. Umfang und Rechtsgrundlagen stehen in der Datenschutzerklärung des jeweiligen Betriebs bzw. Mandanten.',
+  },
 ];
