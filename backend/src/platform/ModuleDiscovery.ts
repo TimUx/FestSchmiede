@@ -2,7 +2,13 @@ import fs from 'fs';
 import path from 'path';
 import { config } from '../config';
 import { logger } from '../utils/logger';
-import { filterDiscoveredManifests, moduleManifestSchema, type ModuleManifest } from './manifest';
+import {
+  filterDiscoveredManifests,
+  isTrustedPlugin,
+  moduleManifestSchema,
+  validateManifestContract,
+  type ModuleManifest,
+} from './manifest';
 
 /**
  * Scans /modules (and future /plugins) for module.json manifests.
@@ -30,6 +36,15 @@ export class ModuleDiscovery {
       try {
         const raw = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
         const manifest = moduleManifestSchema.parse(raw);
+        const contractError = validateManifestContract(manifest);
+        if (contractError) {
+          logger.error(`Manifest ${entry.name} abgelehnt: ${contractError}`);
+          continue;
+        }
+        if (source === 'community' && config.nodeEnv === 'production' && !isTrustedPlugin(manifest)) {
+          logger.error(`Plugin ${manifest.id} abgelehnt: nicht allowlisted oder nicht gültig signiert`);
+          continue;
+        }
         if (manifest.id !== entry.name) {
           logger.warn(`Modul-ID ${manifest.id} stimmt nicht mit Verzeichnis ${entry.name} überein`);
         }

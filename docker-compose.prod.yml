@@ -8,7 +8,7 @@
 
 services:
   traefik:
-    image: traefik:v3.3
+    image: traefik:v3.3.4
     container_name: festschmiede-traefik
     restart: unless-stopped
     command:
@@ -98,7 +98,7 @@ services:
       - traefik.http.routers.festschmiede.middlewares=festschmiede-headers
 
   redis:
-    image: redis:7-alpine
+    image: redis:7.4.2-alpine3.21
     container_name: festschmiede-redis
     restart: unless-stopped
     profiles:

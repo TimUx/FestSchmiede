@@ -11,9 +11,6 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DATABASE_URL: postgresql://festschmiede:qa-ci-postgres-password-secure@localhost:5432/festschmiede
-  JWT_SECRET: qa-docker-ci-jwt-secret-not-in-blocklist-32chars
-  APP_ENCRYPTION_KEY: qa-docker-ci-encryption-key-not-blocked32
   CORS_ORIGIN: http://localhost:5173
   QA_API_BASE: http://localhost:3001/default/api
   QA_PLATFORM_API_BASE: http://localhost:3001/api
@@ -21,7 +18,6 @@ env:
   QA_FRONTEND_BASE: http://localhost:5173
   QA_TENANT_FRONTEND_BASE: http://localhost:5173/default/
   QA_PLATFORM_ADMIN_EMAIL: platform@festschmiede.local
-  QA_PLATFORM_ADMIN_PASSWORD: qa-docker-ci-platform-admin-password
   QA_MAILPIT_BASE: http://localhost:8025
 
 jobs:
@@ -30,6 +26,40 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Generate per-run CI secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          jwt_secret="$(openssl rand -hex 32)"
+          encryption_key="$(openssl rand -hex 32)"
+          admin_password="$(openssl rand -hex 24)"
+          postgres_password="$(openssl rand -hex 24)"
+          for value in "$jwt_secret" "$encryption_key" "$admin_password" "$postgres_password"; do
+            echo "::add-mask::$value"
+          done
+          {
+            echo "POSTGRES_PASSWORD=$postgres_password"
+            echo "PLATFORM_ADMIN_PASSWORD=$admin_password"
+            echo "DATABASE_URL=postgresql://festschmiede:${postgres_password}@localhost:5432/festschmiede"
+            echo "JWT_SECRET=$jwt_secret"
+            echo "APP_ENCRYPTION_KEY=$encryption_key"
+            echo "QA_PLATFORM_ADMIN_PASSWORD=$admin_password"
+            echo "COMPOSE_FILE=docker-compose.ci.yml:docker-compose.ci.override.yml"
+          } >> "$GITHUB_ENV"
+          cat > docker-compose.ci.override.yml <<EOF
+          services:
+            postgres:
+              environment:
+                POSTGRES_PASSWORD: ${postgres_password}
+            backend:
+              environment:
+                DATABASE_URL: postgresql://festschmiede:${postgres_password}@postgres:5432/festschmiede
+                JWT_SECRET: ${jwt_secret}
+                APP_ENCRYPTION_KEY: ${encryption_key}
+                PLATFORM_ADMIN_PASSWORD: ${admin_password}
+          EOF
 
       - uses: actions/setup-node@v4
         with:
@@ -87,6 +117,40 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Generate per-run CI secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          jwt_secret="$(openssl rand -hex 32)"
+          encryption_key="$(openssl rand -hex 32)"
+          admin_password="$(openssl rand -hex 24)"
+          postgres_password="$(openssl rand -hex 24)"
+          for value in "$jwt_secret" "$encryption_key" "$admin_password" "$postgres_password"; do
+            echo "::add-mask::$value"
+          done
+          {
+            echo "POSTGRES_PASSWORD=$postgres_password"
+            echo "PLATFORM_ADMIN_PASSWORD=$admin_password"
+            echo "DATABASE_URL=postgresql://festschmiede:${postgres_password}@localhost:5432/festschmiede"
+            echo "JWT_SECRET=$jwt_secret"
+            echo "APP_ENCRYPTION_KEY=$encryption_key"
+            echo "QA_PLATFORM_ADMIN_PASSWORD=$admin_password"
+            echo "COMPOSE_FILE=docker-compose.ci.yml:docker-compose.ci.override.yml"
+          } >> "$GITHUB_ENV"
+          cat > docker-compose.ci.override.yml <<EOF
+          services:
+            postgres:
+              environment:
+                POSTGRES_PASSWORD: ${postgres_password}
+            backend:
+              environment:
+                DATABASE_URL: postgresql://festschmiede:${postgres_password}@postgres:5432/festschmiede
+                JWT_SECRET: ${jwt_secret}
+                APP_ENCRYPTION_KEY: ${encryption_key}
+                PLATFORM_ADMIN_PASSWORD: ${admin_password}
+          EOF
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -98,7 +162,7 @@ jobs:
 
       - name: Build & start CI stack
         run: |
-          docker compose -f docker-compose.ci.yml up -d --build
+          docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml up -d --build
           npm run qa:wait
 
       - name: Seed QA data
@@ -112,7 +176,7 @@ jobs:
           npm ci --prefix backend
           npm run prisma:generate --prefix backend
           npm run qa:module-scenarios
-          docker compose -f docker-compose.ci.yml restart backend
+          docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml restart backend
           npm run qa:wait
 
       - name: Module integration tests
@@ -136,7 +200,7 @@ jobs:
 
       - name: Collect container logs
         if: always()
-        run: docker compose -f docker-compose.ci.yml logs > artifacts/container-logs.txt
+        run: docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml logs > artifacts/container-logs.txt
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -149,7 +213,7 @@ jobs:
 
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.ci.yml down -v
+        run: docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml down -v
 
   user-journey:
     name: Realistische Nutzerreise (E2E)
@@ -158,6 +222,40 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+
+      - name: Generate per-run CI secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          jwt_secret="$(openssl rand -hex 32)"
+          encryption_key="$(openssl rand -hex 32)"
+          admin_password="$(openssl rand -hex 24)"
+          postgres_password="$(openssl rand -hex 24)"
+          for value in "$jwt_secret" "$encryption_key" "$admin_password" "$postgres_password"; do
+            echo "::add-mask::$value"
+          done
+          {
+            echo "POSTGRES_PASSWORD=$postgres_password"
+            echo "PLATFORM_ADMIN_PASSWORD=$admin_password"
+            echo "DATABASE_URL=postgresql://festschmiede:${postgres_password}@localhost:5432/festschmiede"
+            echo "JWT_SECRET=$jwt_secret"
+            echo "APP_ENCRYPTION_KEY=$encryption_key"
+            echo "QA_PLATFORM_ADMIN_PASSWORD=$admin_password"
+            echo "COMPOSE_FILE=docker-compose.ci.yml:docker-compose.ci.override.yml"
+          } >> "$GITHUB_ENV"
+          cat > docker-compose.ci.override.yml <<EOF
+          services:
+            postgres:
+              environment:
+                POSTGRES_PASSWORD: ${postgres_password}
+            backend:
+              environment:
+                DATABASE_URL: postgresql://festschmiede:${postgres_password}@postgres:5432/festschmiede
+                JWT_SECRET: ${jwt_secret}
+                APP_ENCRYPTION_KEY: ${encryption_key}
+                PLATFORM_ADMIN_PASSWORD: ${admin_password}
+          EOF
 
       - uses: actions/setup-node@v4
         with:
@@ -172,7 +270,7 @@ jobs:
 
       - name: Start CI stack
         run: |
-          docker compose -f docker-compose.ci.yml up -d --build
+          docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml up -d --build
           npm run qa:wait
 
       - name: Prisma migrate & platform seed
@@ -185,7 +283,7 @@ jobs:
 
       - name: Backend neu starten (Plattform-Settings-Cache)
         run: |
-          docker compose -f docker-compose.ci.yml restart backend
+          docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml restart backend
           npm run qa:wait
 
       - name: Install Playwright
@@ -205,11 +303,11 @@ jobs:
 
       - name: Collect container logs on failure
         if: failure()
-        run: mkdir -p artifacts && docker compose -f docker-compose.ci.yml logs > artifacts/container-logs.txt
+        run: mkdir -p artifacts && docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml logs > artifacts/container-logs.txt
 
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.ci.yml down -v
+        run: docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml down -v
 
   performance:
     name: Performance-Baseline
@@ -218,6 +316,40 @@ jobs:
     if: github.event_name != 'pull_request'
     steps:
       - uses: actions/checkout@v4
+
+      - name: Generate per-run CI secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          jwt_secret="$(openssl rand -hex 32)"
+          encryption_key="$(openssl rand -hex 32)"
+          admin_password="$(openssl rand -hex 24)"
+          postgres_password="$(openssl rand -hex 24)"
+          for value in "$jwt_secret" "$encryption_key" "$admin_password" "$postgres_password"; do
+            echo "::add-mask::$value"
+          done
+          {
+            echo "POSTGRES_PASSWORD=$postgres_password"
+            echo "PLATFORM_ADMIN_PASSWORD=$admin_password"
+            echo "DATABASE_URL=postgresql://festschmiede:${postgres_password}@localhost:5432/festschmiede"
+            echo "JWT_SECRET=$jwt_secret"
+            echo "APP_ENCRYPTION_KEY=$encryption_key"
+            echo "QA_PLATFORM_ADMIN_PASSWORD=$admin_password"
+            echo "COMPOSE_FILE=docker-compose.ci.yml:docker-compose.ci.override.yml"
+          } >> "$GITHUB_ENV"
+          cat > docker-compose.ci.override.yml <<EOF
+          services:
+            postgres:
+              environment:
+                POSTGRES_PASSWORD: ${postgres_password}
+            backend:
+              environment:
+                DATABASE_URL: postgresql://festschmiede:${postgres_password}@postgres:5432/festschmiede
+                JWT_SECRET: ${jwt_secret}
+                APP_ENCRYPTION_KEY: ${encryption_key}
+                PLATFORM_ADMIN_PASSWORD: ${admin_password}
+          EOF
 
       - uses: actions/setup-node@v4
         with:
@@ -230,7 +362,7 @@ jobs:
 
       - name: Start CI stack
         run: |
-          docker compose -f docker-compose.ci.yml up -d --build
+          docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml up -d --build
           npm run qa:wait
           npm ci --prefix backend
           (cd backend && npx prisma generate && npm run seed)
@@ -241,4 +373,4 @@ jobs:
 
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.ci.yml down -v
+        run: docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml down -v

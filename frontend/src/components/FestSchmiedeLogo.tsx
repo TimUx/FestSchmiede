@@ -45,6 +45,7 @@ export function FestSchmiedeLogo({
       component="img"
       src={useLightLogo ? '/logo-white.png' : '/logo-dark.png'}
       alt={alt}
+      aria-label={alt}
       sx={{ height: resolvedHeight, width: 'auto', display: 'block', flexShrink: 0, ...sx }}
     />
   );

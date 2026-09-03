@@ -14,7 +14,11 @@ Ideal für Vereinsfeste, Schützenfeste und Veranstaltungen mit Speisenverkauf u
 |:---:|:---:|:---:|
 | ![Dashboard](docs/screenshots/06-dashboard.png) | ![Küche](docs/screenshots/07-kuechenansicht-tablet.png) | ![Admin](docs/screenshots/16-admin-uebersicht.png) |
 
-Weitere Bilder: [docs/screenshots/](docs/screenshots/README.md)
+Weitere Bilder und Gerätevarianten: [Screenshot-Galerie](docs/screenshots/README.md).
+
+Die Bilder zeigen eine beispielhafte Installation mit dem Mandanten **Feuerwehr Musterstadt**.
+Sie dienen der UI-Vorschau; konkrete Inhalte, Verfügbarkeit und Rollen hängen von der
+jeweiligen Veranstaltung ab.
 
 ## Funktionen
 
@@ -27,7 +31,7 @@ Weitere Bilder: [docs/screenshots/](docs/screenshots/README.md)
 ## Schnellstart
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.4.0/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/TimUx/FestSchmiede/v2.5.6/install.sh | bash
 ```
 
 Oder nach Git-Clone: `./install.sh` — Details in der [Installationsanleitung](docs/INSTALLATION.md).

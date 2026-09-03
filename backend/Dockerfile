@@ -1,10 +1,10 @@
-FROM node:22-alpine AS builder
+FROM node:22.14.0-alpine3.21 AS builder
 
 WORKDIR /app
 
 COPY package*.json ./
 COPY prisma ./prisma/
-RUN npm install
+RUN npm ci
 
 COPY tsconfig.json ./
 COPY src ./src/
@@ -13,7 +13,7 @@ COPY modules ./modules/
 RUN npm run prisma:generate
 RUN npm run build
 
-FROM node:22-alpine AS runner
+FROM node:22.14.0-alpine3.21 AS runner
 
 WORKDIR /app
 
@@ -25,7 +25,7 @@ RUN apk add --no-cache postgresql-client gzip
 
 COPY package*.json ./
 COPY prisma ./prisma/
-RUN npm install --omit=dev
+RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma

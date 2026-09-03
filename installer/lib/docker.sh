@@ -14,7 +14,41 @@ Soll Docker jetzt installiert werden?
   fi
 
   log_info "Installiere Docker..."
-  if curl -fsSL https://get.docker.com | sh >>"$LOG_FILE" 2>&1; then
+  if ! command -v apt-get >/dev/null 2>&1 || ! command -v gpg >/dev/null 2>&1; then
+    log_error "Unterstützt werden derzeit Debian/Ubuntu mit apt-get und gpg"
+    return 1
+  fi
+
+  # Docker's signed APT repository is used instead of executing a remote script.
+  local os_id codename arch repo_root keyring
+  # shellcheck source=/dev/null
+  source /etc/os-release
+  os_id="${ID:-}"
+  codename="${VERSION_CODENAME:-}"
+  [[ -n "$codename" ]] || codename="$(. /etc/os-release && printf '%s' "${UBUNTU_CODENAME:-}")"
+  [[ "$os_id" == "debian" || "$os_id" == "ubuntu" ]] || {
+    log_error "Nicht unterstütztes Betriebssystem: ${os_id:-unbekannt}"
+    return 1
+  }
+  [[ -n "$codename" ]] || {
+    log_error "Distribution-Codename konnte nicht ermittelt werden"
+    return 1
+  }
+  arch="$(dpkg --print-architecture)"
+  repo_root="/etc/apt/keyrings"
+  keyring="${repo_root}/docker.asc"
+  if ! (apt-get update &&
+    apt-get install -y ca-certificates curl &&
+    install -m 0755 -d "$repo_root" &&
+    curl -fsSL https://download.docker.com/linux/"$os_id"/gpg -o "$keyring" &&
+    chmod a+r "$keyring" &&
+    printf 'deb [arch=%s signed-by=%s] https://download.docker.com/linux/%s %s stable\n' "$arch" "$keyring" "$os_id" "$codename" > /etc/apt/sources.list.d/docker.list &&
+    apt-get update &&
+    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin) >>"$LOG_FILE" 2>&1; then
+    log_error "Docker-Installation über das signierte Paket-Repository fehlgeschlagen"
+    return 1
+  fi
+  if docker --version >/dev/null 2>&1; then
     SYS_DETECT[docker_installed]="yes"
     SYS_DETECT[docker_version]="$(docker --version 2>/dev/null)"
     SYS_DETECT[compose_installed]="yes"
@@ -84,10 +118,10 @@ stack_pull() {
     "${image_prefix}/frontend:${image_tag}"
   )
   if [[ "${CFG[DB_MODE]:-internal}" == "internal" ]]; then
-    images+=("postgres:16-alpine")
+    images+=("postgres:16.8-alpine3.21")
   fi
   if [[ "${CFG[USE_REDIS]:-no}" == "internal" ]]; then
-    images+=("redis:7-alpine")
+    images+=("redis:7.4.2-alpine3.21")
   fi
 
   log_info "Lade Docker-Images für Swarm..."

@@ -1,11 +1,11 @@
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16.8-alpine3.21
     container_name: festschmiede-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-festschmiede}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-in-production}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
       POSTGRES_DB: ${POSTGRES_DB:-festschmiede}
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -28,18 +28,17 @@ services:
           memory: 256M
 
   backend:
-    image: ${GHCR_IMAGE_PREFIX:-ghcr.io/timux/festschmiede}/backend:${IMAGE_TAG:-latest}
+    image: ${GHCR_IMAGE_PREFIX:-ghcr.io/timux/festschmiede}/backend:${IMAGE_TAG:-v2.5.6}
     container_name: festschmiede-backend
     restart: unless-stopped
-    pull_policy: always
     depends_on:
       postgres:
         condition: service_healthy
     environment:
       NODE_ENV: production
       PORT: 3001
-      DATABASE_URL: postgresql://${POSTGRES_USER:-festschmiede}:${POSTGRES_PASSWORD:-change-me-in-production}@postgres:5432/${POSTGRES_DB:-festschmiede}
-      JWT_SECRET: ${JWT_SECRET:-change-me-in-production-use-long-random-string}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-festschmiede}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}@postgres:5432/${POSTGRES_DB:-festschmiede}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
       MULTI_TENANT_ENABLED: ${MULTI_TENANT_ENABLED:-false}
@@ -52,7 +51,7 @@ services:
       DEFAULT_TENANT_SLUG: ${DEFAULT_TENANT_SLUG:-default}
       TRUSTED_PROXY_HOPS: ${TRUSTED_PROXY_HOPS:-1}
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
-      APP_ENCRYPTION_KEY: ${APP_ENCRYPTION_KEY:-}
+      APP_ENCRYPTION_KEY: ${APP_ENCRYPTION_KEY:?APP_ENCRYPTION_KEY must be set}
       LOG_FORMAT: ${LOG_FORMAT:-text}
       FESTSCHMIEDE_BACKUP_DIR: /app/backups
     ports:
@@ -77,10 +76,9 @@ services:
           memory: 128M
 
   frontend:
-    image: ${GHCR_IMAGE_PREFIX:-ghcr.io/timux/festschmiede}/frontend:${IMAGE_TAG:-latest}
+    image: ${GHCR_IMAGE_PREFIX:-ghcr.io/timux/festschmiede}/frontend:${IMAGE_TAG:-v2.5.6}
     container_name: festschmiede-frontend
     restart: unless-stopped
-    pull_policy: always
     depends_on:
       backend:
         condition: service_healthy

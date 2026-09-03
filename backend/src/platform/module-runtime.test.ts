@@ -18,7 +18,7 @@ import { SettingsService } from './settings/SettingsService';
 import { registerModuleSettingsFromManifest, registerModuleSettingsFromContract } from '../core/settings/registerCoreSettings';
 import type { TenantModule } from '@prisma/client';
 import type { ModuleManifest } from './manifest';
-import { filterDiscoveredManifests } from './manifest';
+import { filterDiscoveredManifests, isTrustedPlugin, validateManifestContract } from './manifest';
 import type { FeatureContext } from './types';
 import { Router } from 'express';
 
@@ -162,6 +162,26 @@ describe('filterDiscoveredManifests', () => {
 
   afterEach(() => {
     process.env.SHOW_PREVIEW_MODULES = originalEnv;
+  });
+
+  describe('plugin trust and manifest contracts', () => {
+    it('does not trust unsigned plugins', () => {
+      expect(isTrustedPlugin({ id: 'community-plugin' } as ModuleManifest)).toBe(false);
+    });
+
+    it('rejects unsupported API versions and undeclared permission references', () => {
+      const manifest = {
+        ...({} as ModuleManifest),
+        apiVersion: '2',
+        permissions: [],
+        menus: [{ id: 'menu', label: 'Menu', path: '/', requiredPermission: 'plugin.view' }],
+        reports: [],
+        developerPages: [],
+      };
+      expect(validateManifestContract(manifest)).toContain('API-Version');
+
+      expect(validateManifestContract({ ...manifest, apiVersion: '3' })).toContain('Berechtigung');
+    });
   });
 
   it('skips preview modules unless SHOW_PREVIEW_MODULES=1', () => {

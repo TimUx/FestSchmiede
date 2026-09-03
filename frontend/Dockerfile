@@ -1,4 +1,4 @@
-FROM node:22-alpine AS builder
+FROM node:22.14.0-alpine3.21 AS builder
 
 WORKDIR /app
 
@@ -11,12 +11,12 @@ ENV VITE_WS_URL=$VITE_WS_URL
 ENV VITE_TURNSTILE_SITE_KEY=$VITE_TURNSTILE_SITE_KEY
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
 RUN npm run build
 
-FROM nginx:alpine AS runner
+FROM nginx:1.27.4-alpine3.21 AS runner
 
 ENV BACKEND_HOST=backend
 ENV BACKEND_PORT=3001

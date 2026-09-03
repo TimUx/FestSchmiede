@@ -309,7 +309,9 @@ export function OrderStatusPage() {
             mb: 3,
             fontSize: '1.2rem',
             py: 2,
-            animation: `${pulse} 1.5s ease-in-out infinite`,
+            '@media (prefers-reduced-motion: no-preference)': {
+              animation: `${pulse} 1.5s ease-in-out infinite`,
+            },
             '& .MuiAlert-message': { fontWeight: 700 },
           }}
         >

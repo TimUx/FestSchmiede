@@ -31,3 +31,6 @@ jobs:
       - name: npm audit frontend
         run: npm audit --audit-level=high
         working-directory: frontend
+
+      - name: npm audit root
+        run: npm audit --audit-level=high

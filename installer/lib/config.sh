@@ -91,7 +91,7 @@ apply_defaults() {
   CFG[POSTGRES_USER]="${CFG[POSTGRES_USER]:-festschmiede}"
   CFG[POSTGRES_DB]="${CFG[POSTGRES_DB]:-festschmiede}"
   CFG[GHCR_IMAGE_PREFIX]="${CFG[GHCR_IMAGE_PREFIX]:-ghcr.io/timux/festschmiede}"
-  CFG[IMAGE_TAG]="${CFG[IMAGE_TAG]:-latest}"
+  CFG[IMAGE_TAG]="${CFG[IMAGE_TAG]:-v2.5.6}"
   CFG[JWT_EXPIRES_IN]="${CFG[JWT_EXPIRES_IN]:-8h}"
   CFG[DEFAULT_TENANT_SLUG]="${CFG[DEFAULT_TENANT_SLUG]:-default}"
   CFG[TRUSTED_PROXY_HOPS]="${CFG[TRUSTED_PROXY_HOPS]:-2}"
@@ -412,7 +412,7 @@ generate_swarm_stack() {
     database_url="postgresql://${db_user}:${db_pass}@postgres:5432/${db_name}"
     postgres_service="
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16.8-alpine3.21
     environment:
       POSTGRES_USER: ${db_user}
       POSTGRES_PASSWORD: \"${db_pass}\"
@@ -445,7 +445,7 @@ $(_swarm_node_placement_yaml)
     redis_env="      REDIS_URL: \"redis://redis:6379\""
     redis_service="
   redis:
-    image: redis:7-alpine
+    image: redis:7.4.2-alpine3.21
     command: [\"redis-server\", \"--appendonly\", \"yes\"]
     volumes:
       - redis_data:/data
@@ -859,7 +859,7 @@ generate_compose_override() {
   if [[ "$use_redis" == "internal" && ! ( "$proxy_mode" == "traefik" && "${CFG[PROXY_DEPLOYMENT]:-}" == "bundled" ) ]]; then
     redis_service="
   redis:
-    image: redis:7-alpine
+    image: redis:7.4.2-alpine3.21
     container_name: festschmiede-redis
     restart: unless-stopped
     profiles:

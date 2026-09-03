@@ -49,7 +49,7 @@ run_prisma() {
     -e FESTSCHMIEDE_SKIP_PRE_MIGRATION_BACKUP=1 \
     -v "${BACKEND}:/app" \
     -w /app \
-    node:22-alpine \
+    node:22.14.0-alpine3.21 \
     sh -c "npm ci --omit=dev >/dev/null 2>&1 && $*"
 }
 
@@ -78,7 +78,7 @@ docker run -d --name "$CONTAINER" \
   -e POSTGRES_PASSWORD="$DB_PASS" \
   -e POSTGRES_DB=postgres \
   -p "${PORT}:5432" \
-  postgres:16-alpine >/dev/null
+  postgres:16.8-alpine3.21 >/dev/null
 
 wait_for_pg || { fail "Postgres start"; exit 1; }
 ensure_container_running || { fail "Postgres container not running"; exit 1; }

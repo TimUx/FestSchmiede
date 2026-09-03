@@ -60,7 +60,7 @@ export function PickupBoardPage() {
                 next.delete(order.id);
                 return next;
               });
-            }, 600);
+            }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 600);
           }
         }
       },
@@ -227,9 +227,11 @@ export function PickupBoardPage() {
               bgcolor: '#16213e',
               borderRadius: 4,
               border: '4px solid #0f3460',
-              animation: removing.has(order.id)
-                ? `${slideOut} 0.6s ease forwards`
-                : `${fadeIn} 0.5s ease`,
+              '@media (prefers-reduced-motion: no-preference)': {
+                animation: removing.has(order.id)
+                  ? `${slideOut} 0.6s ease forwards`
+                  : `${fadeIn} 0.5s ease`,
+              },
             }}
           >
             <Typography

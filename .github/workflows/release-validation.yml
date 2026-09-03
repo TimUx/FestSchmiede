@@ -19,13 +19,9 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  DATABASE_URL: postgresql://festschmiede:qa-ci-postgres-password-secure@localhost:5432/festschmiede
-  JWT_SECRET: qa-docker-ci-jwt-secret-not-in-blocklist-32chars
-  APP_ENCRYPTION_KEY: qa-docker-ci-encryption-key-not-blocked32
   CORS_ORIGIN: http://localhost:5173
   QA_FRONTEND_BASE: http://localhost:5173
   QA_PLATFORM_ADMIN_EMAIL: platform@festschmiede.local
-  QA_PLATFORM_ADMIN_PASSWORD: qa-docker-ci-platform-admin-password
   QA_MAILPIT_BASE: http://localhost:8025
 
 jobs:
@@ -34,11 +30,45 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ github.event.release.tag_name || inputs.tag || github.ref }}
 
-      - uses: actions/setup-node@v4
+      - name: Generate per-run CI secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          jwt_secret="$(openssl rand -hex 32)"
+          encryption_key="$(openssl rand -hex 32)"
+          admin_password="$(openssl rand -hex 24)"
+          postgres_password="$(openssl rand -hex 24)"
+          for value in "$jwt_secret" "$encryption_key" "$admin_password" "$postgres_password"; do
+            echo "::add-mask::$value"
+          done
+          {
+            echo "POSTGRES_PASSWORD=$postgres_password"
+            echo "PLATFORM_ADMIN_PASSWORD=$admin_password"
+            echo "DATABASE_URL=postgresql://festschmiede:${postgres_password}@localhost:5432/festschmiede"
+            echo "JWT_SECRET=$jwt_secret"
+            echo "APP_ENCRYPTION_KEY=$encryption_key"
+            echo "QA_PLATFORM_ADMIN_PASSWORD=$admin_password"
+            echo "COMPOSE_FILE=docker-compose.ci.yml:docker-compose.ci.override.yml"
+          } >> "$GITHUB_ENV"
+          cat > docker-compose.ci.override.yml <<EOF
+          services:
+            postgres:
+              environment:
+                POSTGRES_PASSWORD: ${postgres_password}
+            backend:
+              environment:
+                DATABASE_URL: postgresql://festschmiede:${postgres_password}@postgres:5432/festschmiede
+                JWT_SECRET: ${jwt_secret}
+                APP_ENCRYPTION_KEY: ${encryption_key}
+                PLATFORM_ADMIN_PASSWORD: ${admin_password}
+          EOF
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
           cache: npm
@@ -63,11 +93,11 @@ jobs:
 
       - name: Docker stack + Nutzerreise
         run: |
-          docker compose -f docker-compose.ci.yml up -d --build
+          docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml up -d --build
           npm run qa:wait
           (cd backend && npm run seed)
           npm run qa:prepare-journey
-          docker compose -f docker-compose.ci.yml restart backend
+          docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml restart backend
           npm run qa:wait
           npx playwright install chromium --with-deps
           npm run qa:e2e:journey
@@ -78,7 +108,7 @@ jobs:
         run: npm run qa:report || true
 
       - name: Upload release validation artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
           name: release-validation
@@ -86,7 +116,7 @@ jobs:
 
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.ci.yml down -v
+        run: docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml down -v
 
   build-and-push:
     name: Docker Images (${{ matrix.name }})
@@ -106,7 +136,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ github.event.release.tag_name || inputs.tag || github.ref }}
 
@@ -117,10 +147,10 @@ jobs:
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -128,7 +158,7 @@ jobs:
 
       - name: Extract Docker metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.name }}
           tags: |
@@ -140,7 +170,8 @@ jobs:
             type=raw,value=latest,enable=${{ github.event_name == 'workflow_dispatch' }}
 
       - name: Build and push ${{ matrix.name }}
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        id: image
         with:
           context: ./${{ matrix.context }}
           file: ./${{ matrix.file }}
@@ -153,3 +184,21 @@ jobs:
             VITE_API_URL=${{ vars.VITE_API_URL || '' }}
             VITE_WS_URL=${{ vars.VITE_WS_URL || '' }}
             VITE_TURNSTILE_SITE_KEY=${{ vars.VITE_TURNSTILE_SITE_KEY || '' }}
+
+      - name: Enforce immutable image digest
+        env:
+          IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
+        run: |
+          set -euo pipefail
+          [[ "$IMAGE_DIGEST" == sha256:* ]] || {
+            echo "Release images must be published with a sha256 digest." >&2
+            exit 1
+          }
+          printf '%s  %s\n' "$IMAGE_DIGEST" "${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.name }}" \
+            >> "image-digests-${{ matrix.name }}.txt"
+
+      - name: Upload image checksum
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: image-digests-${{ matrix.name }}
+          path: image-digests-${{ matrix.name }}.txt

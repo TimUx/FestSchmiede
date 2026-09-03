@@ -29,6 +29,19 @@ describe('API auth — negative cases', () => {
     expect(res.status).toBe(403);
   });
 
+  it('refresh token replay returns 401 after rotation', async () => {
+    const refreshed = await tenantApi(app)
+      .post('/api/auth/refresh')
+      .send({ refreshToken });
+    expect(refreshed.status).toBe(200);
+
+    const replay = await tenantApi(app)
+      .post('/api/auth/refresh')
+      .send({ refreshToken });
+    expect(replay.status).toBe(401);
+    refreshToken = refreshed.body.refreshToken;
+  });
+
   it('revoked session returns 401', async () => {
     expect(refreshToken).toBeTruthy();
     await tenantApi(app)

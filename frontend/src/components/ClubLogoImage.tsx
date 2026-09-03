@@ -40,7 +40,7 @@ export function ClubLogoImage({
   }
 
   if (fallback === 'festschmiede') {
-    return <FestSchmiedeLogo size="header" variant={festSchmiedeVariant} />;
+    return <FestSchmiedeLogo size="header" variant={festSchmiedeVariant} alt={alt} />;
   }
 
   return null;

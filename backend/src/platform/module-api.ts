@@ -24,7 +24,18 @@ export type {
 } from './types';
 
 export type { ModuleManifest, ModuleStatus } from './manifest';
-export { MODULE_STATUS_LABELS, moduleManifestSchema, CORE_VERSION, isPreviewModule, shouldLoadPreviewModules, filterDiscoveredManifests } from './manifest';
+export {
+  MODULE_STATUS_LABELS,
+  moduleManifestSchema,
+  CORE_VERSION,
+  MODULE_API_VERSION,
+  isPreviewModule,
+  shouldLoadPreviewModules,
+  filterDiscoveredManifests,
+  isTrustedPlugin,
+  validateManifestContract,
+  verifyPluginSignature,
+} from './manifest';
 
 export type {
   PayableResource,

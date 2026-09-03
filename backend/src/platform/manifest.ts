@@ -1,5 +1,9 @@
 import { z } from 'zod';
 import { resolveAppVersion } from '../config/version';
+import crypto from 'crypto';
+import { config } from '../config';
+
+export const MODULE_API_VERSION = '3';
 
 const menuMetadataSchema = z.object({
   id: z.string(),
@@ -110,8 +114,8 @@ export const moduleManifestSchema = z.object({
     optional: z.array(z.string()).default([]),
   }).default({ required: [], optional: [] }),
   permissions: z.array(z.object({
-    key: z.string(),
-    description: z.string(),
+    key: z.string().min(1).regex(/^[a-z][a-z0-9_.-]*$/),
+    description: z.string().min(1),
   })).default([]),
   menus: z.array(menuMetadataSchema).default([]),
   widgets: z.array(widgetMetadataSchema).default([]),
@@ -125,12 +129,20 @@ export const moduleManifestSchema = z.object({
   /** Stable modules are visible in admin; preview modules require SHOW_PREVIEW_MODULES=1 */
   productionReady: z.boolean().default(false),
   preview: z.boolean().optional(),
+  apiVersion: z.string().regex(/^\d+(?:\.\d+)?$/).default(MODULE_API_VERSION),
+  signature: z.object({
+    algorithm: z.literal('ed25519'),
+    keyId: z.string().min(1),
+    value: z.string().min(1),
+  }).optional(),
 }).transform((manifest) => ({
   ...manifest,
   preview: manifest.preview ?? !manifest.productionReady,
 }));
 
-export type ModuleManifest = z.infer<typeof moduleManifestSchema>;
+type ParsedModuleManifest = z.infer<typeof moduleManifestSchema>;
+/** API version is optional for legacy manifests; parsing supplies the current default. */
+export type ModuleManifest = Omit<ParsedModuleManifest, 'apiVersion'> & { apiVersion?: string };
 
 export function isPreviewModule(manifest: Pick<ModuleManifest, 'preview'>): boolean {
   return manifest.preview === true;
@@ -143,6 +155,58 @@ export function shouldLoadPreviewModules(): boolean {
 export function filterDiscoveredManifests(manifests: ModuleManifest[]): ModuleManifest[] {
   if (shouldLoadPreviewModules()) return manifests;
   return manifests.filter((manifest) => !isPreviewModule(manifest));
+}
+
+function canonicalize(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonicalize).join(',')}]`;
+  if (value && typeof value === 'object') {
+    return `{${Object.entries(value as Record<string, unknown>)
+      .filter(([key]) => key !== 'signature')
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, item]) => `${JSON.stringify(key)}:${canonicalize(item)}`)
+      .join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+export function verifyPluginSignature(manifest: ModuleManifest): boolean {
+  if (!manifest.signature) return false;
+  try {
+    const keys = JSON.parse(config.pluginTrust.trustKeys) as Record<string, string>;
+    const publicKey = keys[manifest.signature.keyId];
+    if (!publicKey) return false;
+    return crypto.verify(
+      null,
+      Buffer.from(canonicalize(manifest), 'utf8'),
+      publicKey,
+      Buffer.from(manifest.signature.value, 'base64')
+    );
+  } catch {
+    return false;
+  }
+}
+
+export function isTrustedPlugin(manifest: ModuleManifest): boolean {
+  return config.pluginTrust.allowlist.includes(manifest.id) && verifyPluginSignature(manifest);
+}
+
+export function validateManifestContract(manifest: ModuleManifest): string | null {
+  const apiVersion = manifest.apiVersion ?? MODULE_API_VERSION;
+  if (apiVersion.split('.')[0] !== MODULE_API_VERSION) {
+    return `nicht unterstützte Plugin-API-Version ${apiVersion}`;
+  }
+  const permissions = new Set(manifest.permissions.map((permission) => permission.key));
+  if (permissions.size !== manifest.permissions.length) {
+    return 'doppelte Berechtigungsdefinition';
+  }
+  const references = [
+    ...manifest.menus.map((item) => item.requiredPermission),
+    ...manifest.reports.map((item) => item.requiredPermission),
+    ...manifest.developerPages.map((item) => item.requiredPermission),
+    manifest.settings?.permission,
+  ].filter((permission): permission is string => Boolean(permission));
+  const undeclared = references.find((permission) => !permissions.has(permission));
+  return undeclared ? `nicht deklarierte Berechtigung ${undeclared}` : null;
 }
 
 export type ModuleStatus =

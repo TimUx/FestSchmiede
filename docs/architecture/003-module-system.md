@@ -93,6 +93,13 @@ Jedes Modul implementiert: `install`, `uninstall`, `initialize`, `shutdown`, `en
 
 Optional: `getConfigContract()` mit Zod.
 
+### Plugin-Vertrauensmodell
+
+Community-Plugins müssen in Produktion über `PLUGIN_ALLOWLIST` freigegeben und mit
+Ed25519 signiert sein (`PLUGIN_TRUST_KEYS`). Unsigned/unallowlisted Plugins werden
+bereits bei der Discovery verworfen. `apiVersion` muss aktuell `3` sein; alle in
+Metadaten referenzierten Berechtigungen müssen im Manifest deklariert werden.
+
 ### DB-Modell
 
 `InstalledModule`: `moduleId`, `moduleVersion`, `imageVersion`, `installed`, `enabled`, `configJson`, Health-Felder, `everInstalled`, `everActivated`, `lifecycleStatus`, `lastError`, `schemaVersion`.
@@ -175,6 +182,6 @@ Siehe [ADR-003](./003-module-system.md) und [ADR-041](./041-module-api-v3.md).
 
 ## Offene Punkte
 
-- [ ] Modul-Signierung für Community-Plugins
+- [x] Modul-Signierung und Allowlist für Community-Plugins in Produktion
 - [ ] Hot-Reload in Entwicklung
 - [ ] `activate`/`deactivate` API vs. `enable`/`disable` konsolidieren

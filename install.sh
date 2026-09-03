@@ -12,7 +12,7 @@
 #   FESTSCHMIEDE_DEFAULT_INSTALL_DIR  – Standard-Zielverzeichnis (wenn INSTALL_DIR leer)
 #   FESTSCHMIEDE_VERSION              – Release-Tag (Standard: 2.4.0)
 #   FESTSCHMIEDE_GITHUB_REPO          – GitHub Repo (Standard: TimUx/FestSchmiede)
-#   FESTSCHMIEDE_REF                  – Git-Ref statt Version (z.B. main)
+#   FESTSCHMIEDE_REF                  – immutable Release-Tag (z.B. v2.5.6) oder Commit-SHA
 #   FESTSCHMIEDE_BOOTSTRAP_ONLY=1     – Nur Dateien herunterladen
 
 set -euo pipefail
@@ -43,7 +43,7 @@ Installationspfad (Priorität: --dir > FESTSCHMIEDE_INSTALL_DIR > Default):
 
 Weitere Umgebungsvariablen:
   FESTSCHMIEDE_VERSION       Release-Version (Standard: ${FESTSCHMIEDE_VERSION})
-  FESTSCHMIEDE_REF           Git-Branch/Tag (überschreibt VERSION)
+  FESTSCHMIEDE_REF           Immutable Tag/SHA (überschreibt VERSION; keine Branches)
   FESTSCHMIEDE_GITHUB_REPO   GitHub Repository
   FESTSCHMIEDE_BOOTSTRAP_ONLY=1  Nur herunterladen, kein Wizard
   IMAGE_TAG                  Image-Tag für Update (überschreibt .env, z. B. v2.4.36)
@@ -143,11 +143,17 @@ _need_cmd() {
 }
 
 _github_ref() {
+  local ref
   if [[ -n "$FESTSCHMIEDE_REF" ]]; then
-    echo "$FESTSCHMIEDE_REF"
+    ref="$FESTSCHMIEDE_REF"
   else
-    echo "v${FESTSCHMIEDE_VERSION}"
+    ref="v${FESTSCHMIEDE_VERSION}"
   fi
+  if [[ ! "$ref" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ && ! "$ref" =~ ^[0-9a-fA-F]{40}$ ]]; then
+    _err "FESTSCHMIEDE_REF muss ein semantischer Release-Tag oder 40-stelliger Commit-SHA sein (keine Branches)"
+    return 1
+  fi
+  printf '%s\n' "$ref"
 }
 
 _github_raw_base() {
@@ -215,15 +221,18 @@ _download_bootstrap_file() {
 
 _bootstrap_download() {
   local install_dir="$1"
-  local manifest rel_path
+  local manifest rel_path checksum_file
 
   _need_cmd curl
+  _need_cmd sha256sum
 
   _log "Lade FestSchmiede-Plattformdateien $(_github_ref) herunter..."
   _log "Quelle: $(_github_raw_base)"
 
   mkdir -p "${install_dir}/installer"
   _download_bootstrap_file "$install_dir" "installer/bootstrap-files.txt"
+  checksum_file="${install_dir}/installer/bootstrap-files.sha256"
+  _download_bootstrap_file "$install_dir" "installer/bootstrap-files.sha256"
 
   manifest="$(_bootstrap_manifest_path "$install_dir")"
   while IFS= read -r rel_path; do
@@ -232,6 +241,11 @@ _bootstrap_download() {
     _log "  → ${rel_path}"
     _download_bootstrap_file "$install_dir" "$rel_path"
   done < <(_read_bootstrap_manifest "$manifest")
+
+  (cd "$install_dir" && sha256sum --ignore-missing -c "$checksum_file") || {
+    _err "Bootstrap-Integritätsprüfung fehlgeschlagen"
+    return 1
+  }
 
   while IFS= read -r rel_path; do
     [[ -n "$rel_path" ]] || continue
@@ -244,7 +258,7 @@ _bootstrap_download() {
 
 _bootstrap_verify() {
   local install_dir="$1"
-  local manifest rel_path missing=0
+  local manifest rel_path checksum_file missing=0
 
   manifest="$(_bootstrap_manifest_path "$install_dir")"
   while IFS= read -r rel_path; do
@@ -254,6 +268,12 @@ _bootstrap_verify() {
       missing=1
     fi
   done < <(_read_bootstrap_manifest "$manifest")
+
+  checksum_file="${install_dir}/installer/bootstrap-files.sha256"
+  if [[ ! -f "$checksum_file" ]] || ! (cd "$install_dir" && sha256sum --ignore-missing -c "$checksum_file" >/dev/null); then
+    _err "Bootstrap-Integritätsprüfung fehlgeschlagen: ${checksum_file}"
+    missing=1
+  fi
 
   for unwanted in backend frontend package.json tests docs; do
     if [[ -e "${install_dir}/${unwanted}" ]]; then

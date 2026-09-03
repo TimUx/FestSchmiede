@@ -87,7 +87,18 @@ export type {
   AuditLogEntry,
 } from './types';
 export type { ModuleStatus, ModuleManifest } from './manifest';
-export { MODULE_STATUS_LABELS, moduleManifestSchema, CORE_VERSION, isPreviewModule, shouldLoadPreviewModules, filterDiscoveredManifests } from './manifest';
+export {
+  MODULE_STATUS_LABELS,
+  moduleManifestSchema,
+  CORE_VERSION,
+  MODULE_API_VERSION,
+  isPreviewModule,
+  shouldLoadPreviewModules,
+  filterDiscoveredManifests,
+  isTrustedPlugin,
+  validateManifestContract,
+  verifyPluginSignature,
+} from './manifest';
 export * as ModuleApi from './module-api';
 export {
   payableResourceRegistry,

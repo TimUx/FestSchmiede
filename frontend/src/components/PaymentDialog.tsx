@@ -238,9 +238,10 @@ export function PaymentDialog({
                   startIcon={retrying ? <CircularProgress size={20} color="inherit" /> : <RefreshIcon />}
                   onClick={() => { void handleRetry(); }}
                   disabled={retrying}
+                  aria-label={retrying ? 'Zahlung wird erneut versucht' : 'Zahlung erneut versuchen'}
                   sx={{ ...touchPrimaryButtonSx, flex: 1 }}
                 >
-                  Erneut bezahlen
+                  {retrying ? 'Zahlung wird erneut versucht…' : 'Erneut bezahlen'}
                 </Button>
                 <Button
                   variant="outlined"
