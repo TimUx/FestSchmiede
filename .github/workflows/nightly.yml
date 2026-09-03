@@ -37,6 +37,8 @@ jobs:
             echo "::add-mask::$value"
           done
           {
+            echo "POSTGRES_PASSWORD=$postgres_password"
+            echo "PLATFORM_ADMIN_PASSWORD=$admin_password"
             echo "DATABASE_URL=postgresql://festschmiede:${postgres_password}@localhost:5432/festschmiede"
             echo "JWT_SECRET=$jwt_secret"
             echo "APP_ENCRYPTION_KEY=$encryption_key"
