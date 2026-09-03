@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-festschmiede}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-in-production}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
       POSTGRES_DB: ${POSTGRES_DB:-festschmiede}
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -38,8 +38,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3001
-      DATABASE_URL: postgresql://${POSTGRES_USER:-festschmiede}:${POSTGRES_PASSWORD:-change-me-in-production}@postgres:5432/${POSTGRES_DB:-festschmiede}
-      JWT_SECRET: ${JWT_SECRET:-change-me-in-production-use-long-random-string}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-festschmiede}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}@postgres:5432/${POSTGRES_DB:-festschmiede}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
       MULTI_TENANT_ENABLED: ${MULTI_TENANT_ENABLED:-false}
@@ -52,7 +52,7 @@ services:
       DEFAULT_TENANT_SLUG: ${DEFAULT_TENANT_SLUG:-default}
       TRUSTED_PROXY_HOPS: ${TRUSTED_PROXY_HOPS:-1}
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
-      APP_ENCRYPTION_KEY: ${APP_ENCRYPTION_KEY:-}
+      APP_ENCRYPTION_KEY: ${APP_ENCRYPTION_KEY:?APP_ENCRYPTION_KEY must be set}
       LOG_FORMAT: ${LOG_FORMAT:-text}
       FESTSCHMIEDE_BACKUP_DIR: /app/backups
     ports:

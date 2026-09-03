@@ -215,15 +215,18 @@ _download_bootstrap_file() {
 
 _bootstrap_download() {
   local install_dir="$1"
-  local manifest rel_path
+  local manifest rel_path checksum_file
 
   _need_cmd curl
+  _need_cmd sha256sum
 
   _log "Lade FestSchmiede-Plattformdateien $(_github_ref) herunter..."
   _log "Quelle: $(_github_raw_base)"
 
   mkdir -p "${install_dir}/installer"
   _download_bootstrap_file "$install_dir" "installer/bootstrap-files.txt"
+  checksum_file="${install_dir}/installer/bootstrap-files.sha256"
+  _download_bootstrap_file "$install_dir" "installer/bootstrap-files.sha256"
 
   manifest="$(_bootstrap_manifest_path "$install_dir")"
   while IFS= read -r rel_path; do
@@ -232,6 +235,11 @@ _bootstrap_download() {
     _log "  → ${rel_path}"
     _download_bootstrap_file "$install_dir" "$rel_path"
   done < <(_read_bootstrap_manifest "$manifest")
+
+  (cd "$install_dir" && sha256sum --ignore-missing -c "$checksum_file") || {
+    _err "Bootstrap-Integritätsprüfung fehlgeschlagen"
+    return 1
+  }
 
   while IFS= read -r rel_path; do
     [[ -n "$rel_path" ]] || continue
@@ -244,7 +252,7 @@ _bootstrap_download() {
 
 _bootstrap_verify() {
   local install_dir="$1"
-  local manifest rel_path missing=0
+  local manifest rel_path checksum_file missing=0
 
   manifest="$(_bootstrap_manifest_path "$install_dir")"
   while IFS= read -r rel_path; do
@@ -254,6 +262,12 @@ _bootstrap_verify() {
       missing=1
     fi
   done < <(_read_bootstrap_manifest "$manifest")
+
+  checksum_file="${install_dir}/installer/bootstrap-files.sha256"
+  if [[ ! -f "$checksum_file" ]] || ! (cd "$install_dir" && sha256sum --ignore-missing -c "$checksum_file" >/dev/null); then
+    _err "Bootstrap-Integritätsprüfung fehlgeschlagen: ${checksum_file}"
+    missing=1
+  fi
 
   for unwanted in backend frontend package.json tests docs; do
     if [[ -e "${install_dir}/${unwanted}" ]]; then
