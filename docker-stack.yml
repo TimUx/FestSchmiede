@@ -9,7 +9,7 @@ version: "3.8"
 
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16.8-alpine3.21
     environment:
       POSTGRES_USER: festschmiede
       POSTGRES_DB: festschmiede
@@ -34,7 +34,7 @@ services:
       retries: 5
 
   backend:
-    image: ${GHCR_IMAGE_PREFIX:-ghcr.io/timux/festschmiede}/backend:${IMAGE_TAG:-latest}
+    image: ${GHCR_IMAGE_PREFIX:-ghcr.io/timux/festschmiede}/backend:${IMAGE_TAG:-v2.5.6}
     environment:
       NODE_ENV: production
       PORT: 3001
@@ -75,7 +75,7 @@ services:
       start_period: 40s
 
   frontend:
-    image: ${GHCR_IMAGE_PREFIX:-ghcr.io/timux/festschmiede}/frontend:${IMAGE_TAG:-latest}
+    image: ${GHCR_IMAGE_PREFIX:-ghcr.io/timux/festschmiede}/frontend:${IMAGE_TAG:-v2.5.6}
     environment:
       BACKEND_HOST: ${BACKEND_HOST:-backend}
       BACKEND_PORT: ${BACKEND_PORT:-3001}
@@ -100,7 +100,7 @@ services:
       retries: 5
 
   traefik:
-    image: traefik:v3.3
+    image: traefik:v3.3.4
     command:
       - --providers.swarm=true
       - --providers.swarm.exposedbydefault=false

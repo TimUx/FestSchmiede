@@ -118,10 +118,10 @@ stack_pull() {
     "${image_prefix}/frontend:${image_tag}"
   )
   if [[ "${CFG[DB_MODE]:-internal}" == "internal" ]]; then
-    images+=("postgres:16-alpine")
+    images+=("postgres:16.8-alpine3.21")
   fi
   if [[ "${CFG[USE_REDIS]:-no}" == "internal" ]]; then
-    images+=("redis:7-alpine")
+    images+=("redis:7.4.2-alpine3.21")
   fi
 
   log_info "Lade Docker-Images für Swarm..."

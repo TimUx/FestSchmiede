@@ -128,8 +128,9 @@ docker compose up -d
 docker compose exec backend npm run seed
 ```
 
-Standard-Images: `ghcr.io/timux/festschmiede/backend:latest` und `ghcr.io/timux/festschmiede/frontend:latest`  
-Tag ändern über `IMAGE_TAG` in `.env` (z. B. Release-Version).
+Standard-Images: `ghcr.io/timux/festschmiede/backend:v2.5.6` und `ghcr.io/timux/festschmiede/frontend:v2.5.6`
+Produktive Deployments verwenden standardmäßig einen expliziten Release-Tag. Für ein Upgrade
+`IMAGE_TAG` in `.env` auf den gewünschten Release-Tag setzen; `latest` nicht verwenden.
 
 Das Backend wendet beim Start versionierte Prisma-Migrationen an (`prisma migrate deploy`). Vor Upgrades ist ein Datenbank-Backup Pflicht — siehe [OPERATIONS.md](OPERATIONS.md).
 
@@ -346,7 +347,7 @@ Traefik muss im selben Docker-Netzwerk wie die Anwendung laufen. Beispiel mit Le
 # docker-compose.yml – Ergänzung am frontend-Service
 services:
   frontend:
-    image: ghcr.io/timux/festschmiede/frontend:latest
+    image: ghcr.io/timux/festschmiede/frontend:v2.5.6
     container_name: festschmiede-frontend
     restart: unless-stopped
     networks:

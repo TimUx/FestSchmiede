@@ -17,6 +17,14 @@ export const config = {
   modulesDir: process.env.MODULES_DIR || path.join(process.cwd(), 'modules'),
   pluginsDir: process.env.PLUGINS_DIR || path.join(process.cwd(), 'plugins'),
   modulesDistDir: process.env.MODULES_DIST_DIR || path.join(process.cwd(), 'dist', 'modules'),
+  pluginTrust: {
+    /** Community plugins must be explicitly allowlisted and signed in production. */
+    allowlist: (process.env.PLUGIN_ALLOWLIST || '')
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean),
+    trustKeys: process.env.PLUGIN_TRUST_KEYS || '{}',
+  },
   coreVersion: resolveAppVersion(),
   multiTenant: {
     enabled: process.env.MULTI_TENANT_ENABLED === 'true',
