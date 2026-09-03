@@ -118,7 +118,7 @@ Die größten Risiken lagen im **sicheren Standardbetrieb**: bekannte Compose-Se
 - **Upload-Schutz:** MIME-Allowlist, Größenlimit, Tenant-Pfad, Re-Encoding und Zugriffsmiddleware sind vorhanden.
 - **DB-Indizes:** Für häufige Order-Abfragen existieren zusammengesetzte Indizes in `backend/prisma/schema.prisma:360-369`; ein N+1-Befund muss mit Produktionsprofiling statt nur statischer Suche bewertet werden.
 - **Realtime/Offline:** Frontend-Reconnect, Offline-/Degraded-Status und HTTP-Fallback sind vorhanden; echte Offline-Bestellung und Konfliktauflösung sind nicht vollständig ersichtlich.
-- **Tests/CI:** Auth-, Authorization-Matrix-, Tenant-Guard-, Payment-Tenant-Guard-, E2E- und Installer-Tests existieren. Explizite Tests für Refresh-Replay, Plugin-Sandbox, Compose-Default-Secret-Fehler und signierte Installer-Artefakte fehlen.
+- **Tests/CI:** Auth-, Authorization-Matrix-, Tenant-Guard-, Payment-Tenant-Guard-, E2E- und Installer-Tests existieren. Refresh-Replay-Tests und Plugin-Manifest-Tests wurden ergänzt; echte Plugin-Sandbox-, Compose-Default-Secret- und signierte Installer-Artefakt-Tests bleiben offen.
 
 ## Empfehlungen und Reihenfolge
 
@@ -151,8 +151,9 @@ Bis beide Punkte behoben und mit einem Clean-Install-/Rollback-Test verifiziert 
 ## Umsetzungsstand und Validierung
 
 - **K1/K2/H1:** umgesetzt: Compose verlangt Secrets, Docker wird über das signierte APT-Repository installiert, Bootstrap-Dateien werden per SHA-256 geprüft und Branch-Refs werden abgelehnt.
-- **H2/H3/H4:** umgesetzt: Images/Builds sind reproduzierbarer, Community-Plugins benötigen Allowlist plus Ed25519-Signatur, und CI erzeugt maskierte Secrets pro Lauf.
+- **H2/H3/H4:** umgesetzt: Images/Builds sind reproduzierbarer, Community-Plugins benötigen Allowlist plus Ed25519-Signatur, CI erzeugt maskierte Secrets pro Lauf und Container-Scanning ist im PR-Workflow aktiviert.
+- **M4/N2:** umgesetzt: Refresh-Token-Familien/Replays werden erkannt; zentrale QR-, Logo-, Retry- und Reduced-Motion-Accessibility-Nachbesserungen sind enthalten.
 - **Regressionen:** Installer-Suite **55 bestanden, 0 fehlgeschlagen**; Bootstrap-Checksums und Bash-Syntax erfolgreich geprüft; Compose scheitert ohne Secrets und ist mit expliziten Test-Secrets valide.
 - **Einschränkung:** Ein echter Clean-Install-, Docker-Upgrade- und Rollback-Lauf konnte in dieser Review-Umgebung nicht vollständig gegen eine reale Registry/Host-Infrastruktur ausgeführt werden und bleibt als Release-Gate offen.
 
-Die verbleibenden mittleren und niedrigen Punkte sollten als separate, reviewbare PRs mit Deployment-, Clean-Install- und Rollback-Tests umgesetzt werden.
+Die verbleibenden mittleren und niedrigen Punkte sollten als separate, reviewbare PRs mit Deployment-, Clean-Install- und Rollback-Tests umgesetzt werden. Insbesondere Redis-Adapter/Multi-Instance-Betrieb, reale Clean-Install-/Upgrade-/Rollback-Läufe und eine echte Plugin-Sandbox sind weiterhin Release-Gates.
