@@ -37,11 +37,13 @@ export const sessionService = {
   ): Promise<{ accessToken: string; refreshToken: string; expiresAt: Date }> {
     const refreshToken = crypto.randomBytes(REFRESH_TOKEN_BYTES).toString('hex');
     const refreshTokenHash = hashRefreshToken(refreshToken);
+    const familyId = crypto.randomUUID();
     const expiresAt = new Date(Date.now() + REFRESH_EXPIRY_MS);
 
     const session = await prisma.userSession.create({
       data: {
         userId,
+        familyId,
         refreshTokenHash,
         expiresAt,
         userAgent: userAgent ?? null,
@@ -70,7 +72,17 @@ export const sessionService = {
       include: { user: { include: { role: true } } },
     });
 
-    if (!session || session.revokedAt || session.expiresAt < new Date()) {
+    if (!session) {
+      throw new AppError(401, 'Ungültige oder abgelaufene Sitzung');
+    }
+    if (session.revokedAt) {
+      await prisma.userSession.updateMany({
+        where: { familyId: session.familyId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+      throw new AppError(401, 'Ungültige oder abgelaufene Sitzung');
+    }
+    if (session.expiresAt < new Date()) {
       throw new AppError(401, 'Ungültige oder abgelaufene Sitzung');
     }
     if (!session.user.active) {
@@ -83,12 +95,25 @@ export const sessionService = {
     const newRefreshTokenHash = hashRefreshToken(newRefreshToken);
     const newExpiresAt = new Date(Date.now() + REFRESH_EXPIRY_MS);
 
-    await prisma.userSession.update({
-      where: { id: session.id },
+    const rotated = await prisma.userSession.updateMany({
+      where: { id: session.id, revokedAt: null },
+      data: { revokedAt: new Date() },
+    });
+    if (rotated.count !== 1) {
+      await prisma.userSession.updateMany({
+        where: { familyId: session.familyId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+      throw new AppError(401, 'Ungültige oder abgelaufene Sitzung');
+    }
+
+    const nextSession = await prisma.userSession.create({
       data: {
+        userId: session.userId,
+        familyId: session.familyId,
         refreshTokenHash: newRefreshTokenHash,
         expiresAt: newExpiresAt,
-        revokedAt: null,
+        userAgent: session.userAgent,
       },
     });
 
@@ -101,7 +126,7 @@ export const sessionService = {
     };
 
     const accessToken = jwt.sign(
-      { ...payload, sessionId: session.id } satisfies AuthPayload,
+      { ...payload, sessionId: nextSession.id } satisfies AuthPayload,
       config.jwt.secret,
       { expiresIn: config.jwt.expiresIn } as jwt.SignOptions
     );

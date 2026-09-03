@@ -89,6 +89,7 @@ model PlatformUserSession {
   id               String       @id @default(uuid())
   userId           String       @map("user_id")
   user             PlatformUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  familyId         String       @map("family_id")
   refreshTokenHash String       @unique @map("refresh_token_hash")
   expiresAt        DateTime     @map("expires_at")
   revokedAt        DateTime?    @map("revoked_at")
@@ -96,6 +97,7 @@ model PlatformUserSession {
   createdAt        DateTime     @default(now()) @map("created_at")
 
   @@index([userId])
+  @@index([familyId])
   @@map("platform_user_sessions")
 }
 
@@ -234,6 +236,7 @@ model UserSession {
   id               String    @id @default(uuid())
   userId           String
   user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  familyId         String    @map("family_id")
   refreshTokenHash String    @unique
   expiresAt        DateTime
   revokedAt        DateTime?
@@ -241,6 +244,7 @@ model UserSession {
   createdAt        DateTime  @default(now())
 
   @@index([userId])
+  @@index([familyId])
 }
 
 model Event {

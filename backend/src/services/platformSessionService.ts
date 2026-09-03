@@ -30,11 +30,13 @@ export const platformSessionService = {
   ): Promise<{ accessToken: string; refreshToken: string; expiresAt: Date }> {
     const refreshToken = crypto.randomBytes(REFRESH_TOKEN_BYTES).toString('hex');
     const refreshTokenHash = hashRefreshToken(refreshToken);
+    const familyId = crypto.randomUUID();
     const expiresAt = new Date(Date.now() + REFRESH_EXPIRY_MS);
 
     const session = await prisma.platformUserSession.create({
       data: {
         userId,
+        familyId,
         refreshTokenHash,
         expiresAt,
         userAgent: userAgent ?? null,
@@ -57,7 +59,17 @@ export const platformSessionService = {
       include: { user: true },
     });
 
-    if (!session || session.revokedAt || session.expiresAt < new Date()) {
+    if (!session) {
+      throw new AppError(401, 'Ungültige oder abgelaufene Sitzung');
+    }
+    if (session.revokedAt) {
+      await prisma.platformUserSession.updateMany({
+        where: { familyId: session.familyId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+      throw new AppError(401, 'Ungültige oder abgelaufene Sitzung');
+    }
+    if (session.expiresAt < new Date()) {
       throw new AppError(401, 'Ungültige oder abgelaufene Sitzung');
     }
     if (!session.user.active) {
@@ -68,9 +80,25 @@ export const platformSessionService = {
     const newRefreshTokenHash = hashRefreshToken(newRefreshToken);
     const newExpiresAt = new Date(Date.now() + REFRESH_EXPIRY_MS);
 
-    await prisma.platformUserSession.update({
-      where: { id: session.id },
-      data: { refreshTokenHash: newRefreshTokenHash, expiresAt: newExpiresAt, revokedAt: null },
+    const rotated = await prisma.platformUserSession.updateMany({
+      where: { id: session.id, revokedAt: null },
+      data: { revokedAt: new Date() },
+    });
+    if (rotated.count !== 1) {
+      await prisma.platformUserSession.updateMany({
+        where: { familyId: session.familyId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+      throw new AppError(401, 'Ungültige oder abgelaufene Sitzung');
+    }
+    const nextSession = await prisma.platformUserSession.create({
+      data: {
+        userId: session.userId,
+        familyId: session.familyId,
+        refreshTokenHash: newRefreshTokenHash,
+        expiresAt: newExpiresAt,
+        userAgent: session.userAgent,
+      },
     });
 
     const { parsePlatformPermissions } = await import('../platform/platformPermissions');
@@ -83,7 +111,7 @@ export const platformSessionService = {
     };
 
     const accessToken = jwt.sign(
-      { ...payload, sessionId: session.id } satisfies AuthPayload,
+      { ...payload, sessionId: nextSession.id } satisfies AuthPayload,
       config.jwt.secret,
       { expiresIn: config.jwt.expiresIn } as jwt.SignOptions
     );
