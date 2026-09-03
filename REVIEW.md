@@ -120,12 +120,32 @@ Die größten Risiken liegen derzeit im **sicheren Standardbetrieb**: Die Standa
 - **Realtime/Offline:** Frontend-Reconnect, Offline-/Degraded-Status und HTTP-Fallback sind vorhanden; echte Offline-Bestellung und Konfliktauflösung sind nicht vollständig ersichtlich.
 - **Tests/CI:** Auth-, Authorization-Matrix-, Tenant-Guard-, Payment-Tenant-Guard-, E2E- und Installer-Tests existieren. Explizite Tests für Refresh-Replay, Plugin-Sandbox, Compose-Default-Secret-Fehler und signierte Installer-Artefakte fehlen.
 
-## Priorisierte Maßnahmen
+## Empfehlungen und Reihenfolge
 
-1. K1: Compose ohne gesetzte Produktionssecrets hart fehlschlagen lassen und Defaults entfernen.
-2. K2/H1: Installer-Lieferkette auf signierte, immutable Release-Artefakte mit Hashprüfung umstellen.
-3. H2: Images auf Digests/immutable Tags pinnen und Docker-Builds reproduzierbar machen.
-4. H3: Plugin-Vertrauensmodell festlegen; untrusted Plugins nicht im Backend-Prozess ausführen.
-5. H4/M1: CI-Testwerte entkoppeln und Dependency-/Container-Scanning mit dokumentierten Schwellen etablieren.
+### Sofort umsetzen – kritische Findings
 
-Die fünf priorisierten Punkte sind sicherheits- und lieferkettenrelevant; sie sollten als separate, reviewbare PRs mit Deployment-/Rollback-Tests umgesetzt werden. In diesem Audit wurden bewusst keine riskanten Produktionsänderungen direkt vorgenommen.
+Diese Maßnahmen sollten vor jedem produktiven oder öffentlich erreichbaren Betrieb umgesetzt werden:
+
+1. **K1 – Default-Secrets entfernen:** `docker-compose.yml` darf ohne explizit gesetzte starke Secrets nicht starten. Fallbacks wie `change-me-in-production` durch harte Compose-Fehler oder Docker Secrets ersetzen.
+2. **K2 – Unsichere Docker-Installation ersetzen:** Kein `curl | sh`. Docker über signierte Distributionspakete bzw. das offizielle signierte Repository installieren.
+
+Bis beide Punkte behoben und mit einem Clean-Install-/Rollback-Test verifiziert sind, sollte kein produktiver Rollout erfolgen.
+
+### Danach umsetzen – hohe Priorität
+
+3. **H1 – Installer-Lieferkette absichern:** Bootstrap-Dateien aus immutable Releases laden und ein signiertes Manifest bzw. SHA-256-Prüfungen erzwingen.
+4. **H2 – Deployments reproduzierbar machen:** Images auf immutable Release-Tags oder Digests pinnen, `latest` und unkontrolliertes `pull_policy: always` im Produktionspfad entfernen.
+5. **H3 – Plugin-Vertrauensmodell festlegen:** Untrusted Plugins nicht im Backend-Prozess laden; alternativ nur signierte, allowlistete Plugins mit minimalen Rechten zulassen.
+6. **H4 – CI-Credentials entkoppeln:** Statische Werte aus Workflow-Dateien entfernen, pro Lauf erzeugen oder als ausschließlich nicht-produktive Actions-Secrets verwalten.
+
+### Nächste Stufe – mittlere Priorität
+
+7. **M1 – Toolchain härten:** Docker-Builds auf `npm ci` umstellen, Container/Base-Images pinnen, Dependency-Updates automatisieren und Audit-Schwellen samt Ausnahmen dokumentieren.
+8. **M3/M4 – Sicherheitsinvarianten testen:** HTML-Sanitization an allen Schreib- und Lesepfaden absichern sowie Refresh-Token-Rotation, Replay-Erkennung und parallele Refreshes testen.
+9. **N3 – Multi-Instance-Realtime klären:** Redis-Adapter verpflichtend konfigurieren oder den Betrieb auf eine Backend-Instanz begrenzen und dies dokumentieren.
+
+### Anschließend – niedrigere Priorität und Qualität
+
+10. **N1/N2 – Dokumentation und UX verbessern:** Security-Versionen/Support aktualisieren, ARIA-Beschriftungen ergänzen und Reduced-Motion-Unterstützung einführen.
+
+Die kritischen und hohen Punkte sollten als separate, reviewbare PRs mit Deployment-, Clean-Install- und Rollback-Tests umgesetzt werden. In diesem Audit wurden bewusst keine riskanten Produktionsänderungen direkt vorgenommen.
