@@ -69,7 +69,7 @@ jobs:
 
       - name: Start CI stack
         run: |
-          docker compose -f docker-compose.ci.yml up -d --build
+          docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml up -d --build
           npm run qa:wait
 
       - name: Large database seed (1000 orders)
@@ -83,7 +83,7 @@ jobs:
 
       - name: Backend neu starten (Plattform-Settings-Cache)
         run: |
-          docker compose -f docker-compose.ci.yml restart backend
+          docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml restart backend
           npm run qa:wait
 
       - name: Performance baseline
@@ -111,4 +111,4 @@ jobs:
 
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.ci.yml down -v
+        run: docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml down -v

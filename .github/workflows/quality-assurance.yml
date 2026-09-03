@@ -158,7 +158,7 @@ jobs:
 
       - name: Build & start CI stack
         run: |
-          docker compose -f docker-compose.ci.yml up -d --build
+          docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml up -d --build
           npm run qa:wait
 
       - name: Seed QA data
@@ -172,7 +172,7 @@ jobs:
           npm ci --prefix backend
           npm run prisma:generate --prefix backend
           npm run qa:module-scenarios
-          docker compose -f docker-compose.ci.yml restart backend
+          docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml restart backend
           npm run qa:wait
 
       - name: Module integration tests
@@ -196,7 +196,7 @@ jobs:
 
       - name: Collect container logs
         if: always()
-        run: docker compose -f docker-compose.ci.yml logs > artifacts/container-logs.txt
+        run: docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml logs > artifacts/container-logs.txt
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -209,7 +209,7 @@ jobs:
 
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.ci.yml down -v
+        run: docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml down -v
 
   user-journey:
     name: Realistische Nutzerreise (E2E)
@@ -264,7 +264,7 @@ jobs:
 
       - name: Start CI stack
         run: |
-          docker compose -f docker-compose.ci.yml up -d --build
+          docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml up -d --build
           npm run qa:wait
 
       - name: Prisma migrate & platform seed
@@ -277,7 +277,7 @@ jobs:
 
       - name: Backend neu starten (Plattform-Settings-Cache)
         run: |
-          docker compose -f docker-compose.ci.yml restart backend
+          docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml restart backend
           npm run qa:wait
 
       - name: Install Playwright
@@ -297,11 +297,11 @@ jobs:
 
       - name: Collect container logs on failure
         if: failure()
-        run: mkdir -p artifacts && docker compose -f docker-compose.ci.yml logs > artifacts/container-logs.txt
+        run: mkdir -p artifacts && docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml logs > artifacts/container-logs.txt
 
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.ci.yml down -v
+        run: docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml down -v
 
   performance:
     name: Performance-Baseline
@@ -354,7 +354,7 @@ jobs:
 
       - name: Start CI stack
         run: |
-          docker compose -f docker-compose.ci.yml up -d --build
+          docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml up -d --build
           npm run qa:wait
           npm ci --prefix backend
           (cd backend && npx prisma generate && npm run seed)
@@ -365,4 +365,4 @@ jobs:
 
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.ci.yml down -v
+        run: docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml down -v

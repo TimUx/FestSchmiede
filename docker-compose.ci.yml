@@ -3,7 +3,7 @@ services:
     image: postgres:16.8-alpine3.21
     environment:
       POSTGRES_USER: festschmiede
-      POSTGRES_PASSWORD: qa-ci-postgres-password-secure
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
       POSTGRES_DB: festschmiede
     ports:
       - "5432:5432"
@@ -37,12 +37,12 @@ services:
       NODE_ENV: production
       FESTSCHMIEDE_CI: "1"
       PORT: 3001
-      DATABASE_URL: postgresql://festschmiede:qa-ci-postgres-password-secure@postgres:5432/festschmiede
-      JWT_SECRET: qa-docker-ci-jwt-secret-not-in-blocklist-32chars
+      DATABASE_URL: postgresql://festschmiede:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}@postgres:5432/festschmiede
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
       JWT_EXPIRES_IN: 8h
       CORS_ORIGIN: http://localhost:5173
-      APP_ENCRYPTION_KEY: qa-docker-ci-encryption-key-not-blocked32
-      PLATFORM_ADMIN_PASSWORD: qa-docker-ci-platform-admin-password
+      APP_ENCRYPTION_KEY: ${APP_ENCRYPTION_KEY:?APP_ENCRYPTION_KEY must be set}
+      PLATFORM_ADMIN_PASSWORD: ${PLATFORM_ADMIN_PASSWORD:?PLATFORM_ADMIN_PASSWORD must be set}
       MODULES_DIR: /app/modules
       PLUGINS_DIR: /app/plugins
       MULTI_TENANT_ENABLED: "true"

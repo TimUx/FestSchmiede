@@ -91,11 +91,11 @@ jobs:
 
       - name: Docker stack + Nutzerreise
         run: |
-          docker compose -f docker-compose.ci.yml up -d --build
+          docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml up -d --build
           npm run qa:wait
           (cd backend && npm run seed)
           npm run qa:prepare-journey
-          docker compose -f docker-compose.ci.yml restart backend
+          docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml restart backend
           npm run qa:wait
           npx playwright install chromium --with-deps
           npm run qa:e2e:journey
@@ -114,7 +114,7 @@ jobs:
 
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.ci.yml down -v
+        run: docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml down -v
 
   build-and-push:
     name: Docker Images (${{ matrix.name }})
