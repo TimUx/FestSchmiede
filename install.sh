@@ -12,7 +12,7 @@
 #   FESTSCHMIEDE_DEFAULT_INSTALL_DIR  – Standard-Zielverzeichnis (wenn INSTALL_DIR leer)
 #   FESTSCHMIEDE_VERSION              – Release-Tag (Standard: 2.4.0)
 #   FESTSCHMIEDE_GITHUB_REPO          – GitHub Repo (Standard: TimUx/FestSchmiede)
-#   FESTSCHMIEDE_REF                  – Git-Ref statt Version (z.B. main)
+#   FESTSCHMIEDE_REF                  – immutable Release-Tag (z.B. v2.5.6) oder Commit-SHA
 #   FESTSCHMIEDE_BOOTSTRAP_ONLY=1     – Nur Dateien herunterladen
 
 set -euo pipefail
@@ -43,7 +43,7 @@ Installationspfad (Priorität: --dir > FESTSCHMIEDE_INSTALL_DIR > Default):
 
 Weitere Umgebungsvariablen:
   FESTSCHMIEDE_VERSION       Release-Version (Standard: ${FESTSCHMIEDE_VERSION})
-  FESTSCHMIEDE_REF           Git-Branch/Tag (überschreibt VERSION)
+  FESTSCHMIEDE_REF           Immutable Tag/SHA (überschreibt VERSION; keine Branches)
   FESTSCHMIEDE_GITHUB_REPO   GitHub Repository
   FESTSCHMIEDE_BOOTSTRAP_ONLY=1  Nur herunterladen, kein Wizard
   IMAGE_TAG                  Image-Tag für Update (überschreibt .env, z. B. v2.4.36)
@@ -143,11 +143,17 @@ _need_cmd() {
 }
 
 _github_ref() {
+  local ref
   if [[ -n "$FESTSCHMIEDE_REF" ]]; then
-    echo "$FESTSCHMIEDE_REF"
+    ref="$FESTSCHMIEDE_REF"
   else
-    echo "v${FESTSCHMIEDE_VERSION}"
+    ref="v${FESTSCHMIEDE_VERSION}"
   fi
+  if [[ ! "$ref" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ && ! "$ref" =~ ^[0-9a-fA-F]{40}$ ]]; then
+    _err "FESTSCHMIEDE_REF muss ein semantischer Release-Tag oder 40-stelliger Commit-SHA sein (keine Branches)"
+    return 1
+  fi
+  printf '%s\n' "$ref"
 }
 
 _github_raw_base() {

@@ -7,7 +7,7 @@
 
 Die Anwendung hat bereits mehrere wichtige Schutzmaßnahmen: Prisma-/Zod-Nutzung, tenant-scoped Repositories und Socket-Räume, serverseitige Session-Prüfung, Rate-Limits, Helmet, CORS-Allowlist, Upload-Re-Encoding und Stripe-Webhook-Signaturprüfung. Die vorhandenen Tenant- und Payment-Tests sind ein gutes Fundament.
 
-Die größten Risiken liegen derzeit im **sicheren Standardbetrieb**: Die Standard-Compose-Datei startet bei fehlenden Umgebungsvariablen mit bekannten Secrets, der Installer führt ein ungeprüft heruntergeladenes Remote-Skript aus, und der Bootstrap-Installer prüft keine Dateiintegrität. Außerdem ist der produktive Image-/Dependency-Bezug nicht reproduzierbar genug. Diese Punkte sollten vor einem produktiven Rollout behoben werden.
+Die größten Risiken lagen im **sicheren Standardbetrieb**: bekannte Compose-Secret-Fallbacks, ein ungeprüfter Docker-Installationspfad und fehlende Bootstrap-Integritätsprüfung. Diese drei Punkte wurden inzwischen gehärtet; die verbleibenden Findings sollten vor einem produktiven Rollout nachgezogen werden.
 
 ## Findings (nach Schweregrad)
 
@@ -148,4 +148,11 @@ Bis beide Punkte behoben und mit einem Clean-Install-/Rollback-Test verifiziert 
 
 10. **N1/N2 – Dokumentation und UX verbessern:** Security-Versionen/Support aktualisieren, ARIA-Beschriftungen ergänzen und Reduced-Motion-Unterstützung einführen.
 
-Die kritischen und hohen Punkte sollten als separate, reviewbare PRs mit Deployment-, Clean-Install- und Rollback-Tests umgesetzt werden. In diesem Audit wurden bewusst keine riskanten Produktionsänderungen direkt vorgenommen.
+## Umsetzungsstand und Validierung
+
+- **K1/K2/H1:** umgesetzt: Compose verlangt Secrets, Docker wird über das signierte APT-Repository installiert, Bootstrap-Dateien werden per SHA-256 geprüft und Branch-Refs werden abgelehnt.
+- **H2/H3/H4:** umgesetzt: Images/Builds sind reproduzierbarer, Community-Plugins benötigen Allowlist plus Ed25519-Signatur, und CI erzeugt maskierte Secrets pro Lauf.
+- **Regressionen:** Installer-Suite **55 bestanden, 0 fehlgeschlagen**; Bootstrap-Checksums und Bash-Syntax erfolgreich geprüft; Compose scheitert ohne Secrets und ist mit expliziten Test-Secrets valide.
+- **Einschränkung:** Ein echter Clean-Install-, Docker-Upgrade- und Rollback-Lauf konnte in dieser Review-Umgebung nicht vollständig gegen eine reale Registry/Host-Infrastruktur ausgeführt werden und bleibt als Release-Gate offen.
+
+Die verbleibenden mittleren und niedrigen Punkte sollten als separate, reviewbare PRs mit Deployment-, Clean-Install- und Rollback-Tests umgesetzt werden.

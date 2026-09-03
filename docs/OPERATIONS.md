@@ -75,7 +75,7 @@ Der Assistent führt automatisch aus:
 6. **Health-Check** (API muss `status: ok` melden)
 7. Bei Fehler: **Rollback** (Config + optional Datenbank)
 
-Phase 1 lädt zuerst die aktuellen Installer-Dateien vom gewählten Release (`IMAGE_TAG` / `FESTSCHMIEDE_REF`, sonst die Version aus `install.sh`). Anschließend startet `install.sh` neu und führt Phase 2 (Anwendungs-Update) mit dem frischen Installer aus.
+Phase 1 lädt zuerst die aktuellen Installer-Dateien vom gewählten, unveränderlichen Release-Tag oder Commit (`IMAGE_TAG` / `FESTSCHMIEDE_REF`, sonst die Version aus `install.sh`). Branch-Refs werden aus Sicherheitsgründen abgelehnt. Anschließend startet `install.sh` neu und führt Phase 2 (Anwendungs-Update) mit dem frischen Installer aus.
 
 Vor dem Update nur prüfen (keine Änderungen):
 
