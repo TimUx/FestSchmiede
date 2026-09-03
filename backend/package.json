@@ -28,7 +28,7 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.1",
-    "nodemailer": "^9.0.3",
+    "nodemailer": "^9.1.0",
     "sharp": "^0.35.4",
     "socket.io": "^4.8.1",
     "stripe": "^17.7.0",
