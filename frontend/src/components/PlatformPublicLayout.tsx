@@ -154,7 +154,9 @@ export function PlatformPublicLayout({ children }: PlatformPublicLayoutProps) {
   useEffect(() => {
     if (location.hash) {
       const el = document.querySelector(location.hash);
-      el?.scrollIntoView({ behavior: 'smooth' });
+      el?.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      });
     }
   }, [location.pathname, location.hash]);
 

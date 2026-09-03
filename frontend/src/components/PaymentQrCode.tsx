@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Box, Link, Typography } from '@mui/material';
+import { Box, Link, Typography, Button } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import QRCode from 'qrcode';
 
 interface PaymentQrCodeProps {
@@ -12,6 +13,7 @@ interface PaymentQrCodeProps {
 export function PaymentQrCode({ value, size = 240, label = 'QR-Code zum Bezahlen' }: PaymentQrCodeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [failed, setFailed] = useState(false);
+  const [retryAttempt, setRetryAttempt] = useState(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -23,7 +25,7 @@ export function PaymentQrCode({ value, size = 240, label = 'QR-Code zum Bezahlen
       margin: 2,
       errorCorrectionLevel: 'M',
     }).catch(() => setFailed(true));
-  }, [value, size]);
+  }, [value, size, retryAttempt]);
 
   const ariaLabel = failed ? 'QR-Code nicht verfügbar – Link unten nutzen' : label;
 
@@ -45,11 +47,28 @@ export function PaymentQrCode({ value, size = 240, label = 'QR-Code zum Bezahlen
         <canvas ref={canvasRef} width={size} height={size} style={{ maxWidth: '100%', height: 'auto' }} />
       </Box>
       {failed && (
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          QR-Code konnte nicht angezeigt werden.
-        </Typography>
+        <>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            QR-Code konnte nicht angezeigt werden.
+          </Typography>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<RefreshIcon />}
+            onClick={() => setRetryAttempt((attempt) => attempt + 1)}
+            sx={{ mt: 1 }}
+          >
+            QR-Code erneut laden
+          </Button>
+        </>
       )}
-      <Link href={value} target="_blank" rel="noopener noreferrer" sx={{ display: 'block', mt: 1, wordBreak: 'break-all' }}>
+      <Link
+        href={value}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Zahlungslink öffnen"
+        sx={{ display: 'block', mt: 1, wordBreak: 'break-all' }}
+      >
         Zahlungslink öffnen
       </Link>
     </Box>

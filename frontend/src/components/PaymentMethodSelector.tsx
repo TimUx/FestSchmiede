@@ -45,7 +45,9 @@ export function PaymentMethodSelector({ options, value, onChange }: PaymentMetho
                 borderRadius: 2,
                 mb: 1.5,
                 bgcolor: value === option.id ? 'action.selected' : 'background.paper',
-                transition: 'border-color 0.15s',
+                '@media (prefers-reduced-motion: no-preference)': {
+                  transition: 'border-color 0.15s',
+                },
               }}
             >
               <FormControlLabel
