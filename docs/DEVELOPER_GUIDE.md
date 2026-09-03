@@ -479,7 +479,7 @@ Installer (Shell, ohne Node):
 ./installer/tests/run-tests.sh
 ```
 
-### Screenshots generieren
+### Screenshots generieren und aktualisieren
 
 ```bash
 cd frontend && npm run build
@@ -497,6 +497,11 @@ docker run --rm -v "$PWD":/work -w /work mcr.microsoft.com/playwright:v1.52.0-ja
 ```
 
 Neue Screenshots (u. a. `21-payment-admin.png`, `22-payment-einstellungen.png`) werden automatisch mit erzeugt. Die für die Landingpage benötigten Dateien werden zusätzlich nach `frontend/public/screenshots/` kopiert.
+
+Die Galerie in `docs/screenshots/README.md` ist die verbindliche Zuordnung von Dateinamen,
+Rolle und Geräteklasse. Nach Änderungen an Navigation, Rollenrechten, Zahlungen oder
+Barrierefreiheit die Screenshots neu erzeugen und vor dem Commit auf sensible Testdaten,
+mobile Darstellung und verständliche Statusanzeigen prüfen.
 
 Umgebungsvariablen für die Screenshot-Pipeline:
 
