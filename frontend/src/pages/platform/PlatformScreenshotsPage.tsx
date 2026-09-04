@@ -21,7 +21,9 @@ export function PlatformScreenshotsPage() {
                   loading="lazy"
                 />
                 <CardContent>
-                  <Typography variant="h6" fontWeight={700}>{s.title}</Typography>
+                  <Typography variant="h6" sx={{
+                    fontWeight: 700
+                  }}>{s.title}</Typography>
                 </CardContent>
               </Card>
             </Grid>

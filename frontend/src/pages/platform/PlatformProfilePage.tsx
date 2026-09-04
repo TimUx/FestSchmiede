@@ -80,7 +80,11 @@ export function PlatformProfilePage() {
   return (
     <Box>
       <Typography variant="h4" gutterBottom>Mein Profil</Typography>
-      <Typography color="text.secondary" sx={{ mb: 3 }}>
+      <Typography
+        sx={{
+          color: "text.secondary",
+          mb: 3
+        }}>
         Persönliche Daten und Passwort für Ihr Plattformadministrator-Konto.
       </Typography>
 
@@ -138,7 +142,12 @@ export function PlatformProfilePage() {
         <Divider sx={{ my: 3 }} />
 
         <Typography variant="h6" gutterBottom>Passwort ändern</Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            mb: 2
+          }}>
           Aktuelles Passwort ist erforderlich, wenn Sie E-Mail oder Passwort ändern.
         </Typography>
         <TextField

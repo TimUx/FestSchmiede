@@ -84,18 +84,25 @@ export function SeoLandingPageView({ page }: SeoLandingPageViewProps) {
       <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
         <Box component="article">
           {paragraphs(page.intro).slice(1).map((p) => (
-            <Typography key={p.slice(0, 40)} paragraph sx={{ lineHeight: 1.75 }}>
+            <Typography key={p.slice(0, 40)} component="p" sx={{ mb: 2, lineHeight: 1.75 }}>
               {p}
             </Typography>
           ))}
 
           {page.sections.map((section) => (
             <Box key={section.heading} component="section" sx={{ mt: 5 }}>
-              <Typography variant="h2" component="h2" fontWeight={800} sx={{ fontSize: { xs: '1.35rem', md: '1.6rem' }, mb: 2 }}>
+              <Typography
+                variant="h2"
+                component="h2"
+                sx={{
+                  fontWeight: 800,
+                  fontSize: { xs: '1.35rem', md: '1.6rem' },
+                  mb: 2
+                }}>
                 {section.heading}
               </Typography>
               {paragraphs(section.body).map((p) => (
-                <Typography key={p.slice(0, 40)} paragraph sx={{ lineHeight: 1.75 }}>
+                <Typography key={p.slice(0, 40)} component="p" sx={{ mb: 2, lineHeight: 1.75 }}>
                   {p}
                 </Typography>
               ))}
@@ -134,16 +141,29 @@ export function SeoLandingPageView({ page }: SeoLandingPageViewProps) {
           ))}
 
           <Box component="section" sx={{ mt: 6 }}>
-            <Typography variant="h2" component="h2" fontWeight={800} sx={{ fontSize: { xs: '1.35rem', md: '1.6rem' }, mb: 2 }}>
+            <Typography
+              variant="h2"
+              component="h2"
+              sx={{
+                fontWeight: 800,
+                fontSize: { xs: '1.35rem', md: '1.6rem' },
+                mb: 2
+              }}>
               Häufige Fragen
             </Typography>
             {page.faqs.map((faq) => (
               <Accordion key={faq.q} disableGutters elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls={`${faq.q}-content`} id={`${faq.q}-header`}>
-                  <Typography fontWeight={600}>{faq.q}</Typography>
+                  <Typography sx={{
+                    fontWeight: 600
+                  }}>{faq.q}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <Typography color="text.secondary" sx={{ lineHeight: 1.7 }}>{faq.a}</Typography>
+                  <Typography
+                    sx={{
+                      color: "text.secondary",
+                      lineHeight: 1.7
+                    }}>{faq.a}</Typography>
                 </AccordionDetails>
               </Accordion>
             ))}
@@ -151,7 +171,14 @@ export function SeoLandingPageView({ page }: SeoLandingPageViewProps) {
 
           {(related.length > 0 || clusterPages.length > 0) && (
             <Box component="nav" aria-label="Verwandte Themen" sx={{ mt: 6 }}>
-              <Typography variant="h2" component="h2" fontWeight={800} sx={{ fontSize: { xs: '1.35rem', md: '1.6rem' }, mb: 2 }}>
+              <Typography
+                variant="h2"
+                component="h2"
+                sx={{
+                  fontWeight: 800,
+                  fontSize: { xs: '1.35rem', md: '1.6rem' },
+                  mb: 2
+                }}>
                 Weiterlesen
               </Typography>
               <Stack spacing={1}>
@@ -179,7 +206,9 @@ export function SeoLandingPageView({ page }: SeoLandingPageViewProps) {
       </Container>
 
       <CtaBand title={page.cta.title} subtitle={page.cta.subtitle}>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{
+          justifyContent: "center"
+        }}>
           <Button component={Link} to="/mandant-beantragen" variant="contained" size="large">
             Jetzt Mandant beantragen
           </Button>

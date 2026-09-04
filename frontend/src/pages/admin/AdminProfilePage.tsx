@@ -83,7 +83,11 @@ export function AdminProfilePage() {
 
   return (
     <AdminLayout title="Mein Profil">
-      <Typography color="text.secondary" sx={{ mb: 3 }}>
+      <Typography
+        sx={{
+          color: "text.secondary",
+          mb: 3
+        }}>
         Persönliche Daten und Anmeldemethoden für Ihr Administrator-Konto.
       </Typography>
 
@@ -107,7 +111,9 @@ export function AdminProfilePage() {
         />
 
         <Divider sx={{ my: 2 }} />
-        <Typography variant="subtitle1" fontWeight={600}>Anmeldemethoden</Typography>
+        <Typography variant="subtitle1" sx={{
+          fontWeight: 600
+        }}>Anmeldemethoden</Typography>
         <FormControlLabel
           control={<Switch checked={magicLinkEnabled} onChange={(e) => setMagicLinkEnabled(e.target.checked)} />}
           label="Magic-Link-Anmeldung"
@@ -118,8 +124,15 @@ export function AdminProfilePage() {
         />
 
         <Divider sx={{ my: 2 }} />
-        <Typography variant="subtitle1" fontWeight={600}>Benachrichtigungen</Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        <Typography variant="subtitle1" sx={{
+          fontWeight: 600
+        }}>Benachrichtigungen</Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            mb: 1
+          }}>
           E-Mails zu Bestellungen, Stornierungen, Zahlungen und weiteren Ereignissen dieses Mandanten.
         </Typography>
         <FormControlLabel
@@ -133,7 +146,14 @@ export function AdminProfilePage() {
           label="E-Mail-Benachrichtigungen erhalten"
         />
         {!email.trim() && (
-          <Typography variant="caption" color="text.secondary" display="block" sx={{ ml: 4, mt: -0.5 }}>
+          <Typography
+            variant="caption"
+            sx={{
+              color: "text.secondary",
+              display: "block",
+              ml: 4,
+              mt: -0.5
+            }}>
             Bitte zuerst eine E-Mail-Adresse hinterlegen.
           </Typography>
         )}
@@ -141,7 +161,9 @@ export function AdminProfilePage() {
         {passwordEnabled && (
           <>
             <Divider sx={{ my: 2 }} />
-            <Typography variant="subtitle1" fontWeight={600}>Passwort ändern</Typography>
+            <Typography variant="subtitle1" sx={{
+              fontWeight: 600
+            }}>Passwort ändern</Typography>
             <TextField label="Aktuelles Passwort" type="password" fullWidth margin="normal" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
             <TextField label="Neues Passwort" type="password" fullWidth margin="normal" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
             <TextField label="Neues Passwort bestätigen" type="password" fullWidth margin="normal" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />

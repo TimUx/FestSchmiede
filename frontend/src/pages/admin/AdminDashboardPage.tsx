@@ -7,7 +7,7 @@ import {
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import WarningIcon from '@mui/icons-material/Warning';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutlined';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { AdminLayout } from '@/components/AdminLayout';
 import { RealtimeStatusPanel } from '@/components/RealtimeStatusPanel';
@@ -48,10 +48,17 @@ export function AdminDashboardPage() {
 
   return (
     <AdminLayout title="Administration">
-      <Typography variant="h4" fontWeight={800} gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{
+        fontWeight: 800
+      }}>
         Administration
       </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+      <Typography
+        variant="body1"
+        sx={{
+          color: "text.secondary",
+          mb: 3
+        }}>
         Veranstalter, Team und Funktionen verwalten.
       </Typography>
 
@@ -94,9 +101,13 @@ export function AdminDashboardPage() {
                   <CardActionArea component={Link} to={tile.path} sx={{ height: '100%' }}>
                     <CardContent>
                       <Box sx={{ mb: 1 }}>{resolveAdminIcon(tile.icon)}</Box>
-                      <Typography variant="h6" fontWeight={700}>{tile.label}</Typography>
+                      <Typography variant="h6" sx={{
+                        fontWeight: 700
+                      }}>{tile.label}</Typography>
                       {tile.description && (
-                        <Typography variant="body2" color="text.secondary">{tile.description}</Typography>
+                        <Typography variant="body2" sx={{
+                          color: "text.secondary"
+                        }}>{tile.description}</Typography>
                       )}
                     </CardContent>
                   </CardActionArea>
@@ -107,19 +118,25 @@ export function AdminDashboardPage() {
 
           <Accordion disableGutters elevation={0} sx={{ border: 1, borderColor: 'divider' }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle2" fontWeight={600}>Erweitert</Typography>
+              <Typography variant="subtitle2" sx={{
+                fontWeight: 600
+              }}>Erweitert</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <Stack spacing={2}>
                 <RealtimeStatusPanel />
                 {health.length > 0 && (
                   <Paper variant="outlined" sx={{ p: 2 }}>
-                    <Typography variant="subtitle2" fontWeight={600} gutterBottom>Funktionsstatus</Typography>
+                    <Typography variant="subtitle2" gutterBottom sx={{
+                      fontWeight: 600
+                    }}>Funktionsstatus</Typography>
                     <Stack spacing={1}>
                       {health.map((item) => (
                         <Box key={item.id} sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                           {healthIcons[item.status]}
-                          <Typography variant="body2" fontWeight={600}>{item.label}</Typography>
+                          <Typography variant="body2" sx={{
+                            fontWeight: 600
+                          }}>{item.label}</Typography>
                           <Chip
                             size="small"
                             label={
@@ -131,7 +148,9 @@ export function AdminDashboardPage() {
                             variant="outlined"
                           />
                           {item.description && (
-                            <Typography variant="caption" color="text.secondary">{item.description}</Typography>
+                            <Typography variant="caption" sx={{
+                              color: "text.secondary"
+                            }}>{item.description}</Typography>
                           )}
                         </Box>
                       ))}

@@ -69,7 +69,13 @@ export function PlatformTenantsPage() {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2
+        }}>
         <Typography variant="h4">Mandanten</Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => setShowCreate(!showCreate)}>
           Neuer Mandant
@@ -79,7 +85,12 @@ export function PlatformTenantsPage() {
       {showCreate && (
         <Paper sx={{ p: 2, mb: 2 }}>
           <Typography variant="h6" gutterBottom>Mandant erstellen</Typography>
-          <Box display="flex" gap={2} flexWrap="wrap">
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              flexWrap: "wrap"
+            }}>
             <TextField label="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             <TextField label="Ansprechpartner" value={form.contactName} onChange={(e) => setForm({ ...form, contactName: e.target.value })} />
             <TextField label="E-Mail" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
@@ -90,7 +101,12 @@ export function PlatformTenantsPage() {
         </Paper>
       )}
 
-      <Box display="flex" gap={2} mb={2}>
+      <Box
+        sx={{
+          display: "flex",
+          gap: 2,
+          mb: 2
+        }}>
         <TextField label="Suche" value={search} onChange={(e) => setSearch(e.target.value)} size="small" />
         <FormControl size="small" sx={{ minWidth: 140 }}>
           <InputLabel>Status</InputLabel>

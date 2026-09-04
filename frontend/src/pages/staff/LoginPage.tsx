@@ -194,10 +194,18 @@ export function LoginPage() {
   return (
     <PublicLayout>
       <Box sx={{ maxWidth: 440, mx: 'auto', mt: 4 }}>
-        <Typography variant="h4" fontWeight={800} gutterBottom align="center">
+        <Typography variant="h4" gutterBottom align="center" sx={{
+          fontWeight: 800
+        }}>
           {isAdminLogin ? 'Admin-Login' : 'Mitarbeiter-Login'}
         </Typography>
-        <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
+        <Typography
+          variant="body2"
+          align="center"
+          sx={{
+            color: "text.secondary",
+            mb: 2
+          }}>
           {passwordlessOnly ? (
             'Melden Sie sich passwortlos per E-Mail an.'
           ) : isAdminLogin ? (
@@ -254,7 +262,12 @@ export function LoginPage() {
 
           {showMagic && tab === (showPassword ? 1 : 0) && (
             <Box>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "text.secondary",
+                  mb: 2
+                }}>
                 Wir senden Ihnen einen einmaligen Anmeldelink per E-Mail.
               </Typography>
               <Button variant="contained" fullWidth size="large" disabled={loading || !identifier}
@@ -266,7 +279,12 @@ export function LoginPage() {
 
           {showCode && tab === (showPassword ? (showMagic ? 2 : 1) : (showMagic ? 1 : 0)) && (
             <Box>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "text.secondary",
+                  mb: 2
+                }}>
                 Wir senden Ihnen einen einmaligen Anmeldecode per E-Mail.
               </Typography>
               <Button variant="outlined" fullWidth sx={{ mb: 2 }} disabled={loading || !identifier}
@@ -276,7 +294,7 @@ export function LoginPage() {
               <Divider sx={{ my: 2 }} />
               <form onSubmit={handleCodeVerify}>
                 <TextField label="Anmeldecode" fullWidth required value={code}
-                  onChange={(e) => setCode(e.target.value)} sx={{ mb: 2 }} inputProps={{ inputMode: 'numeric' }} />
+                  onChange={(e) => setCode(e.target.value)} sx={{ mb: 2 }} slotProps={{ htmlInput: { inputMode: 'numeric' } }} />
                 <Button type="submit" variant="contained" fullWidth disabled={loading}>
                   Code bestätigen
                 </Button>
@@ -289,7 +307,12 @@ export function LoginPage() {
       <Dialog open={forgotOpen} onClose={() => setForgotOpen(false)} maxWidth="xs" fullWidth>
         <DialogTitle>Passwort vergessen</DialogTitle>
         <DialogContent>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              mb: 2
+            }}>
             Geben Sie Benutzername oder E-Mail ein. Sie erhalten einen Link, falls Passwort-Anmeldung für das Konto aktiv ist.
           </Typography>
           <TextField

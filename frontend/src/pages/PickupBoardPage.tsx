@@ -102,7 +102,9 @@ export function PickupBoardPage() {
   if (availableEvents.length === 0) {
     return (
       <Box sx={{ minHeight: '100vh', bgcolor: '#1a1a2e', color: '#fff', p: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Typography variant="h4" color="grey.500">
+        <Typography variant="h4" sx={{
+          color: "grey.500"
+        }}>
           Keine Veranstaltung für Abholungen verfügbar
         </Typography>
       </Box>
@@ -112,10 +114,23 @@ export function PickupBoardPage() {
   if (!eventId) {
     return (
       <Box sx={{ minHeight: '100vh', bgcolor: '#1a1a2e', color: '#fff', p: 4 }}>
-        <Typography variant="h2" align="center" fontWeight={800} sx={{ mb: 2, fontSize: { xs: '2rem', md: '3rem' } }}>
+        <Typography
+          variant="h2"
+          align="center"
+          sx={{
+            fontWeight: 800,
+            mb: 2,
+            fontSize: { xs: '2rem', md: '3rem' }
+          }}>
           Veranstaltung wählen
         </Typography>
-        <Typography variant="h5" align="center" color="grey.400" sx={{ mb: 4 }}>
+        <Typography
+          variant="h5"
+          align="center"
+          sx={{
+            color: "grey.400",
+            mb: 4
+          }}>
           Bitte wählen Sie die Veranstaltung für das Abholboard.
         </Typography>
         {error && (
@@ -139,11 +154,17 @@ export function PickupBoardPage() {
                 }}
               >
                 <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="h5" fontWeight={800}>{event.name}</Typography>
-                  <Typography variant="body1" color="grey.400">
+                  <Typography variant="h5" sx={{
+                    fontWeight: 800
+                  }}>{event.name}</Typography>
+                  <Typography variant="body1" sx={{
+                    color: "grey.400"
+                  }}>
                     {event.eventDateLabel}
                   </Typography>
-                  <Typography variant="body2" color="grey.500">
+                  <Typography variant="body2" sx={{
+                    color: "grey.500"
+                  }}>
                     {event.startTime} – {event.endTime}
                   </Typography>
                 </Box>
@@ -169,13 +190,21 @@ export function PickupBoardPage() {
       <Typography
         variant="h2"
         align="center"
-        fontWeight={800}
-        sx={{ mb: 1, fontSize: { xs: '2rem', md: '3rem' } }}
-      >
+        sx={{
+          fontWeight: 800,
+          mb: 1,
+          fontSize: { xs: '2rem', md: '3rem' }
+        }}>
         Abholbereit
       </Typography>
       {selectedEvent && (
-        <Typography variant="h5" align="center" color="grey.400" sx={{ mb: 2 }}>
+        <Typography
+          variant="h5"
+          align="center"
+          sx={{
+            color: "grey.400",
+            mb: 2
+          }}>
           {selectedEvent.name} · {selectedEvent.eventDateLabel}
         </Typography>
       )}
@@ -211,7 +240,12 @@ export function PickupBoardPage() {
         }}
       >
         {orders.length === 0 && (
-          <Typography variant="h4" color="grey.500" sx={{ mt: 8 }}>
+          <Typography
+            variant="h4"
+            sx={{
+              color: "grey.500",
+              mt: 8
+            }}>
             Keine Bestellungen abholbereit
           </Typography>
         )}
@@ -235,10 +269,11 @@ export function PickupBoardPage() {
             }}
           >
             <Typography
-              fontWeight={900}
-              color="#e94560"
-              sx={{ fontSize: { xs: '3rem', sm: '4rem', md: '5rem' } }}
-            >
+              sx={{
+                fontWeight: 900,
+                color: "#e94560",
+                fontSize: { xs: '3rem', sm: '4rem', md: '5rem' }
+              }}>
               {order.displayNumber}
             </Typography>
           </Box>

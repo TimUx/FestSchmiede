@@ -23,7 +23,9 @@ export function MarketingBreadcrumbs({ items }: MarketingBreadcrumbsProps) {
         const isLast = index === items.length - 1;
         if (isLast || !item.to) {
           return (
-            <Typography key={`${item.label}-${index}`} color="text.primary" variant="body2">
+            <Typography key={`${item.label}-${index}`} variant="body2" sx={{
+              color: "text.primary"
+            }}>
               {item.label}
             </Typography>
           );

@@ -88,9 +88,15 @@ function StatCard({ title, value, subtitle }: { title: string; value: string | n
   return (
     <Card variant="outlined" sx={{ height: '100%' }}>
       <CardContent>
-        <Typography variant="overline" color="text.secondary">{title}</Typography>
-        <Typography variant="h4" fontWeight={800}>{value}</Typography>
-        {subtitle && <Typography variant="caption" color="text.secondary">{subtitle}</Typography>}
+        <Typography variant="overline" sx={{
+          color: "text.secondary"
+        }}>{title}</Typography>
+        <Typography variant="h4" sx={{
+          fontWeight: 800
+        }}>{value}</Typography>
+        {subtitle && <Typography variant="caption" sx={{
+          color: "text.secondary"
+        }}>{subtitle}</Typography>}
       </CardContent>
     </Card>
   );
@@ -123,14 +129,18 @@ function OverviewSection({ data, loading }: { data: PaymentDashboard | null; loa
 
       {data.recentErrors.length > 0 && (
         <Paper sx={{ p: 2 }}>
-          <Typography variant="h6" fontWeight={700} gutterBottom>Letzte Fehler</Typography>
+          <Typography variant="h6" gutterBottom sx={{
+            fontWeight: 700
+          }}>Letzte Fehler</Typography>
           <Stack spacing={1}>
             {data.recentErrors.map((e, i) => (
               <Box key={i} sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
                 <ErrorIcon fontSize="small" color="error" />
                 <Typography variant="body2">{LOG_ACTION_LABELS[e.action] ?? e.action}</Typography>
                 {e.providerId && <Chip size="small" label={e.providerId} />}
-                <Typography variant="caption" color="text.secondary">
+                <Typography variant="caption" sx={{
+                  color: "text.secondary"
+                }}>
                   {new Date(e.at).toLocaleString('de-DE')}
                 </Typography>
               </Box>
@@ -197,8 +207,12 @@ function ProvidersSection({ token }: { token: string }) {
                 <Stack spacing={1}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <Box>
-                      <Typography variant="h6" fontWeight={700}>{p.name}</Typography>
-                      <Typography variant="body2" color="text.secondary">{p.description}</Typography>
+                      <Typography variant="h6" sx={{
+                        fontWeight: 700
+                      }}>{p.name}</Typography>
+                      <Typography variant="body2" sx={{
+                        color: "text.secondary"
+                      }}>{p.description}</Typography>
                     </Box>
                     <HealthDot ok={p.health.ok} />
                   </Box>
@@ -207,7 +221,9 @@ function ProvidersSection({ token }: { token: string }) {
                     <Chip size="small" variant="outlined" label={`v${p.version ?? '1.0.0'}`} />
                     {p.sandbox && <Chip size="small" label="Testmodus" color="warning" />}
                   </Box>
-                  <Typography variant="caption" color="text.secondary">{p.health.message}</Typography>
+                  <Typography variant="caption" sx={{
+                    color: "text.secondary"
+                  }}>{p.health.message}</Typography>
                   <Stack direction="row" spacing={1}>
                     <Button
                       size="small"
@@ -412,7 +428,9 @@ function PresetsSection({ token }: { token: string }) {
     <Stack spacing={2} sx={{ maxWidth: 560 }}>
       {error && <Alert severity="error">{error}</Alert>}
       {success && <Alert severity="success">{success}</Alert>}
-      <Typography variant="body1" color="text.secondary">
+      <Typography variant="body1" sx={{
+        color: "text.secondary"
+      }}>
         Wählen Sie, wie Gäste bei Ihrer Veranstaltung bezahlen können.
       </Typography>
       <FormControl>
@@ -529,7 +547,9 @@ function PaymentsSection({ token }: { token: string }) {
 
   return (
     <Stack spacing={2}>
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{
+        alignItems: "center"
+      }}>
         <TextField
           select
           size="small"
@@ -579,7 +599,9 @@ function PaymentsSection({ token }: { token: string }) {
           </Table>
         </TableContainer>
       )}
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack direction="row" spacing={1} sx={{
+        alignItems: "center"
+      }}>
         <Button disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>Zurück</Button>
         <Typography variant="body2">Seite {page} · {total} gesamt</Typography>
         <Button disabled={items.length < 25} onClick={() => setPage((p) => p + 1)}>Weiter</Button>
@@ -595,9 +617,13 @@ function PaymentsSection({ token }: { token: string }) {
               ))}
               {Array.isArray(selected.statusHistory) && selected.statusHistory.length > 0 && (
                 <Box>
-                  <Typography variant="subtitle2" fontWeight={700}>Status-Historie</Typography>
+                  <Typography variant="subtitle2" sx={{
+                    fontWeight: 700
+                  }}>Status-Historie</Typography>
                   {(selected.statusHistory as { action: string; at: string }[]).map((h, i) => (
-                    <Typography key={i} variant="caption" display="block">
+                    <Typography key={i} variant="caption" sx={{
+                      display: "block"
+                    }}>
                       {LOG_ACTION_LABELS[h.action] ?? h.action} – {new Date(h.at).toLocaleString('de-DE')}
                     </Typography>
                   ))}
@@ -796,11 +822,20 @@ function HealthSection({ token }: { token: string }) {
         <Grid key={p.id} size={{ xs: 12, sm: 6, md: 4 }}>
           <Card variant="outlined">
             <CardContent>
-              <Stack direction="row" spacing={1} alignItems="center">
+              <Stack direction="row" spacing={1} sx={{
+                alignItems: "center"
+              }}>
                 <HealthDot ok={p.health.ok} />
-                <Typography fontWeight={700}>{p.name}</Typography>
+                <Typography sx={{
+                  fontWeight: 700
+                }}>{p.name}</Typography>
               </Stack>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>{p.health.message}</Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "text.secondary",
+                  mt: 1
+                }}>{p.health.message}</Typography>
               <Box sx={{ mt: 1 }}><StatusChip status={p.status} /></Box>
             </CardContent>
           </Card>
@@ -830,7 +865,13 @@ function StatisticsSection({ token }: { token: string }) {
 
   return (
     <Stack spacing={2}>
-      <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{
+          alignItems: "center",
+          flexWrap: "wrap"
+        }}>
         <TextField select size="small" label="Zeitraum" value={period} onChange={(e) => setPeriod(e.target.value as typeof period)}>
           <MenuItem value="today">Heute</MenuItem>
           <MenuItem value="week">Woche</MenuItem>
@@ -934,8 +975,16 @@ export function PaymentAdminPage() {
     <AdminLayout title="Online-Zahlung" fullWidth>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
-        <Typography variant="h5" fontWeight={800}>Online-Zahlung</Typography>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 2
+        }}>
+        <Typography variant="h5" sx={{
+          fontWeight: 800
+        }}>Online-Zahlung</Typography>
         {activeTab === 'overview' && (
           <Tooltip title="Aktualisieren">
             <IconButton onClick={() => void loadDashboard()}><RefreshIcon /></IconButton>
@@ -959,7 +1008,9 @@ export function PaymentAdminPage() {
       {advancedTabs.length > 0 && (
         <Accordion sx={{ mb: 3 }} defaultExpanded={advancedTabs.some((t) => t.id === activeTab)}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography fontWeight={600}>Erweitert</Typography>
+            <Typography sx={{
+              fontWeight: 600
+            }}>Erweitert</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Tabs

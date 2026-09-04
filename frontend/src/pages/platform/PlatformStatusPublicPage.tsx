@@ -10,16 +10,20 @@ export function PlatformStatusPublicPage() {
     <PlatformPublicLayout>
       <BrandingHead titleSuffix="Status" path="/plattform-status" description="Aktueller Betriebsstatus der FestSchmiede-Plattform." />
       <Container maxWidth="md" sx={{ py: 4 }}>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
+        <Typography variant="h4" gutterBottom sx={{
+          fontWeight: 700
+        }}>
           Plattformstatus
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" sx={{ mb: 2 }}>
           {platform.maintenanceMode
             ? 'Die Plattform befindet sich derzeit in Wartung.'
             : 'Alle Systeme sind betriebsbereit.'}
         </Typography>
         {platform.maintenanceMessage && (
-          <Typography color="text.secondary">{platform.maintenanceMessage}</Typography>
+          <Typography sx={{
+            color: "text.secondary"
+          }}>{platform.maintenanceMessage}</Typography>
         )}
       </Container>
     </PlatformPublicLayout>

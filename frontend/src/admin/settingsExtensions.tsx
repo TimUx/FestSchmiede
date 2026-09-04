@@ -46,7 +46,9 @@ function ClubLogoExtension() {
           />
         </Button>
       </Box>
-      <Typography variant="body2" color="text.secondary">
+      <Typography variant="body2" sx={{
+        color: "text.secondary"
+      }}>
         Das Logo erscheint im öffentlichen Kopfbereich und auf der Kontaktseite, sofern hochgeladen.
       </Typography>
     </Box>
@@ -116,14 +118,27 @@ function PaymentProviderTestExtension() {
 
   return (
     <Box sx={{ mb: 2 }}>
-      <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+      <Typography variant="subtitle1" gutterBottom sx={{
+        fontWeight: 600
+      }}>
         Stripe-Verbindung testen
       </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+      <Typography
+        variant="body2"
+        sx={{
+          color: "text.secondary",
+          mb: 1
+        }}>
         Webhook-URL: <code>/api/modules/features/payment/webhooks/stripe</code>
       </Typography>
       {testError && <Alert severity="error" sx={{ mb: 2 }}>{testError}</Alert>}
-      <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap">
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: "center",
+          gap: 1,
+          flexWrap: "wrap"
+        }}>
         <Button size="small" variant="outlined" disabled={testing} onClick={() => void runTest()}>
           Stripe testen
         </Button>
@@ -135,7 +150,9 @@ function PaymentProviderTestExtension() {
           />
         )}
         {health?.message && (
-          <Typography variant="caption" color="text.secondary">{health.message}</Typography>
+          <Typography variant="caption" sx={{
+            color: "text.secondary"
+          }}>{health.message}</Typography>
         )}
       </Stack>
     </Box>
@@ -164,14 +181,27 @@ function NotificationSmtpTestExtension() {
 
   return (
     <Box sx={{ mb: 2 }}>
-      <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+      <Typography variant="subtitle1" gutterBottom sx={{
+        fontWeight: 600
+      }}>
         SMTP-Verbindung testen
       </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+      <Typography
+        variant="body2"
+        sx={{
+          color: "text.secondary",
+          mb: 1
+        }}>
         SMTP wird zentral in den Plattform-Einstellungen konfiguriert. Optional können hier nur Absendername und Reply-To überschrieben werden.
       </Typography>
       {testError && <Alert severity="error" sx={{ mb: 2 }}>{testError}</Alert>}
-      <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap">
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: "center",
+          gap: 1,
+          flexWrap: "wrap"
+        }}>
         <Button size="small" variant="outlined" disabled={testing} onClick={() => void runTest()}>
           Verbindung testen
         </Button>
@@ -183,7 +213,9 @@ function NotificationSmtpTestExtension() {
           />
         )}
         {health?.message && (
-          <Typography variant="caption" color="text.secondary">{health.message}</Typography>
+          <Typography variant="caption" sx={{
+            color: "text.secondary"
+          }}>{health.message}</Typography>
         )}
       </Stack>
     </Box>
@@ -224,11 +256,19 @@ function PrinterTestExtension() {
 
   return (
     <Box sx={{ mb: 2 }}>
-      <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+      <Typography variant="subtitle1" gutterBottom sx={{
+        fontWeight: 600
+      }}>
         Drucker testen &amp; erkennen
       </Typography>
       {testError && <Alert severity="error" sx={{ mb: 2 }}>{testError}</Alert>}
-      <Stack direction="row" gap={1} flexWrap="wrap" sx={{ mb: 1 }}>
+      <Stack
+        direction="row"
+        sx={{
+          gap: 1,
+          flexWrap: "wrap",
+          mb: 1
+        }}>
         {['printer1', 'printer2', 'printer3'].map((slot) => (
           <Button
             key={slot}
@@ -254,7 +294,12 @@ function PrinterTestExtension() {
         />
       ))}
       {discovered.length > 0 && (
-        <Typography variant="caption" color="text.secondary" display="block">
+        <Typography
+          variant="caption"
+          sx={{
+            color: "text.secondary",
+            display: "block"
+          }}>
           Gefunden: {discovered.map((d) => `${d.host}:${d.port}`).join(', ')}
         </Typography>
       )}

@@ -11,7 +11,7 @@ import {
   keyframes,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlined';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { PaymentQrCode } from '@/components/PaymentQrCode';
@@ -114,8 +114,9 @@ export function PaymentDialog({
         <Typography
           id="payment-dialog-description"
           variant="body2"
-          color="text.secondary"
-          sx={success ? {
+          sx={[{
+            color: "text.secondary"
+          }, success ? {
             position: 'absolute',
             width: 1,
             height: 1,
@@ -124,8 +125,7 @@ export function PaymentDialog({
             clip: 'rect(0,0,0,0)',
             whiteSpace: 'nowrap',
             border: 0,
-          } : { mb: 3 }}
-        >
+          } : { mb: 3 }]}>
           {success
             ? 'Zahlung abgeschlossen'
             : 'Scannen Sie den QR-Code oder tippen Sie auf „Jetzt bezahlen“.'}
@@ -133,32 +133,52 @@ export function PaymentDialog({
         {success ? (
           <Box>
             <CheckCircleIcon color="success" sx={{ fontSize: 72, mb: 2 }} />
-            <Typography id="payment-dialog-title" variant="h5" fontWeight={800} gutterBottom>
+            <Typography id="payment-dialog-title" variant="h5" gutterBottom sx={{
+              fontWeight: 800
+            }}>
               Zahlung erfolgreich
             </Typography>
-            <Typography variant="h3" fontWeight={900} color="primary" sx={{ my: 2 }}>
+            <Typography
+              variant="h3"
+              color="primary"
+              sx={{
+                fontWeight: 900,
+                my: 2
+              }}>
               {order.displayNumber}
             </Typography>
-            <Typography color="text.secondary">
+            <Typography sx={{
+              color: "text.secondary"
+            }}>
               Ihre Abholnummer – bitte merken oder später vorzeigen.
             </Typography>
           </Box>
         ) : (
           <>
-            <Typography id="payment-dialog-title" variant="h5" fontWeight={800} gutterBottom>
+            <Typography id="payment-dialog-title" variant="h5" gutterBottom sx={{
+              fontWeight: 800
+            }}>
               Bitte bezahlen Sie Ihre Bestellung
             </Typography>
 
             <Stack spacing={2} sx={{ mb: 3 }}>
               <Box>
-                <Typography variant="overline" color="text.secondary">Betrag</Typography>
-                <Typography variant="h4" fontWeight={800} color="primary">
+                <Typography variant="overline" sx={{
+                  color: "text.secondary"
+                }}>Betrag</Typography>
+                <Typography variant="h4" color="primary" sx={{
+                  fontWeight: 800
+                }}>
                   {formatPrice(order.totalPrice)}
                 </Typography>
               </Box>
               <Box>
-                <Typography variant="overline" color="text.secondary">Zahlungsart</Typography>
-                <Typography variant="body1" fontWeight={600}>
+                <Typography variant="overline" sx={{
+                  color: "text.secondary"
+                }}>Zahlungsart</Typography>
+                <Typography variant="body1" sx={{
+                  fontWeight: 600
+                }}>
                   {paymentLabel}
                 </Typography>
               </Box>
@@ -191,13 +211,13 @@ export function PaymentDialog({
                   <CircularProgress size={28} aria-hidden />
                   <Typography
                     variant="h6"
-                    fontWeight={600}
                     sx={{
+                      fontWeight: 600,
+
                       '@media (prefers-reduced-motion: no-preference)': {
                         animation: `${pulse} 2s ease-in-out infinite`,
-                      },
-                    }}
-                  >
+                      }
+                    }}>
                     {paymentStatusLabel(status)}
                   </Typography>
                 </Box>
@@ -205,7 +225,9 @@ export function PaymentDialog({
 
               {failure && (
                 <Alert severity="error" icon={<ErrorOutlineIcon />} sx={{ textAlign: 'left' }}>
-                  <Typography fontWeight={700}>{paymentStatusLabel(status)}</Typography>
+                  <Typography sx={{
+                    fontWeight: 700
+                  }}>{paymentStatusLabel(status)}</Typography>
                   <Typography variant="body2" sx={{ mt: 0.5 }}>
                     Ihre Bestellung bleibt gespeichert. Sie können erneut bezahlen oder eine andere Zahlungsart wählen.
                   </Typography>

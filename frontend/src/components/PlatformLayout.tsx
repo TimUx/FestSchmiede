@@ -55,8 +55,12 @@ export function PlatformLayout({ children }: { children: React.ReactNode }) {
       <Box sx={{ px: 2, py: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <FestSchmiedeLogo size="drawer" variant="onSurface" />
         <Box sx={{ minWidth: 0 }}>
-          <Typography variant="subtitle2" color="text.secondary">Plattform</Typography>
-          <Typography variant="h6" fontWeight={700} noWrap>{platform?.name ?? 'FestSchmiede'}</Typography>
+          <Typography variant="subtitle2" sx={{
+            color: "text.secondary"
+          }}>Plattform</Typography>
+          <Typography variant="h6" noWrap sx={{
+            fontWeight: 700
+          }}>{platform?.name ?? 'FestSchmiede'}</Typography>
         </Box>
       </Box>
       <List>

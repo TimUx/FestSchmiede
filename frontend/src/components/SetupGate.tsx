@@ -17,7 +17,13 @@ export function SetupGate({ children }: { children: React.ReactNode }) {
 
   if (completed === null) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="40vh">
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "40vh"
+        }}>
         <CircularProgress />
       </Box>
     );

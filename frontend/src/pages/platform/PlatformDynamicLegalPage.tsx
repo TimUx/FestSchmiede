@@ -45,7 +45,9 @@ export function PlatformDynamicLegalPage() {
     <PlatformPublicLayout>
       <BrandingHead titleSuffix={page.title} path={`/rechtliches/${page.slug}`} />
       <Container maxWidth="md" sx={{ py: 4 }}>
-        <Typography variant="h4" fontWeight={700} gutterBottom>{page.title}</Typography>
+        <Typography variant="h4" gutterBottom sx={{
+          fontWeight: 700
+        }}>{page.title}</Typography>
         <Box
           sx={{ '& a': { color: 'primary.main' }, lineHeight: 1.7 }}
           dangerouslySetInnerHTML={{ __html: page.contentHtml }}

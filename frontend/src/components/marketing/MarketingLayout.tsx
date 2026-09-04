@@ -24,7 +24,9 @@ export function MarketingSection({ title, subtitle, children, id, sx, dark }: Ma
       }}
     >
       <Container maxWidth="lg">
-        <Typography variant="h4" component="h2" fontWeight={800} gutterBottom>
+        <Typography variant="h4" component="h2" gutterBottom sx={{
+          fontWeight: 800
+        }}>
           {title}
         </Typography>
         {subtitle && (
@@ -84,22 +86,35 @@ export function MarketingHero({ title, subtitle, children, showLogo = false }: H
             <Typography
               component="h1"
               variant="h2"
-              fontWeight={900}
               sx={{
+                fontWeight: 900,
                 flex: 1,
                 fontSize: { xs: '1.65rem', sm: '1.85rem', md: '2.25rem', lg: '2.75rem' },
-                lineHeight: 1.2,
-              }}
-            >
+                lineHeight: 1.2
+              }}>
               {title}
             </Typography>
           </Box>
         ) : (
-          <Typography variant="h2" component="h1" fontWeight={900} sx={{ fontSize: { xs: '2rem', md: '3rem' }, mb: 2 }}>
+          <Typography
+            variant="h2"
+            component="h1"
+            sx={{
+              fontWeight: 900,
+              fontSize: { xs: '2rem', md: '3rem' },
+              mb: 2
+            }}>
             {title}
           </Typography>
         )}
-        <Typography variant="h5" color="text.secondary" sx={{ maxWidth: 760, mb: 4, lineHeight: 1.5 }}>
+        <Typography
+          variant="h5"
+          sx={{
+            color: "text.secondary",
+            maxWidth: 760,
+            mb: 4,
+            lineHeight: 1.5
+          }}>
           {subtitle}
         </Typography>
         {children}
@@ -112,11 +127,17 @@ export function CtaBand({ title, subtitle, children }: { title: string; subtitle
   return (
     <Box sx={{ py: { xs: 5, md: 7 }, bgcolor: 'background.paper', color: 'text.primary' }}>
       <Container maxWidth="md" sx={{ textAlign: 'center' }}>
-        <Typography variant="h4" fontWeight={800} gutterBottom>
+        <Typography variant="h4" gutterBottom sx={{
+          fontWeight: 800
+        }}>
           {title}
         </Typography>
         {subtitle && (
-          <Typography color="text.secondary" sx={{ mb: 3 }}>
+          <Typography
+            sx={{
+              color: "text.secondary",
+              mb: 3
+            }}>
             {subtitle}
           </Typography>
         )}

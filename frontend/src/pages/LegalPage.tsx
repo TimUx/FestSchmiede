@@ -39,11 +39,18 @@ export function LegalPage() {
         <Alert severity="warning">{error || 'Diese rechtliche Seite ist derzeit nicht verfuegbar.'}</Alert>
       ) : (
         <Paper sx={{ p: { xs: 3, sm: 4 } }}>
-          <Typography variant="h4" fontWeight={800} gutterBottom>
+          <Typography variant="h4" gutterBottom sx={{
+            fontWeight: 800
+          }}>
             {page.title}
           </Typography>
           {page.updatedAt && (
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                mb: 3
+              }}>
               Letzte Aktualisierung: {new Date(page.updatedAt).toLocaleString('de-DE')}
             </Typography>
           )}

@@ -35,7 +35,11 @@ export function PlatformDomainsPage() {
   return (
     <Box>
       <Typography variant="h4" gutterBottom>Domain &amp; Routing</Typography>
-      <Typography color="text.secondary" sx={{ mb: 2 }}>
+      <Typography
+        sx={{
+          color: "text.secondary",
+          mb: 2
+        }}>
         Übersicht der aktiven Hosts und des pfadbasierten Mandanten-Routings. Technische Werte werden über
         Docker/ENV gesetzt und sind hier schreibgeschützt.
       </Typography>
@@ -61,7 +65,9 @@ export function PlatformDomainsPage() {
       {domains.allowedDomains && domains.allowedDomains.length > 0 && (
         <Box sx={{ mt: 3 }}>
           <Typography variant="h6" gutterBottom>Vertrauenswürdige Hosts</Typography>
-          <Typography component="div" color="text.secondary">
+          <Typography component="div" sx={{
+            color: "text.secondary"
+          }}>
             {domains.allowedDomains.map((d) => (
               <Chip key={d} label={d} size="small" sx={{ mr: 1, mb: 1 }} />
             ))}
@@ -71,7 +77,9 @@ export function PlatformDomainsPage() {
       {domains.allowedOrigins && domains.allowedOrigins.length > 0 && (
         <Box sx={{ mt: 3 }}>
           <Typography variant="h6" gutterBottom>CORS (Allowed Origins)</Typography>
-          <Typography component="div" color="text.secondary">
+          <Typography component="div" sx={{
+            color: "text.secondary"
+          }}>
             {domains.allowedOrigins.map((d) => (
               <Chip key={d} label={d} size="small" sx={{ mr: 1, mb: 1 }} />
             ))}

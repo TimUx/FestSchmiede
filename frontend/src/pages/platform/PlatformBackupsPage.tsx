@@ -152,7 +152,11 @@ export function PlatformBackupsPage() {
   return (
     <Box>
       <Typography variant="h4" gutterBottom>Backups</Typography>
-      <Typography color="text.secondary" sx={{ mb: 2 }}>
+      <Typography
+        sx={{
+          color: "text.secondary",
+          mb: 2
+        }}>
         Vollbackups sichern die gesamte PostgreSQL-Datenbank. Mandanten-Backups enthalten nur die Daten eines Vereins
         (Einstellungen, Events, Bestellungen, Module).
       </Typography>
@@ -179,7 +183,13 @@ export function PlatformBackupsPage() {
         <Typography variant="body2">
           Restore verfügbar: {overview.restoreAvailable ? 'Ja' : 'Nein'}
         </Typography>
-        <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>
+        <Typography
+          variant="caption"
+          sx={{
+            color: "text.secondary",
+            display: "block",
+            mt: 1
+          }}>
           Speicherort: {overview.backupDir}
         </Typography>
         <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -212,7 +222,11 @@ export function PlatformBackupsPage() {
             {overview.items.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6}>
-                  <Typography color="text.secondary" sx={{ py: 2 }}>
+                  <Typography
+                    sx={{
+                      color: "text.secondary",
+                      py: 2
+                    }}>
                     Noch keine Backups vorhanden.
                   </Typography>
                 </TableCell>
@@ -227,7 +241,9 @@ export function PlatformBackupsPage() {
                 <TableCell>
                   <Typography variant="body2">{entry.filename}</Typography>
                   {entry.tenantName && (
-                    <Typography variant="caption" color="text.secondary">{entry.tenantName} ({entry.tenantSlug})</Typography>
+                    <Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>{entry.tenantName} ({entry.tenantSlug})</Typography>
                   )}
                 </TableCell>
                 <TableCell>{formatBytes(entry.sizeBytes)}</TableCell>

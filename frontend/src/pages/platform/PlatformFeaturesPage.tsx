@@ -14,8 +14,12 @@ export function PlatformFeaturesPage() {
             <Grid key={f.title} size={{ xs: 12, sm: 6 }}>
               <Card variant="outlined" sx={{ height: '100%' }}>
                 <CardContent>
-                  <Typography variant="h6" fontWeight={700} gutterBottom>{f.title}</Typography>
-                  <Typography color="text.secondary">{f.description}</Typography>
+                  <Typography variant="h6" gutterBottom sx={{
+                    fontWeight: 700
+                  }}>{f.title}</Typography>
+                  <Typography sx={{
+                    color: "text.secondary"
+                  }}>{f.description}</Typography>
                 </CardContent>
               </Card>
             </Grid>

@@ -63,7 +63,9 @@ export function PublicNoEventsNotice({
         textAlign: 'center',
       }}
     >
-      <Stack spacing={3} alignItems="center">
+      <Stack spacing={3} sx={{
+        alignItems: "center"
+      }}>
         {onBack && (
           <Box sx={{ alignSelf: 'flex-start', width: '100%' }}>
             <Button
@@ -101,13 +103,29 @@ export function PublicNoEventsNotice({
         ) : null}
 
         <Box>
-          <Typography variant="overline" color="text.secondary" sx={{ letterSpacing: 1.2 }}>
+          <Typography
+            variant="overline"
+            sx={{
+              color: "text.secondary",
+              letterSpacing: 1.2
+            }}>
             {club.clubName}
           </Typography>
-          <Typography variant="h4" fontWeight={800} gutterBottom sx={{ mt: 0.5 }}>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              fontWeight: 800,
+              mt: 0.5
+            }}>
             {title}
           </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+          <Typography
+            variant="body1"
+            sx={{
+              color: "text.secondary",
+              lineHeight: 1.7
+            }}>
             {body}
           </Typography>
         </Box>

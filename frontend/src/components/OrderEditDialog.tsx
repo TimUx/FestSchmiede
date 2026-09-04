@@ -107,7 +107,12 @@ export function OrderEditDialog({
           </Box>
         ) : (
           <>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                mb: 2
+              }}>
               Gerichte entfernen (Menge 0), Anzahl ändern oder weitere Gerichte hinzufügen.
             </Typography>
             <Grid container spacing={2}>
@@ -130,11 +135,22 @@ export function OrderEditDialog({
               })}
             </Grid>
             {foodItems.length === 0 && (
-              <Typography color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>
+              <Typography
+                sx={{
+                  color: "text.secondary",
+                  py: 2,
+                  textAlign: 'center'
+                }}>
                 Keine verfügbaren Gerichte
               </Typography>
             )}
-            <Typography variant="h6" fontWeight={700} sx={{ mt: 2, textAlign: 'right' }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 700,
+                mt: 2,
+                textAlign: 'right'
+              }}>
               Gesamt: {formatPrice(totalPrice)}
             </Typography>
           </>

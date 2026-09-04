@@ -191,7 +191,9 @@ export function EventsPage() {
       {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>{error}</Alert>}
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-        <Typography variant="h5" fontWeight={700}>Veranstaltungen verwalten</Typography>
+        <Typography variant="h5" sx={{
+          fontWeight: 700
+        }}>Veranstaltungen verwalten</Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
           Neue Veranstaltung
         </Button>
@@ -203,18 +205,32 @@ export function EventsPage() {
             <Card variant={event.isActive ? 'outlined' : undefined} sx={{ borderColor: event.isActive ? 'primary.main' : undefined, borderWidth: event.isActive ? 2 : undefined }}>
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="h6" fontWeight={700}>{event.name}</Typography>
+                  <Typography variant="h6" sx={{
+                    fontWeight: 700
+                  }}>{event.name}</Typography>
                   {event.isActive
                     ? <Chip label="Aktiv" color="primary" size="small" icon={<CheckCircleIcon />} />
                     : <Chip label="Inaktiv" size="small" />}
                 </Box>
                 {event.description && (
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>{event.description}</Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "text.secondary",
+                      mb: 1
+                    }}>{event.description}</Typography>
                 )}
                 <Typography variant="body2">
                   {new Date(event.date).toLocaleDateString('de-DE')} · {event.startTime} – {event.endTime}
                 </Typography>
-                <Stack direction="row" spacing={1} sx={{ mt: 1 }} flexWrap="wrap" useFlexGap>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  useFlexGap
+                  sx={{
+                    flexWrap: "wrap",
+                    mt: 1
+                  }}>
                   <Chip label={event.onlineOrdersActive ? 'Online aktiv' : 'Online inaktiv'} size="small" color={event.onlineOrdersActive ? 'success' : 'default'} />
                   <Chip label={event.cashierActive ? 'Bestellung vor Ort aktiv' : 'Bestellung vor Ort inaktiv'} size="small" color={event.cashierActive ? 'success' : 'default'} />
                   {event.ordersClosed && <Chip label="Bestellungen geschlossen" size="small" color="error" />}
@@ -238,9 +254,9 @@ export function EventsPage() {
           <Stack spacing={2} sx={{ mt: 1 }}>
             <TextField label="Name" fullWidth required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             <TextField label="Beschreibung" fullWidth multiline rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-            <TextField label="Datum" type="date" fullWidth required value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} InputLabelProps={{ shrink: true }} />
-            <TextField label="Beginn" type="time" fullWidth required value={form.startTime} onChange={(e) => setForm({ ...form, startTime: e.target.value })} InputLabelProps={{ shrink: true }} />
-            <TextField label="Ende" type="time" fullWidth required value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} InputLabelProps={{ shrink: true }} />
+            <TextField label="Datum" type="date" fullWidth required value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} />
+            <TextField label="Beginn" type="time" fullWidth required value={form.startTime} onChange={(e) => setForm({ ...form, startTime: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} />
+            <TextField label="Ende" type="time" fullWidth required value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} />
             <FormControlLabel control={<Switch checked={form.onlineOrdersActive} onChange={(e) => setForm({ ...form, onlineOrdersActive: e.target.checked })} />} label="Onlinebestellungen aktiv" />
             <FormControlLabel control={<Switch checked={form.cashierActive} onChange={(e) => setForm({ ...form, cashierActive: e.target.checked })} />} label="Bestellung vor Ort aktiv" />
             <FormControlLabel control={<Switch checked={form.ordersClosed} onChange={(e) => setForm({ ...form, ordersClosed: e.target.checked })} />} label="Bestellungen geschlossen" />
@@ -258,7 +274,12 @@ export function EventsPage() {
           Speisen & Getränke für {foodEvent?.name}
         </DialogTitle>
         <DialogContent>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              mb: 2
+            }}>
             Wählen Sie die Einträge aus dem Katalog, die bei dieser Veranstaltung angeboten werden sollen.
           </Typography>
           {foodLoading ? (
@@ -293,7 +314,13 @@ export function EventsPage() {
           )}
         </DialogContent>
         <DialogActions>
-          <Typography variant="body2" color="text.secondary" sx={{ flex: 1, pl: 2 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              flex: 1,
+              pl: 2
+            }}>
             {assignedCount} von {foodAssignments.length} ausgewählt
           </Typography>
           <Button onClick={() => setFoodDialogOpen(false)}>Abbrechen</Button>

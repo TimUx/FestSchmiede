@@ -185,7 +185,15 @@ export function PlatformTenantDetailPage() {
         Zurück
       </Button>
 
-      <Box display="flex" justifyContent="space-between" alignItems="flex-start" flexWrap="wrap" gap={2} mb={2}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          flexWrap: "wrap",
+          gap: 2,
+          mb: 2
+        }}>
         <Box>
           <Typography variant="h4" gutterBottom>{tenant.name}</Typography>
           <Chip label={tenant.status} />
@@ -195,7 +203,11 @@ export function PlatformTenantDetailPage() {
             Bearbeiten
           </Button>
         ) : (
-          <Box display="flex" gap={1}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 1
+            }}>
             <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSave} disabled={saving}>
               Speichern
             </Button>
@@ -321,7 +333,12 @@ export function PlatformTenantDetailPage() {
       {token && id && <PlatformTenantModulesSection token={token} tenantId={id} />}
 
       <Divider sx={{ my: 3 }} />
-      <Box display="flex" gap={1} flexWrap="wrap">
+      <Box
+        sx={{
+          display: "flex",
+          gap: 1,
+          flexWrap: "wrap"
+        }}>
         <Button
           variant="contained"
           startIcon={sendingInfo ? <CircularProgress size={18} color="inherit" /> : <EmailIcon />}
@@ -365,9 +382,24 @@ export function PlatformTenantDetailPage() {
 
 function InfoRow({ label, value, multiline }: { label: string; value: string; multiline?: boolean }) {
   return (
-    <Box display="flex" justifyContent="space-between" gap={2} py={0.75} flexDirection={multiline ? 'column' : 'row'}>
-      <Typography variant="body2" color="text.secondary">{label}</Typography>
-      <Typography variant="body2" sx={multiline ? { whiteSpace: 'pre-wrap' } : undefined} textAlign={multiline ? 'left' : 'right'}>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        gap: 2,
+        py: 0.75,
+        flexDirection: multiline ? 'column' : 'row'
+      }}>
+      <Typography variant="body2" sx={{
+        color: "text.secondary"
+      }}>{label}</Typography>
+      <Typography
+        variant="body2"
+        sx={{
+          textAlign: multiline ? 'left' : 'right',
+          ...(multiline && { whiteSpace: 'pre-wrap' }),
+        }}
+      >
         {value}
       </Typography>
     </Box>

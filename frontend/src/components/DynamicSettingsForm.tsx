@@ -143,9 +143,16 @@ function renderGroup(
 ) {
   return (
     <Box key={group.id}>
-      <Typography variant="h6" fontWeight={600} gutterBottom>{group.label}</Typography>
+      <Typography variant="h6" gutterBottom sx={{
+        fontWeight: 600
+      }}>{group.label}</Typography>
       {group.description && (
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{group.description}</Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            mb: 2
+          }}>{group.description}</Typography>
       )}
       <Stack spacing={2}>
         {group.fields.map((field) => renderField(field, group.id, onFieldChange, disabled))}
@@ -165,13 +172,17 @@ export function DynamicSettingsForm({ form, onChange, disabled }: DynamicSetting
   return (
     <Stack spacing={4}>
       {form.description && (
-        <Typography variant="body2" color="text.secondary">{form.description}</Typography>
+        <Typography variant="body2" sx={{
+          color: "text.secondary"
+        }}>{form.description}</Typography>
       )}
       {primaryGroups.map((group) => renderGroup(group, handleFieldChange, disabled))}
       {advancedGroups.length > 0 && (
         <Accordion disableGutters elevation={0} sx={{ border: 1, borderColor: 'divider' }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="subtitle1" fontWeight={600}>Erweitert</Typography>
+            <Typography variant="subtitle1" sx={{
+              fontWeight: 600
+            }}>Erweitert</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Stack spacing={4}>

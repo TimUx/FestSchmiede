@@ -22,7 +22,9 @@ export function MaintenanceGate({ children }: { children: ReactNode }) {
   return (
     <Container maxWidth="sm" sx={{ py: 8 }}>
       <Box sx={{ textAlign: 'center' }}>
-        <Typography variant="h4" gutterBottom fontWeight={700}>
+        <Typography variant="h4" gutterBottom sx={{
+          fontWeight: 700
+        }}>
           Wartungsmodus
         </Typography>
         <Alert severity="info" sx={{ mt: 2, textAlign: 'left' }}>

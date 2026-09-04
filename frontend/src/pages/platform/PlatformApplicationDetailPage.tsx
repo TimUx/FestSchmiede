@@ -133,7 +133,13 @@ export function PlatformApplicationDetailPage() {
             {canReApprove && ' Über „Genehmigen“ kann der Mandant erneut automatisch angelegt werden.'}
           </Alert>
         )}
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ sm: 'flex-start' }} sx={{ mb: 2 }}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={2}
+          sx={{
+            alignItems: { sm: 'flex-start' },
+            mb: 2
+          }}>
           <Autocomplete
             sx={{ flex: 1, minWidth: 280 }}
             options={tenants}
@@ -173,7 +179,9 @@ export function PlatformApplicationDetailPage() {
           onChange={(e) => setComment(e.target.value)}
           sx={{ mb: 2 }}
         />
-        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+        <Stack direction="row" spacing={1} useFlexGap sx={{
+          flexWrap: "wrap"
+        }}>
           <Button variant="outlined" onClick={() => act(() => platformApi.updateApplicationStatus(token!, id!, 'UNDER_REVIEW', comment))}>
             In Prüfung
           </Button>

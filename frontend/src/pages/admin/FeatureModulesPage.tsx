@@ -73,9 +73,16 @@ export function FeatureModulesPage() {
     <AdminLayout title="Funktionen">
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
         <ExtensionIcon color="primary" />
-        <Typography variant="h4" fontWeight={800}>Funktionen</Typography>
+        <Typography variant="h4" sx={{
+          fontWeight: 800
+        }}>Funktionen</Typography>
       </Box>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+      <Typography
+        variant="body1"
+        sx={{
+          color: "text.secondary",
+          mb: 3
+        }}>
         Zusätzliche Funktionen für Ihren Veranstalter ein- oder ausschalten.
       </Typography>
 
@@ -116,8 +123,15 @@ export function FeatureModulesPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Typography fontWeight={600}>{mod.name}</Typography>
-                        <Typography variant="caption" color="text.secondary" display="block">
+                        <Typography sx={{
+                          fontWeight: 600
+                        }}>{mod.name}</Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "text.secondary",
+                            display: "block"
+                          }}>
                           {mod.description}
                         </Typography>
                       </TableCell>
@@ -145,7 +159,7 @@ export function FeatureModulesPage() {
                             checked={isOn}
                             disabled={busy || mod.status === 'UPGRADING'}
                             onChange={(e) => void handleToggle(mod, e.target.checked)}
-                            inputProps={{ 'aria-label': `${mod.name} ${isOn ? 'deaktivieren' : 'aktivieren'}` }}
+                            slotProps={{ input: { 'aria-label': `${mod.name} ${isOn ? 'deaktivieren' : 'aktivieren'}` } }}
                           />
                           {busy && <CircularProgress size={20} />}
                         </Box>
@@ -156,16 +170,25 @@ export function FeatureModulesPage() {
                         <TableCell colSpan={4} sx={{ py: 0, borderBottom: expanded ? undefined : 0 }}>
                           <Collapse in={expanded} timeout="auto" unmountOnExit>
                             <Box sx={{ py: 2, pl: 6 }}>
-                              <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+                              <Typography variant="subtitle2" gutterBottom sx={{
+                                fontWeight: 600
+                              }}>
                                 Erweitert
                               </Typography>
                               {mod.installedVersion && (
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body2" sx={{
+                                  color: "text.secondary"
+                                }}>
                                   Installierte Version: {mod.installedVersion}
                                 </Typography>
                               )}
                               {mod.version && mod.installedVersion && mod.version !== mod.installedVersion && (
-                                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    color: "text.secondary",
+                                    mt: 0.5
+                                  }}>
                                   Modul-Updates werden mit Plattform-Releases ausgerollt.
                                 </Typography>
                               )}

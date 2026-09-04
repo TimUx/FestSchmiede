@@ -288,7 +288,7 @@ export function PlatformApplyPage() {
               <TextField
                 fullWidth
                 type="number"
-                inputProps={{ min: 0 }}
+                slotProps={{ htmlInput: { min: 0 } }}
                 label="Anzahl Mitglieder"
                 value={form.memberCount}
                 onChange={(e) => update('memberCount', e.target.value)}
@@ -299,7 +299,7 @@ export function PlatformApplyPage() {
               <TextField
                 fullWidth
                 type="number"
-                inputProps={{ min: 0 }}
+                slotProps={{ htmlInput: { min: 0 } }}
                 label="Veranstaltungen pro Jahr"
                 value={form.eventsPerYear}
                 onChange={(e) => update('eventsPerYear', e.target.value)}
@@ -321,10 +321,20 @@ export function PlatformApplyPage() {
               />
             </Grid>
             <Grid size={12}>
-              <Typography variant="subtitle1" fontWeight={700} sx={{ mt: 1 }}>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  fontWeight: 700,
+                  mt: 1
+                }}>
                 Ihre Bewerbung im Detail
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "text.secondary",
+                  mb: 1
+                }}>
                 Bitte beschreiben Sie Ihr Vorhaben möglichst konkret. Felder mit Mindestlänge zeigen einen Zeichenzähler;
                 über das Hinweis-Symbol sehen Sie Beispiele.
               </Typography>

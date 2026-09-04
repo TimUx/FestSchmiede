@@ -88,7 +88,9 @@ function NavDrawer({
       <Box sx={{ width: { xs: 300, sm: 320 }, pt: 1 }} role="navigation" aria-label="Seitennavigation">
         <Box sx={{ px: 2, py: 2, display: 'flex', alignItems: 'center', gap: 1.5, borderBottom: 1, borderColor: 'divider' }}>
           <FestSchmiedeLogo size="drawer" variant="onSurface" />
-          <Typography variant="subtitle1" fontWeight={700} noWrap>
+          <Typography variant="subtitle1" noWrap sx={{
+            fontWeight: 700
+          }}>
             {platformName}
           </Typography>
         </Box>
@@ -106,7 +108,7 @@ function NavDrawer({
             >
               <ListItemText
                 primary={item.label}
-                primaryTypographyProps={{ fontWeight: item.cta ? 700 : 500 }}
+                slotProps={{ primary: { sx: { fontWeight: item.cta ? 700 : 500 } } }}
               />
             </ListItemButton>
           ))}
@@ -184,7 +186,13 @@ export function PlatformPublicLayout({ children }: PlatformPublicLayoutProps) {
             }}
           >
             <FestSchmiedeLogo size="header" variant="onPrimary" />
-            <Typography variant="h6" fontWeight={700} noWrap sx={{ display: { xs: 'none', sm: 'block' } }}>
+            <Typography
+              variant="h6"
+              noWrap
+              sx={{
+                fontWeight: 700,
+                display: { xs: 'none', sm: 'block' }
+              }}>
               {platform.name}
             </Typography>
           </Box>
@@ -254,27 +262,81 @@ export function PlatformPublicLayout({ children }: PlatformPublicLayoutProps) {
             <SponsorLinks variant="prominent" />
           </Box>
           {platform.footerText && (
-            <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
+            <Typography
+              variant="body2"
+              align="center"
+              sx={{
+                color: "text.secondary",
+                mb: 2
+              }}>
               {platform.footerText}
             </Typography>
           )}
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center', mb: 2 }}>
-            <Typography component={Link} to="/funktionen" variant="body2" color="text.secondary" sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+            <Typography
+              component={Link}
+              to="/funktionen"
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' }
+              }}>
               Funktionen
             </Typography>
-            <Typography component={Link} to="/themen" variant="body2" color="text.secondary" sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+            <Typography
+              component={Link}
+              to="/themen"
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' }
+              }}>
               Themen & Ratgeber
             </Typography>
-            <Typography component={Link} to="/fuer-vereine" variant="body2" color="text.secondary" sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+            <Typography
+              component={Link}
+              to="/fuer-vereine"
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' }
+              }}>
               Für Vereine
             </Typography>
-            <Typography component={Link} to="/faq" variant="body2" color="text.secondary" sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+            <Typography
+              component={Link}
+              to="/faq"
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' }
+              }}>
               FAQ
             </Typography>
-            <Typography component={Link} to="/kontakt" variant="body2" color="text.secondary" sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+            <Typography
+              component={Link}
+              to="/kontakt"
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' }
+              }}>
               Kontakt
             </Typography>
-            <Typography component={Link} to="/mandant-beantragen" variant="body2" color="text.secondary" sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+            <Typography
+              component={Link}
+              to="/mandant-beantragen"
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' }
+              }}>
               Mandant beantragen
             </Typography>
           </Box>
@@ -286,9 +348,11 @@ export function PlatformPublicLayout({ children }: PlatformPublicLayoutProps) {
                   component={Link}
                   to={`/rechtliches/${link.slug}`}
                   variant="body2"
-                  color="text.secondary"
-                  sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
-                >
+                  sx={{
+                    color: "text.secondary",
+                    textDecoration: 'none',
+                    '&:hover': { textDecoration: 'underline' }
+                  }}>
                   {link.title}
                 </Typography>
               ))}
@@ -297,7 +361,13 @@ export function PlatformPublicLayout({ children }: PlatformPublicLayoutProps) {
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, mb: 1 }}>
             <FestSchmiedeLogo size="footer" variant="onSurface" />
           </Box>
-          <Typography variant="caption" color="text.secondary" display="block" align="center">
+          <Typography
+            variant="caption"
+            align="center"
+            sx={{
+              color: "text.secondary",
+              display: "block"
+            }}>
             © {new Date().getFullYear()} {platform.name}
           </Typography>
         </Container>

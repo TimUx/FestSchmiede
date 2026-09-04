@@ -48,7 +48,12 @@ export function PaymentQrCode({ value, size = 240, label = 'QR-Code zum Bezahlen
       </Box>
       {failed && (
         <>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              mt: 1
+            }}>
             QR-Code konnte nicht angezeigt werden.
           </Typography>
           <Button

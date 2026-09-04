@@ -133,8 +133,12 @@ function RoleTemplatePicker({ templates, selected, onChange }: RoleTemplatePicke
             }
             label={
               <Box>
-                <Typography fontWeight={600}>{template.label}</Typography>
-                <Typography variant="caption" color="text.secondary">{template.description}</Typography>
+                <Typography sx={{
+                  fontWeight: 600
+                }}>{template.label}</Typography>
+                <Typography variant="caption" sx={{
+                  color: "text.secondary"
+                }}>{template.description}</Typography>
               </Box>
             }
             sx={{ alignItems: 'flex-start', mb: 0.5 }}
@@ -332,8 +336,12 @@ export function UsersPage() {
     <AdminLayout title="Team">
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>Team</Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="h5" sx={{
+            fontWeight: 700
+          }}>Team</Typography>
+          <Typography variant="body2" sx={{
+            color: "text.secondary"
+          }}>
             Mitarbeiter mit Rollenvorlagen zuweisen — Küche, Kasse, Finanzen und mehr
           </Typography>
         </Box>
@@ -395,14 +403,18 @@ export function UsersPage() {
                         || !user.email?.trim()
                       }
                       onChange={(e) => void handleNotificationToggle(user, e.target.checked)}
-                      inputProps={{ 'aria-label': `E-Mail-Benachrichtigungen für ${user.firstName} ${user.lastName}` }}
+                      slotProps={{ input: { 'aria-label': `E-Mail-Benachrichtigungen für ${user.firstName} ${user.lastName}` } }}
                     />
                   ) : (
-                    <Typography variant="body2" color="text.disabled">—</Typography>
+                    <Typography variant="body2" sx={{
+                      color: "text.disabled"
+                    }}>—</Typography>
                   )}
                 </TableCell>
                 <TableCell align="right">
-                  <Stack direction="row" spacing={1} justifyContent="flex-end">
+                  <Stack direction="row" spacing={1} sx={{
+                    justifyContent: "flex-end"
+                  }}>
                     {user.role === 'STAFF' && (
                       <Button size="small" startIcon={<SecurityIcon />} onClick={() => openPermissions(user)}>
                         Bereiche
@@ -530,7 +542,12 @@ export function UsersPage() {
       <Dialog open={permDialogOpen} onClose={() => setPermDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Bereiche zuweisen</DialogTitle>
         <DialogContent>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              mb: 2
+            }}>
             Wählen Sie einen oder mehrere Bereiche. Die Berechtigungen werden automatisch zusammengeführt.
           </Typography>
           <RoleTemplatePicker

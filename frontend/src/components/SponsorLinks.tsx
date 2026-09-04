@@ -59,14 +59,19 @@ export function SponsorLinks({ variant = 'default' }: SponsorLinksProps) {
         <Stack
           direction={{ xs: 'column', md: 'row' }}
           spacing={1.5}
-          alignItems={{ xs: 'stretch', md: 'center' }}
-          justifyContent="space-between"
-        >
+          sx={{
+            alignItems: { xs: 'stretch', md: 'center' },
+            justifyContent: "space-between"
+          }}>
           <Box>
-            <Typography variant="subtitle2" fontWeight={800}>
+            <Typography variant="subtitle2" sx={{
+              fontWeight: 800
+            }}>
               Sponsor dieses Projekt
             </Typography>
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" sx={{
+              color: "text.secondary"
+            }}>
               Unterstütze FestSchmiede mit einem Kaffee oder per PayPal.
             </Typography>
           </Box>
@@ -91,10 +96,21 @@ export function SponsorLinks({ variant = 'default' }: SponsorLinksProps) {
           borderColor: 'divider',
         }}
       >
-        <Typography variant="h5" fontWeight={900} sx={{ mb: 0.5 }}>
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: 900,
+            mb: 0.5
+          }}>
           Sponsor dieses Projekt
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 2.5, maxWidth: 560 }}>
+        <Typography
+          variant="body1"
+          sx={{
+            color: "text.secondary",
+            mb: 2.5,
+            maxWidth: 560
+          }}>
           FestSchmiede ist Open Source. Wenn dir die Plattform hilft, freue ich mich über einen Kaffee oder eine
           Spende per PayPal.
         </Typography>
@@ -106,7 +122,12 @@ export function SponsorLinks({ variant = 'default' }: SponsorLinksProps) {
   if (variant === 'compact') {
     return (
       <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 2 }}>
-        <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 1 }}>
+        <Typography
+          variant="subtitle2"
+          sx={{
+            fontWeight: 800,
+            mb: 1
+          }}>
           Sponsor dieses Projekt
         </Typography>
         <SponsorButtons />
@@ -116,11 +137,21 @@ export function SponsorLinks({ variant = 'default' }: SponsorLinksProps) {
 
   return (
     <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-      <Typography variant="h6" fontWeight={800} sx={{ mb: 1 }}>
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: 800,
+          mb: 1
+        }}>
         Sponsor dieses Projekt
       </Typography>
       <SponsorButtons />
-      <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
+      <Typography
+        variant="body2"
+        sx={{
+          color: "text.secondary",
+          mt: 1.5
+        }}>
         Danke, dass du FestSchmiede unterstützt.
       </Typography>
     </Paper>

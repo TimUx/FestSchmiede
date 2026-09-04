@@ -298,17 +298,22 @@ export function OrderPage() {
       <PublicLayout fillHeight>
         <Typography
           variant="h4"
-          fontWeight={800}
           gutterBottom
-          sx={{ fontSize: { xs: '1.35rem', sm: '2.125rem' }, mb: { xs: 0.5, sm: 1 } }}
-        >
+          sx={{
+            fontWeight: 800,
+            fontSize: { xs: '1.35rem', sm: '2.125rem' },
+            mb: { xs: 0.5, sm: 1 }
+          }}>
           Veranstaltung wählen
         </Typography>
         <Typography
           variant="body1"
-          color="text.secondary"
-          sx={{ mb: { xs: 1.5, sm: 3 }, fontSize: { xs: '0.9rem', sm: '1rem' }, display: { xs: 'none', sm: 'block' } }}
-        >
+          sx={{
+            color: "text.secondary",
+            mb: { xs: 1.5, sm: 3 },
+            fontSize: { xs: '0.9rem', sm: '1rem' },
+            display: { xs: 'none', sm: 'block' }
+          }}>
           Bitte wählen Sie die Veranstaltung, für die Sie bestellen möchten.
         </Typography>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
@@ -341,22 +346,32 @@ export function OrderPage() {
                   />
                   <Typography
                     variant="subtitle1"
-                    fontWeight={800}
                     sx={{
+                      fontWeight: 800,
                       fontSize: { xs: '0.85rem', sm: '1rem', md: '1.15rem' },
                       lineHeight: 1.2,
                       display: '-webkit-box',
                       WebkitLineClamp: 2,
                       WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                    }}
-                  >
+                      overflow: 'hidden'
+                    }}>
                     {event.name}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.2, mt: 0.25 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: "text.secondary",
+                      lineHeight: 1.2,
+                      mt: 0.25
+                    }}>
                     {event.eventDateLabel}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.2 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: "text.secondary",
+                      lineHeight: 1.2
+                    }}>
                     {event.startTime} – {event.endTime}
                   </Typography>
                 </Box>
@@ -448,24 +463,22 @@ export function OrderPage() {
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Typography
                 variant="h4"
-                fontWeight={800}
                 gutterBottom
                 sx={{
+                  fontWeight: 800,
                   mb: { xs: 0.25, sm: 1 },
                   fontSize: { xs: '1.35rem', sm: '2.125rem' },
-                  lineHeight: { xs: 1.2, sm: 1.3 },
-                }}
-              >
+                  lineHeight: { xs: 1.2, sm: 1.3 }
+                }}>
                 {eventName || 'Essen bestellen'}
               </Typography>
               <Typography
                 variant="body1"
-                color="text.secondary"
                 sx={{
+                  color: "text.secondary",
                   display: { xs: orderStep === 'dishes' ? 'none' : 'block', sm: 'block' },
-                  fontSize: { xs: '0.9rem', sm: '1.1rem' },
-                }}
-              >
+                  fontSize: { xs: '0.9rem', sm: '1.1rem' }
+                }}>
                 {orderStep === 'dishes'
                   ? 'Wählen Sie Ihre Gerichte – im nächsten Schritt geben Sie Ihre Daten ein.'
                   : 'Geben Sie Ihre Daten ein und senden Sie die Bestellung ab.'}
@@ -473,9 +486,12 @@ export function OrderPage() {
               {orderStep === 'dishes' && eventDateLabel && (
                 <Typography
                   variant="caption"
-                  color="text.secondary"
-                  sx={{ display: { xs: 'block', sm: 'none' }, mt: 0.25, lineHeight: 1.3 }}
-                >
+                  sx={{
+                    color: "text.secondary",
+                    display: { xs: 'block', sm: 'none' },
+                    mt: 0.25,
+                    lineHeight: 1.3
+                  }}>
                   {eventDateLabel} · Vorbestellung möglich
                 </Typography>
               )}
@@ -530,9 +546,11 @@ export function OrderPage() {
             <Typography
               variant="h5"
               gutterBottom
-              fontWeight={700}
-              sx={{ display: { xs: 'none', sm: 'block' }, mb: 1 }}
-            >
+              sx={{
+                fontWeight: 700,
+                display: { xs: 'none', sm: 'block' },
+                mb: 1
+              }}>
               Gerichte
             </Typography>
           )}
@@ -586,16 +604,25 @@ export function OrderPage() {
             >
               <Stack
                 direction="row"
-                justifyContent="space-between"
-                alignItems="center"
                 spacing={2}
-                sx={{ maxWidth: 'md', mx: 'auto', px: { xs: 0.5, sm: 0 } }}
-              >
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  maxWidth: 'md',
+                  mx: 'auto',
+                  px: { xs: 0.5, sm: 0 }
+                }}>
                 <Box>
                   <Typography variant="body2" sx={{ fontSize: { xs: '0.85rem', sm: '1rem' } }}>
                     <strong>{totalCount}</strong> {totalCount === 1 ? 'Gericht' : 'Gerichte'}
                   </Typography>
-                  <Typography variant="h6" fontWeight={800} color="primary" sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}>
+                  <Typography
+                    variant="h6"
+                    color="primary"
+                    sx={{
+                      fontWeight: 800,
+                      fontSize: { xs: '1.1rem', sm: '1.25rem' }
+                    }}>
                     {formatPrice(totalPrice)}
                   </Typography>
                 </Box>
@@ -619,16 +646,22 @@ export function OrderPage() {
         ) : (
           <Box component="section" data-testid="order-checkout-step">
             <Paper sx={{ p: 2, mb: 2, bgcolor: 'action.hover' }}>
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              <Typography variant="subtitle2" gutterBottom sx={{
+                color: "text.secondary"
+              }}>
                 Ihre Auswahl
               </Typography>
-              <Typography variant="body1" fontWeight={700}>
+              <Typography variant="body1" sx={{
+                fontWeight: 700
+              }}>
                 {totalCount} {totalCount === 1 ? 'Gericht' : 'Gerichte'} · {formatPrice(totalPrice)}
               </Typography>
             </Paper>
 
             <Paper sx={{ p: 3, mb: 2 }} data-testid="order-customer-form">
-              <Typography variant="h5" gutterBottom fontWeight={700}>
+              <Typography variant="h5" gutterBottom sx={{
+                fontWeight: 700
+              }}>
                 Ihre Daten
               </Typography>
               <Grid container spacing={2}>
@@ -677,10 +710,17 @@ export function OrderPage() {
 
             {changeMethodMode && pendingOrder && paymentSelection.showSelection && (
               <Paper sx={{ p: 2, mb: 2, border: 2, borderColor: 'warning.main' }}>
-                <Typography variant="h6" fontWeight={700} gutterBottom>
+                <Typography variant="h6" gutterBottom sx={{
+                  fontWeight: 700
+                }}>
                   Andere Zahlungsart wählen
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "text.secondary",
+                    mb: 2
+                  }}>
                   Ihre Bestellung {pendingOrder.displayNumber} bleibt gespeichert.
                 </Typography>
                 <PaymentMethodSelector

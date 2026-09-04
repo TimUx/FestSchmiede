@@ -89,7 +89,9 @@ export function KitchenPage() {
       {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>{error}</Alert>}
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h5" fontWeight={700}>
+        <Typography variant="h5" sx={{
+          fontWeight: 700
+        }}>
           {activeCount} aktive Bestellungen
         </Typography>
         <FormGroup row>
@@ -119,17 +121,26 @@ export function KitchenPage() {
             >
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="h3" fontWeight={900} color="primary">
+                  <Typography variant="h3" color="primary" sx={{
+                    fontWeight: 900
+                  }}>
                     #{order.displayNumber}
                   </Typography>
                   <StatusChip status={order.status} size="small" />
                 </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "text.secondary",
+                    mb: 2
+                  }}>
                   {formatTime(order.createdAt)}
                 </Typography>
                 <Stack spacing={0.5} sx={{ mb: 2 }}>
                   {order.items.map((item) => (
-                    <Typography key={item.id || item.foodItemId} variant="h6" fontWeight={600}>
+                    <Typography key={item.id || item.foodItemId} variant="h6" sx={{
+                      fontWeight: 600
+                    }}>
                       {item.quantity}× {item.name}
                     </Typography>
                   ))}
@@ -166,7 +177,9 @@ export function KitchenPage() {
 
       {orders.length === 0 && (
         <Box sx={{ textAlign: 'center', py: 8 }}>
-          <Typography variant="h6" color="text.secondary">
+          <Typography variant="h6" sx={{
+            color: "text.secondary"
+          }}>
             Keine Bestellungen in der Warteschlange
           </Typography>
         </Box>

@@ -6,7 +6,13 @@ import { ProtectedRoute } from '@/components/StaffLayout';
 
 function StaffOutletFallback() {
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" minHeight="40vh">
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "40vh"
+      }}>
       <CircularProgress />
     </Box>
   );

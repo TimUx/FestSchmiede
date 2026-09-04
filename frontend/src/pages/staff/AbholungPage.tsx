@@ -93,10 +93,22 @@ export function AbholungPage() {
 
   return (
     <StaffLayout title="Abholung" fullWidth>
-      <Typography variant="h4" fontWeight={800} gutterBottom sx={{ fontSize: { xs: '1.75rem', sm: '2rem' } }}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{
+          fontWeight: 800,
+          fontSize: { xs: '1.75rem', sm: '2rem' }
+        }}>
         Abholung bestätigen
       </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 2, fontSize: '1.1rem' }}>
+      <Typography
+        variant="body1"
+        sx={{
+          color: "text.secondary",
+          mb: 2,
+          fontSize: '1.1rem'
+        }}>
         Abholnummer eingeben und Abholung bestätigen. Die Veranstaltung wählen Sie oben im Kopfbereich.
       </Typography>
 
@@ -115,7 +127,9 @@ export function AbholungPage() {
 
       <Paper sx={{ p: { xs: 2, sm: 3 }, mb: 3, maxWidth: 560 }}>
         <Stack spacing={2}>
-          <Stack direction="row" spacing={1.5} alignItems="stretch">
+          <Stack direction="row" spacing={1.5} sx={{
+            alignItems: "stretch"
+          }}>
             <TextField
               label="Abholnummer"
               value={orderNumber}
@@ -126,7 +140,7 @@ export function AbholungPage() {
               disabled={!pickupReady}
               onKeyDown={(e) => e.key === 'Enter' && void handleLookup()}
               sx={touchFieldSx}
-              inputProps={{ style: { fontSize: '1.75rem', textAlign: 'center', fontWeight: 700 }, inputMode: 'numeric' }}
+              slotProps={{ htmlInput: { style: { fontSize: '1.75rem', textAlign: 'center', fontWeight: 700 }, inputMode: 'numeric' } }}
             />
             <Button
               variant="contained"
@@ -158,7 +172,14 @@ export function AbholungPage() {
         <Paper sx={{ p: { xs: 3, sm: 4 }, maxWidth: 640 }}>
           <Box sx={{ textAlign: 'center', mb: 3 }}>
             <Typography variant="overline" sx={{ fontSize: '1rem' }}>Abholnummer</Typography>
-            <Typography variant="h1" fontWeight={900} color="primary" sx={{ fontSize: { xs: '4.5rem', sm: '6rem' }, lineHeight: 1.1 }}>
+            <Typography
+              variant="h1"
+              color="primary"
+              sx={{
+                fontWeight: 900,
+                fontSize: { xs: '4.5rem', sm: '6rem' },
+                lineHeight: 1.1
+              }}>
               {order.displayNumber}
             </Typography>
             <Box sx={{ mt: 1, display: 'flex', gap: 1, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -174,13 +195,21 @@ export function AbholungPage() {
           <Stack spacing={1.5} sx={{ mb: 3 }}>
             {order.items.map((item) => (
               <Box key={item.id || item.foodItemId} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
-                <Typography variant="h5" fontWeight={600}>{item.quantity}× {item.name}</Typography>
+                <Typography variant="h5" sx={{
+                  fontWeight: 600
+                }}>{item.quantity}× {item.name}</Typography>
                 <Typography variant="h6">{formatPrice(item.lineTotal || 0)}</Typography>
               </Box>
             ))}
           </Stack>
 
-          <Typography variant="h4" fontWeight={800} textAlign="right" sx={{ mb: 3 }}>
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 800,
+              textAlign: "right",
+              mb: 3
+            }}>
             Gesamt: {formatPrice(order.totalPrice)}
           </Typography>
 

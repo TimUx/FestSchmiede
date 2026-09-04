@@ -37,7 +37,13 @@ export function FormHintTextField({
                   {hint.title}
                 </Typography>
                 {hint.minLength && (
-                  <Typography variant="caption" display="block" sx={{ mb: 0.75, opacity: 0.9 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: "block",
+                      mb: 0.75,
+                      opacity: 0.9
+                    }}>
                     Mindestens {hint.minLength} Zeichen erforderlich.
                   </Typography>
                 )}

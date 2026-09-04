@@ -67,14 +67,20 @@ export function OrderCard({
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
           <Box>
-            <Typography variant={compact ? 'h5' : 'h4'} fontWeight={800} color="primary">
+            <Typography variant={compact ? 'h5' : 'h4'} color="primary" sx={{
+              fontWeight: 800
+            }}>
               #{order.displayNumber}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{
+              color: "text.secondary"
+            }}>
               {formatTime(order.createdAt)} · {order.sourceLabel}
             </Typography>
           </Box>
-          <Stack spacing={0.5} alignItems="flex-end">
+          <Stack spacing={0.5} sx={{
+            alignItems: "flex-end"
+          }}>
             <StatusChip status={order.status} />
             {order.paymentLabel && (
               <Chip size="small" label={order.paymentLabel} variant="outlined" color="default" />
@@ -84,7 +90,9 @@ export function OrderCard({
 
         {!compact && order.customer && (
           <Box sx={{ mb: 1 }}>
-            <Typography variant="body2" fontWeight={600}>
+            <Typography variant="body2" sx={{
+              fontWeight: 600
+            }}>
               {order.customer.firstName} {order.customer.lastName}
             </Typography>
             {(order.customer.email || order.customer.phone) && (
@@ -115,7 +123,9 @@ export function OrderCard({
         <Stack spacing={0.5}>
           {order.items.map((item) => (
             <Box key={item.id || item.foodItemId} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography variant={kitchenMode ? 'h6' : 'body1'} fontWeight={kitchenMode ? 600 : 400}>
+              <Typography variant={kitchenMode ? 'h6' : 'body1'} sx={{
+                fontWeight: kitchenMode ? 600 : 400
+              }}>
                 {item.quantity}× {item.name}
               </Typography>
               {!kitchenMode && item.lineTotal !== undefined && (
@@ -126,13 +136,26 @@ export function OrderCard({
         </Stack>
 
         {!kitchenMode && (
-          <Typography variant="h6" fontWeight={700} sx={{ mt: 1, textAlign: 'right' }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+              mt: 1,
+              textAlign: 'right'
+            }}>
             {formatPrice(order.totalPrice)}
           </Typography>
         )}
 
         {showActions && (
-          <Stack direction="row" spacing={1} sx={{ mt: 2 }} flexWrap="wrap" useFlexGap>
+          <Stack
+            direction="row"
+            spacing={1}
+            useFlexGap
+            sx={{
+              flexWrap: "wrap",
+              mt: 2
+            }}>
             {!kitchenMode && onReleaseToKitchen && order.source === 'ONLINE' && order.releasedToKitchen === false && (
               <Button variant="contained" color="primary" size="small" onClick={onReleaseToKitchen}>
                 Für Küche freigeben

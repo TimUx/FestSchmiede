@@ -206,15 +206,23 @@ export function BestellungPage() {
             px: 2,
           }}
         >
-          <Typography variant="overline" color="text.secondary" sx={{ fontSize: '1.1rem' }}>
+          <Typography
+            variant="overline"
+            sx={{
+              color: "text.secondary",
+              fontSize: '1.1rem'
+            }}>
             Abholnummer
           </Typography>
           <Typography
             variant="h1"
-            fontWeight={900}
             color="primary"
-            sx={{ fontSize: { xs: '5rem', sm: '8rem', md: '10rem' }, my: 2, lineHeight: 1 }}
-          >
+            sx={{
+              fontWeight: 900,
+              fontSize: { xs: '5rem', sm: '8rem', md: '10rem' },
+              my: 2,
+              lineHeight: 1
+            }}>
             {lastOrderNumber}
           </Typography>
           <Button
@@ -234,10 +242,22 @@ export function BestellungPage() {
 
   return (
     <StaffLayout title="Bestellung" fullWidth>
-      <Typography variant="h4" fontWeight={800} gutterBottom sx={{ fontSize: { xs: '1.75rem', sm: '2rem' } }}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{
+          fontWeight: 800,
+          fontSize: { xs: '1.75rem', sm: '2rem' }
+        }}>
         Bestellung vor Ort
       </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 2, fontSize: '1.1rem' }}>
+      <Typography
+        variant="body1"
+        sx={{
+          color: "text.secondary",
+          mb: 2,
+          fontSize: '1.1rem'
+        }}>
         Gerichte auswählen und Bestellung speichern. Die Veranstaltung wählen Sie oben im Kopfbereich.
       </Typography>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
@@ -257,7 +277,9 @@ export function BestellungPage() {
 
       {changeMethodMode && pendingOrder && (
         <Paper sx={{ p: 2, mb: 2, border: 2, borderColor: 'warning.main' }}>
-          <Typography variant="h6" fontWeight={700} gutterBottom>
+          <Typography variant="h6" gutterBottom sx={{
+            fontWeight: 700
+          }}>
             Andere Zahlungsart wählen
           </Typography>
           <PaymentMethodSelector
@@ -324,16 +346,21 @@ export function BestellungPage() {
       >
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
-          justifyContent="space-between"
-          alignItems={{ xs: 'stretch', sm: 'center' }}
           spacing={2}
-          sx={{ maxWidth: 1200, mx: 'auto', px: { sm: 2 } }}
-        >
+          sx={{
+            justifyContent: "space-between",
+            alignItems: { xs: 'stretch', sm: 'center' },
+            maxWidth: 1200,
+            mx: 'auto',
+            px: { sm: 2 }
+          }}>
           <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
             <Typography variant="h6" sx={{ fontSize: '1.15rem' }}>
               {totalCount} {totalCount === 1 ? 'Gericht' : 'Gerichte'}
             </Typography>
-            <Typography variant="h4" fontWeight={800} color="primary">
+            <Typography variant="h4" color="primary" sx={{
+              fontWeight: 800
+            }}>
               {formatPrice(totalPrice)}
             </Typography>
           </Box>

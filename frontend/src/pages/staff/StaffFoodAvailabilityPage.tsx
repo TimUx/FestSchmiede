@@ -76,7 +76,12 @@ export function StaffFoodAvailabilityPage() {
     <StaffLayout title="Verfügbarkeit">
       {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>{error}</Alert>}
 
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+      <Typography
+        variant="body1"
+        sx={{
+          color: "text.secondary",
+          mb: 2
+        }}>
         Markieren Sie Speisen & Getränke als ausverkauft. Die Einstellung gilt jeweils für die gewählte Veranstaltung.
       </Typography>
 
@@ -116,12 +121,19 @@ export function StaffFoodAvailabilityPage() {
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
                   <Box sx={{ minWidth: 0 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                      <Typography variant="subtitle1" fontWeight={700} sx={{ color: item.soldOut ? 'text.disabled' : 'text.primary' }}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
+                          fontWeight: 700,
+                          color: item.soldOut ? 'text.disabled' : 'text.primary'
+                        }}>
                         {item.name}
                       </Typography>
                       {item.soldOut && <Chip label="Ausverkauft" color="error" size="small" />}
                     </Box>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{
+                      color: "text.secondary"
+                    }}>
                       {formatPrice(Number(item.price))}
                     </Typography>
                   </Box>
@@ -144,7 +156,12 @@ export function StaffFoodAvailabilityPage() {
           </Stack>
 
           {items.length === 0 && (
-            <Typography color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
+            <Typography
+              sx={{
+                color: "text.secondary",
+                py: 4,
+                textAlign: 'center'
+              }}>
               Für diese Veranstaltung sind noch keine Speisen & Getränke zugeordnet.
             </Typography>
           )}

@@ -112,7 +112,12 @@ export function OrdersPage() {
         />
       )}
       {selectedEventId && orders.length === 0 && (
-        <Typography color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
+        <Typography
+          sx={{
+            color: "text.secondary",
+            py: 4,
+            textAlign: 'center'
+          }}>
           Keine Bestellungen für diese Veranstaltung
         </Typography>
       )}

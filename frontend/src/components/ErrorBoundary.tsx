@@ -27,7 +27,12 @@ export class ErrorBoundary extends Component<Props, State> {
           <Alert severity="error" sx={{ mb: 2 }}>
             Es ist ein unerwarteter Fehler aufgetreten.
           </Alert>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              mb: 2
+            }}>
             {this.state.error.message}
           </Typography>
           <Button variant="contained" onClick={() => window.location.assign('/')}>

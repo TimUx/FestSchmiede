@@ -34,7 +34,9 @@ function PaymentStatusWidget() {
         size="small"
         sx={{ mb: 1 }}
       />
-      <Typography variant="body2" color="text.secondary">
+      <Typography variant="body2" sx={{
+        color: "text.secondary"
+      }}>
         {available ? 'Mindestens ein Zahlungsanbieter ist konfiguriert.' : 'Kein aktiver Zahlungsanbieter.'}
       </Typography>
     </Box>
@@ -76,7 +78,14 @@ function NotificationsStatusWidget() {
         sx={{ mb: 1 }}
       />
       {readyChannels.length > 0 ? (
-        <Stack direction="row" spacing={0.75} useFlexGap flexWrap="wrap" sx={{ mb: 1 }}>
+        <Stack
+          direction="row"
+          spacing={0.75}
+          useFlexGap
+          sx={{
+            flexWrap: "wrap",
+            mb: 1
+          }}>
           {readyChannels.map(([id]) => (
             <Chip
               key={id}
@@ -87,7 +96,9 @@ function NotificationsStatusWidget() {
           ))}
         </Stack>
       ) : null}
-      <Typography variant="body2" color="text.secondary">
+      <Typography variant="body2" sx={{
+        color: "text.secondary"
+      }}>
         {active
           ? `${readyChannels.length} Kanal/Kanäle bereit.`
           : 'Kein Benachrichtigungskanal konfiguriert.'}
@@ -105,9 +116,13 @@ export function renderWidget(componentId: string, title: string): ReactNode {
   const Widget = WIDGET_COMPONENTS[componentId];
   return (
     <Paper sx={{ p: 2, height: '100%' }}>
-      <Typography variant="subtitle1" fontWeight={700} gutterBottom>{title}</Typography>
+      <Typography variant="subtitle1" gutterBottom sx={{
+        fontWeight: 700
+      }}>{title}</Typography>
       {Widget ? <Widget /> : (
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{
+          color: "text.secondary"
+        }}>
           Widget „{componentId}" ist nicht registriert.
         </Typography>
       )}

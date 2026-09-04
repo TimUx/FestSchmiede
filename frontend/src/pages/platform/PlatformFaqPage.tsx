@@ -106,19 +106,36 @@ export function PlatformFaqPage() {
               component="section"
               sx={{ scrollMarginTop: { xs: 88, md: 96 } }}
             >
-              <Typography variant="h2" component="h2" fontWeight={800} sx={{ fontSize: { xs: '1.25rem', md: '1.45rem' }, mb: 0.5 }}>
+              <Typography
+                variant="h2"
+                component="h2"
+                sx={{
+                  fontWeight: 800,
+                  fontSize: { xs: '1.25rem', md: '1.45rem' },
+                  mb: 0.5
+                }}>
                 {group.title}
               </Typography>
-              <Typography color="text.secondary" sx={{ mb: 1.5 }}>
+              <Typography
+                sx={{
+                  color: "text.secondary",
+                  mb: 1.5
+                }}>
                 {group.description}
               </Typography>
               {group.items.map((item) => (
                 <Accordion key={item.q} disableGutters elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
                   <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography fontWeight={600}>{item.q}</Typography>
+                    <Typography sx={{
+                      fontWeight: 600
+                    }}>{item.q}</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
-                    <Typography color="text.secondary" lineHeight={1.7}>{item.a}</Typography>
+                    <Typography
+                      sx={{
+                        color: "text.secondary",
+                        lineHeight: 1.7
+                      }}>{item.a}</Typography>
                   </AccordionDetails>
                 </Accordion>
               ))}

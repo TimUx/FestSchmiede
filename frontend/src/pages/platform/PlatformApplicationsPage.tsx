@@ -47,7 +47,13 @@ export function PlatformApplicationsPage() {
   return (
     <Box>
       <Typography variant="h4" gutterBottom>Mandantenanträge</Typography>
-      <Box display="flex" gap={2} mb={2} flexWrap="wrap">
+      <Box
+        sx={{
+          display: "flex",
+          gap: 2,
+          mb: 2,
+          flexWrap: "wrap"
+        }}>
         <TextField label="Suche" value={search} onChange={(e) => setSearch(e.target.value)} size="small" />
         <FormControl size="small" sx={{ minWidth: 180 }}>
           <InputLabel>Status</InputLabel>
