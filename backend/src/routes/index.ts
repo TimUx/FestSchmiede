@@ -87,7 +87,7 @@ router.get('/health', async (req, res) => {
   const { prisma } = await import('../config/database');
   const dbStart = performance.now();
   let dbLatencyMs = -1;
-  let dbOk = false;
+  let dbOk: boolean;
   try {
     await prisma.$queryRaw`SELECT 1`;
     dbLatencyMs = Math.round(performance.now() - dbStart);
