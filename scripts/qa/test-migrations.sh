@@ -49,8 +49,8 @@ run_prisma() {
     -e FESTSCHMIEDE_SKIP_PRE_MIGRATION_BACKUP=1 \
     -v "${BACKEND}:/app" \
     -w /app \
-    node:22.14.0-alpine3.21 \
-    sh -c "npm ci --omit=dev >/dev/null 2>&1 && $*"
+    node:22.14.0-bookworm \
+    sh -c 'npx() { if [ "$1" = prisma ]; then shift; ./node_modules/.bin/prisma "$@"; else command npx "$@"; fi; }; eval "$1"' sh "$*"
 }
 
 migration_status_ok() {

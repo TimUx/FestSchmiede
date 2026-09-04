@@ -1,8 +1,11 @@
 import { PrismaClient, RoleName, OrderSource, StatusCode } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }),
+});
 const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000010';
 
 /**

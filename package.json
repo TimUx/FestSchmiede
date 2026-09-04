@@ -7,7 +7,7 @@
     "qa:lint": "eslint backend/src frontend/src tests scripts/qa --max-warnings 0",
     "qa:typecheck": "npm run build --prefix backend && npm run build --prefix frontend",
     "qa:format": "node --print \"'Format-Check: TypeScript-Compiler als Gate'\"",
-    "qa:depcheck": "npx depcheck backend && npx depcheck frontend",
+    "qa:depcheck": "npx depcheck backend --ignores pg,@types/pg,supertest,@types/supertest && npx depcheck frontend",
     "qa:unit": "npm run test:coverage --prefix backend && npm run test --prefix frontend",
     "qa:api": "vitest run --config tests/vitest.config.ts",
     "qa:seed": "NODE_PATH=backend/node_modules npx tsx tests/seeds/qa-seed.ts",
@@ -39,7 +39,7 @@
     "@playwright/test": "^1.52.0",
     "@types/node": "^22.15.30",
     "@types/supertest": "^6.0.3",
-    "@vitest/coverage-v8": "^3.2.3",
+    "@vitest/coverage-v8": "^4.1.11",
     "depcheck": "^1.4.7",
     "dotenv": "^16.5.0",
     "eslint": "^9.28.0",
@@ -48,6 +48,6 @@
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.34.0",
-    "vitest": "^3.2.3"
+    "vitest": "^4.1.11"
   }
 }

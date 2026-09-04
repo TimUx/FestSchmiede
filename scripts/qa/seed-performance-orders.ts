@@ -3,9 +3,12 @@
  * Usage: cd backend && npx tsx ../scripts/qa/seed-performance-orders.ts [count]
  */
 import { PrismaClient, OrderSource, StatusCode } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import crypto from 'crypto';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }),
+});
 const TENANT_ID = '00000000-0000-0000-0000-000000000010';
 const EVENT_ID = '00000000-0000-0000-0000-000000000001';
 const FOOD_ITEM_ID = '00000000-0000-0000-0001-000000000001';

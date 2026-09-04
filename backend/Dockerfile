@@ -3,6 +3,7 @@ FROM node:22.14.0-alpine3.21 AS builder
 WORKDIR /app
 
 COPY package*.json ./
+COPY prisma.config.ts ./
 COPY prisma ./prisma/
 RUN npm ci
 
@@ -24,6 +25,7 @@ ENV PLUGINS_DIR=/app/plugins
 RUN apk add --no-cache postgresql-client gzip
 
 COPY package*.json ./
+COPY prisma.config.ts ./
 COPY prisma ./prisma/
 RUN npm ci --omit=dev
 
