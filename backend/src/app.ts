@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 import routes from './routes';
 import { errorHandler } from './middleware/errorHandler';
 import { corsPolicy } from './middleware/corsPolicy';
@@ -22,7 +23,7 @@ app.use(requestContextMiddleware);
 app.use(createSecurityHeadersMiddleware());
 app.use(cors(corsPolicy.corsOptions()));
 app.use(express.json({
-  verify: (req, _res, buf) => {
+  verify: (req: IncomingMessage, _res: ServerResponse, buf: Buffer) => {
     if (req.url?.includes('/webhooks/')) {
       (req as express.Request & { rawBody?: Buffer }).rawBody = buf;
     }
