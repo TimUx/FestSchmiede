@@ -65,16 +65,29 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(import.meta.dirname, './src'),
     },
   },
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          mui: ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
-          socket: ['socket.io-client'],
+        manualChunks(id) {
+          if (
+            id.includes('/node_modules/react/') ||
+            id.includes('/node_modules/react-dom/') ||
+            id.includes('/node_modules/react-router-dom/')
+          ) {
+            return 'vendor';
+          }
+          if (
+            id.includes('/node_modules/@mui/') ||
+            id.includes('/node_modules/@emotion/')
+          ) {
+            return 'mui';
+          }
+          if (id.includes('/node_modules/socket.io-client/')) {
+            return 'socket';
+          }
         },
       },
     },
