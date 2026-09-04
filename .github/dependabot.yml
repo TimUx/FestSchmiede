@@ -12,6 +12,12 @@ updates:
     directory: /frontend
     schedule:
       interval: weekly
+    groups:
+      mui-major-updates:
+        patterns:
+          - "@mui/*"
+        update-types:
+          - major
   - package-ecosystem: github-actions
     directory: /
     schedule:
