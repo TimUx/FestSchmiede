@@ -106,6 +106,9 @@ test.describe('FestSchmiede Nutzerreise (End-to-End)', () => {
   });
 
   test('3 · Mandanten-Administrator einrichten (Einrichtungsassistent)', async () => {
+    // Erwartet mehr als die serial-Default-Timeout von 60s: Warten auf die Zugangs-Mail (bis zu 30s)
+    // plus Login und sieben sequenzielle Einrichtungsassistent-Schritte mit Netzwerk-Roundtrips.
+    test.setTimeout(120_000);
     state.adminPassword = await waitForTemporaryPassword(state.adminEmail, { timeoutMs: 30_000 });
     await loginTenantAdmin(page, state.slug, state.adminEmail, state.adminPassword);
     await completeSetupWizard(page, state.organization);
