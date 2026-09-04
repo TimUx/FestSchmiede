@@ -104,7 +104,7 @@ jobs:
         run: bash scripts/qa/test-migrations.sh
 
       - name: Upload coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: coverage
@@ -203,7 +203,7 @@ jobs:
         run: docker compose -f docker-compose.ci.yml -f docker-compose.ci.override.yml logs > artifacts/container-logs.txt
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: qa-artifacts
@@ -293,7 +293,7 @@ jobs:
         run: PLAYWRIGHT_WORKERS=1 npm run qa:e2e:journey
 
       - name: Upload journey artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: user-journey-artifacts
