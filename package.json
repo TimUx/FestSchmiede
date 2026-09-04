@@ -35,14 +35,14 @@
     "qa:migrations": "bash scripts/qa/test-migrations.sh"
   },
   "devDependencies": {
-    "@eslint/js": "^9.28.0",
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.52.0",
     "@types/node": "^22.15.30",
-    "@types/supertest": "^6.0.3",
+    "@types/supertest": "^7.2.1",
     "@vitest/coverage-v8": "^4.1.11",
     "depcheck": "^1.4.7",
-    "dotenv": "^16.5.0",
-    "eslint": "^9.28.0",
+    "dotenv": "^17.4.2",
+    "eslint": "^10.9.1",
     "playwright": "^1.52.0",
     "supertest": "^7.1.1",
     "tsx": "^4.19.4",

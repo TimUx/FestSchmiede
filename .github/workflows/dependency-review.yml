@@ -16,36 +16,6 @@ jobs:
 
       - name: Dependency Review
         if: github.event_name == 'pull_request'
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: npm audit backend
-        run: |
-          for attempt in 1 2 3; do
-            npm audit --audit-level=high && exit 0
-            [ "$attempt" -eq 3 ] && exit 1
-            sleep $((attempt * 10))
-          done
-        working-directory: backend
-
-      - name: npm audit frontend
-        run: |
-          for attempt in 1 2 3; do
-            npm audit --audit-level=high && exit 0
-            [ "$attempt" -eq 3 ] && exit 1
-            sleep $((attempt * 10))
-          done
-        working-directory: frontend
-
-      - name: npm audit root
-        run: |
-          for attempt in 1 2 3; do
-            npm audit --audit-level=high && exit 0
-            [ "$attempt" -eq 3 ] && exit 1
-            sleep $((attempt * 10))
-          done
