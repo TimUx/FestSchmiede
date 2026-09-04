@@ -27,7 +27,9 @@ interface PaymentMethodSelectorProps {
 export function PaymentMethodSelector({ options, value, onChange }: PaymentMethodSelectorProps) {
   return (
     <Paper sx={{ p: 2, mb: 2 }} data-testid="payment-method-selector">
-      <Typography id="payment-method-legend" component="legend" variant="h6" fontWeight={700} gutterBottom>
+      <Typography id="payment-method-legend" component="legend" variant="h6" gutterBottom sx={{
+        fontWeight: 700
+      }}>
         Zahlungsart
       </Typography>
       <FormControl component="fieldset" fullWidth aria-labelledby="payment-method-legend">
@@ -66,7 +68,12 @@ export function PaymentMethodSelector({ options, value, onChange }: PaymentMetho
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, pt: 0.5 }}>
                     <PaymentIcon icon={option.icon} type={option.type} />
                     <Box>
-                      <Typography variant="body1" fontWeight={700} sx={{ fontSize: '1.1rem' }}>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          fontWeight: 700,
+                          fontSize: '1.1rem'
+                        }}>
                         {option.label}
                         {option.recommended && (
                           <Typography component="span" variant="body2" color="primary" sx={{ ml: 1 }}>
@@ -75,7 +82,9 @@ export function PaymentMethodSelector({ options, value, onChange }: PaymentMetho
                         )}
                       </Typography>
                       {option.description && (
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{
+                          color: "text.secondary"
+                        }}>
                           {option.description}
                         </Typography>
                       )}

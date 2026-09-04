@@ -15,10 +15,14 @@ export function RealtimeStatusPanel() {
 
   return (
     <Paper sx={{ p: 2, mb: 3 }} variant="outlined">
-      <Typography variant="subtitle2" fontWeight={700} gutterBottom>
+      <Typography variant="subtitle2" gutterBottom sx={{
+        fontWeight: 700
+      }}>
         Echtzeit-Verbindung
       </Typography>
-      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+      <Stack direction="row" spacing={1} useFlexGap sx={{
+        flexWrap: "wrap"
+      }}>
         <Chip
           size="small"
           label={STATE_LABELS[diag.state] ?? diag.state}

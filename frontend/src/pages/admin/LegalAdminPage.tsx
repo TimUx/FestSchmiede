@@ -172,9 +172,17 @@ export function LegalAdminPage() {
 
   return (
     <AdminLayout title="Rechtliche Informationen" fullWidth>
-      <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: "center",
+          mb: 2
+        }}>
         <GavelIcon color="primary" />
-        <Typography variant="h5" fontWeight={800}>Rechtliche Informationen</Typography>
+        <Typography variant="h5" sx={{
+          fontWeight: 800
+        }}>Rechtliche Informationen</Typography>
       </Stack>
 
       <Alert severity="warning" sx={{ mb: 3 }}>
@@ -199,13 +207,19 @@ export function LegalAdminPage() {
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: 4 }}>
             <Paper sx={{ p: 3 }}>
-              <Typography variant="overline" color="text.secondary">Veroeffentlicht</Typography>
-              <Typography variant="h4" fontWeight={800}>{publishedCount}</Typography>
+              <Typography variant="overline" sx={{
+                color: "text.secondary"
+              }}>Veroeffentlicht</Typography>
+              <Typography variant="h4" sx={{
+                fontWeight: 800
+              }}>{publishedCount}</Typography>
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, md: 8 }}>
             <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" fontWeight={700} gutterBottom>Seitenstatus</Typography>
+              <Typography variant="h6" gutterBottom sx={{
+                fontWeight: 700
+              }}>Seitenstatus</Typography>
               <Stack spacing={1.5}>
                 {pages.map((page) => (
                   <Box key={page.pageType} sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
@@ -259,15 +273,21 @@ export function LegalAdminPage() {
                     />
                   </Stack>
 
-                  <Stack direction="row" spacing={3} flexWrap="wrap" useFlexGap>
-                    <Stack direction="row" spacing={1} alignItems="center">
+                  <Stack direction="row" spacing={3} useFlexGap sx={{
+                    flexWrap: "wrap"
+                  }}>
+                    <Stack direction="row" spacing={1} sx={{
+                      alignItems: "center"
+                    }}>
                       <Switch
                         checked={draft.enabled}
                         onChange={(e) => setDraft({ ...draft, enabled: e.target.checked })}
                       />
                       <Typography>Aktiviert</Typography>
                     </Stack>
-                    <Stack direction="row" spacing={1} alignItems="center">
+                    <Stack direction="row" spacing={1} sx={{
+                      alignItems: "center"
+                    }}>
                       <Switch
                         checked={draft.published}
                         onChange={(e) => setDraft({ ...draft, published: e.target.checked })}
@@ -318,7 +338,9 @@ export function LegalAdminPage() {
         </Paper>
       ) : (
         <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" fontWeight={700} gutterBottom>
+          <Typography variant="h6" gutterBottom sx={{
+            fontWeight: 700
+          }}>
             Vorschau {draft ? `- ${PAGE_TYPE_LABELS[draft.pageType]}` : ''}
           </Typography>
           {previewHtml ? (
@@ -326,7 +348,9 @@ export function LegalAdminPage() {
               <div dangerouslySetInnerHTML={{ __html: previewHtml }} />
             </Box>
           ) : (
-            <Typography color="text.secondary">Noch keine Vorschau geladen.</Typography>
+            <Typography sx={{
+              color: "text.secondary"
+            }}>Noch keine Vorschau geladen.</Typography>
           )}
         </Paper>
       )}

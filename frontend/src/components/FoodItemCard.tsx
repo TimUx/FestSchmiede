@@ -94,26 +94,27 @@ export function FoodItemCard({
           <Typography
             variant={compact ? 'subtitle2' : touchMode ? 'h5' : 'h6'}
             component="h3"
-            fontWeight={700}
             sx={{
+              fontWeight: 700,
               ...(soldOut ? { color: 'text.disabled' } : undefined),
+
               ...(compact && {
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
                 lineHeight: 1.25,
-              }),
-            }}
-          >
+              })
+            }}>
             {item.name}
           </Typography>
           <Typography
             variant={compact ? 'body2' : touchMode ? 'h5' : 'h6'}
             color={soldOut ? 'text.disabled' : 'primary'}
-            fontWeight={700}
-            sx={{ flexShrink: 0 }}
-          >
+            sx={{
+              fontWeight: 700,
+              flexShrink: 0
+            }}>
             {formatPrice(Number(item.price))}
           </Typography>
         </Box>

@@ -22,7 +22,9 @@ export function ContactPage() {
 
   return (
     <PublicLayout>
-      <Typography variant="h4" fontWeight={800} gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{
+        fontWeight: 800
+      }}>
         Kontakt
       </Typography>
 
@@ -38,9 +40,13 @@ export function ContactPage() {
             />
           )}
           <Box>
-            <Typography variant="h5" fontWeight={700}>{club.clubName}</Typography>
+            <Typography variant="h5" sx={{
+              fontWeight: 700
+            }}>{club.clubName}</Typography>
             {club.description && (
-              <Typography variant="body2" color="text.secondary">{club.description}</Typography>
+              <Typography variant="body2" sx={{
+                color: "text.secondary"
+              }}>{club.description}</Typography>
             )}
           </Box>
         </Box>

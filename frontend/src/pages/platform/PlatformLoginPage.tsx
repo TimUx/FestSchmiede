@@ -111,16 +111,29 @@ export function PlatformLoginPage() {
   };
 
   return (
-    <Box minHeight="100vh" display="flex" alignItems="center" bgcolor="#0d47a1">
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        bgcolor: "#0d47a1"
+      }}>
       <Container maxWidth="sm">
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
           <FestSchmiedeLogo size="auth" variant="onPrimary" />
         </Box>
         <Paper sx={{ p: 4 }}>
-          <Typography variant="h5" gutterBottom fontWeight={700}>
+          <Typography variant="h5" gutterBottom sx={{
+            fontWeight: 700
+          }}>
             Plattform-Administration
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              mb: 3
+            }}>
             Anmeldung für Plattformadministratoren
           </Typography>
           {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}

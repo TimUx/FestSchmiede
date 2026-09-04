@@ -117,7 +117,12 @@ export function PlatformMailPage() {
       <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <EmailIcon /> E-Mail
       </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+      <Typography
+        variant="body2"
+        sx={{
+          color: "text.secondary",
+          mb: 3
+        }}>
         Zentrale SMTP-Konfiguration für alle Mandanten. Mandanten besitzen keine eigenen SMTP-Einstellungen mehr.
       </Typography>
 
@@ -232,10 +237,14 @@ export function PlatformMailPage() {
                 <Chip label={`Ausstehend: ${queue.pending}`} color="warning" variant="outlined" />
                 <Chip label={`Fehlgeschlagen: ${queue.failed}`} color="error" variant="outlined" />
                 <Divider sx={{ my: 1 }} />
-                <Typography variant="body2" color="text.secondary">Gesamt: {queue.total}</Typography>
+                <Typography variant="body2" sx={{
+                  color: "text.secondary"
+                }}>Gesamt: {queue.total}</Typography>
               </Stack>
             ) : (
-              <Typography variant="body2" color="text.secondary">Keine Daten</Typography>
+              <Typography variant="body2" sx={{
+                color: "text.secondary"
+              }}>Keine Daten</Typography>
             )}
           </Paper>
         </Grid>

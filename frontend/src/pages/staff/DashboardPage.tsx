@@ -33,14 +33,18 @@ function StatCard({ title, value, icon, color }: StatCardProps) {
       <CardContent sx={{ height: '100%', display: 'flex', alignItems: 'center', gap: 2, p: 2.5 }}>
         <Box sx={{ color, fontSize: 36, flexShrink: 0, display: 'flex' }}>{icon}</Box>
         <Box sx={{ minWidth: 0 }}>
-          <Typography variant="body2" color="text.secondary" noWrap>
+          <Typography variant="body2" noWrap sx={{
+            color: "text.secondary"
+          }}>
             {title}
           </Typography>
           <Typography
             variant="h5"
-            fontWeight={800}
-            sx={{ wordBreak: 'break-word', lineHeight: 1.2 }}
-          >
+            sx={{
+              fontWeight: 800,
+              wordBreak: 'break-word',
+              lineHeight: 1.2
+            }}>
             {value}
           </Typography>
         </Box>
@@ -108,10 +112,17 @@ export function DashboardPage() {
       </Box>
 
       <Box>
-        <Typography variant="h5" fontWeight={800} gutterBottom>
+        <Typography variant="h5" gutterBottom sx={{
+          fontWeight: 800
+        }}>
           Schnellzugriff
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            mb: 2
+          }}>
           Häufig genutzte Funktionen für Kasse und Abholung.
         </Typography>
         <StaffKioskActions variant="dashboard" />

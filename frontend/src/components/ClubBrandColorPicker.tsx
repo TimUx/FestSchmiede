@@ -17,10 +17,17 @@ export function ClubBrandColorPicker({ value, onChange, disabled }: ClubBrandCol
 
   return (
     <Box>
-      <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+      <Typography variant="subtitle1" gutterBottom sx={{
+        fontWeight: 600
+      }}>
         Primärfarbe
       </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+      <Typography
+        variant="body2"
+        sx={{
+          color: "text.secondary",
+          mb: 2
+        }}>
         Wird für Buttons, Links, Rahmen und den Kopfbereich verwendet. Nur Farben mit gut lesbarer heller Schrift.
       </Typography>
       <Box
@@ -49,7 +56,12 @@ export function ClubBrandColorPicker({ value, onChange, disabled }: ClubBrandCol
                 opacity: disabled ? 0.6 : 1,
               }}
             >
-              <Stack spacing={0.75} alignItems="center" sx={{ width: '100%' }}>
+              <Stack
+                spacing={0.75}
+                sx={{
+                  alignItems: "center",
+                  width: '100%'
+                }}>
                 <Box
                   sx={{
                     width: 40,
@@ -64,7 +76,12 @@ export function ClubBrandColorPicker({ value, onChange, disabled }: ClubBrandCol
                 >
                   {selected ? <CheckIcon fontSize="small" /> : null}
                 </Box>
-                <Typography variant="caption" textAlign="center" lineHeight={1.2}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    textAlign: "center",
+                    lineHeight: 1.2
+                  }}>
                   {color.label}
                 </Typography>
               </Stack>

@@ -139,7 +139,12 @@ export function SetupWizardPage() {
 
   return (
     <AdminLayout title="Einrichtungsassistent">
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+      <Typography
+        variant="body1"
+        sx={{
+          color: "text.secondary",
+          mb: 3
+        }}>
         Willkommen bei FestSchmiede! In wenigen Schritten richten Sie Ihren Mandanten ein.
       </Typography>
       <Stepper activeStep={step} sx={{ mb: 4 }} alternativeLabel>
@@ -189,7 +194,9 @@ export function SetupWizardPage() {
         )}
         {step === 3 && (
           <Stack spacing={2}>
-            <Typography variant="body2" color="text.secondary">Optional – kann später gepflegt werden.</Typography>
+            <Typography variant="body2" sx={{
+              color: "text.secondary"
+            }}>Optional – kann später gepflegt werden.</Typography>
             <TextField label="Impressum" fullWidth multiline rows={2} value={impressum} onChange={(e) => setImpressum(e.target.value)} />
             <TextField label="Datenschutz" fullWidth multiline rows={2} value={privacy} onChange={(e) => setPrivacy(e.target.value)} />
             <TextField label="AGB" fullWidth multiline rows={2} value={terms} onChange={(e) => setTerms(e.target.value)} />
@@ -211,17 +218,17 @@ export function SetupWizardPage() {
             {!skipEvent && (
               <>
                 <TextField label="Name" fullWidth value={eventName} onChange={(e) => setEventName(e.target.value)} />
-                <TextField label="Datum" type="date" fullWidth value={eventDate} onChange={(e) => setEventDate(e.target.value)} InputLabelProps={{ shrink: true }} />
+                <TextField label="Datum" type="date" fullWidth value={eventDate} onChange={(e) => setEventDate(e.target.value)} slotProps={{ inputLabel: { shrink: true } }} />
                 <TextField label="Beschreibung" fullWidth multiline rows={2} value={eventDescription} onChange={(e) => setEventDescription(e.target.value)} />
                 <Divider>Bestellzeiten</Divider>
                 <Stack direction="row" spacing={2}>
-                  <TextField label="Von" type="time" value={orderStart} onChange={(e) => setOrderStart(e.target.value)} InputLabelProps={{ shrink: true }} />
-                  <TextField label="Bis" type="time" value={orderEnd} onChange={(e) => setOrderEnd(e.target.value)} InputLabelProps={{ shrink: true }} />
+                  <TextField label="Von" type="time" value={orderStart} onChange={(e) => setOrderStart(e.target.value)} slotProps={{ inputLabel: { shrink: true } }} />
+                  <TextField label="Bis" type="time" value={orderEnd} onChange={(e) => setOrderEnd(e.target.value)} slotProps={{ inputLabel: { shrink: true } }} />
                 </Stack>
                 <Divider>Abholzeiten</Divider>
                 <Stack direction="row" spacing={2}>
-                  <TextField label="Von" type="time" value={pickupStart} onChange={(e) => setPickupStart(e.target.value)} InputLabelProps={{ shrink: true }} />
-                  <TextField label="Bis" type="time" value={pickupEnd} onChange={(e) => setPickupEnd(e.target.value)} InputLabelProps={{ shrink: true }} />
+                  <TextField label="Von" type="time" value={pickupStart} onChange={(e) => setPickupStart(e.target.value)} slotProps={{ inputLabel: { shrink: true } }} />
+                  <TextField label="Bis" type="time" value={pickupEnd} onChange={(e) => setPickupEnd(e.target.value)} slotProps={{ inputLabel: { shrink: true } }} />
                 </Stack>
                 <FormControlLabel control={<Checkbox checked={eventPublic} onChange={(e) => setEventPublic(e.target.checked)} />} label="Öffentlich" />
               </>

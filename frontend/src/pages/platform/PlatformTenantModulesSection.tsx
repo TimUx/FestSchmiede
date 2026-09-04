@@ -77,11 +77,22 @@ export function PlatformTenantModulesSection({ token, tenantId }: Props) {
 
   return (
     <Paper sx={{ p: 2, mt: 2 }}>
-      <Box display="flex" alignItems="center" gap={1} mb={1}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          mb: 1
+        }}>
         <ExtensionIcon color="primary" />
         <Typography variant="h6">Modul-Freigaben</Typography>
       </Box>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+      <Typography
+        variant="body2"
+        sx={{
+          color: "text.secondary",
+          mb: 2
+        }}>
         Legen Sie fest, welche installierten Module der Mandant in seiner Verwaltung aktivieren darf.
         Nicht freigegebene Module sind für den Mandanten unsichtbar.
       </Typography>
@@ -90,15 +101,27 @@ export function PlatformTenantModulesSection({ token, tenantId }: Props) {
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
       {loading ? (
-        <Box display="flex" justifyContent="center" py={3}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            py: 3
+          }}>
           <CircularProgress size={28} />
         </Box>
       ) : modules.length === 0 ? (
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{
+          color: "text.secondary"
+        }}>
           Keine Module im System gefunden.
         </Typography>
       ) : (
-        <Box display="flex" flexDirection="column" gap={0.5}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 0.5
+          }}>
           {modules.map((mod) => (
             <Box
               key={mod.moduleId}
@@ -122,15 +145,28 @@ export function PlatformTenantModulesSection({ token, tenantId }: Props) {
                 }
                 label={
                   <Box>
-                    <Typography fontWeight={600}>{mod.name}</Typography>
-                    <Typography variant="caption" color="text.secondary" display="block">
+                    <Typography sx={{
+                      fontWeight: 600
+                    }}>{mod.name}</Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "text.secondary",
+                        display: "block"
+                      }}>
                       {mod.description}
                     </Typography>
                   </Box>
                 }
                 sx={{ alignItems: 'flex-start', m: 0, flex: 1 }}
               />
-              <Box display="flex" gap={0.5} flexWrap="wrap" justifyContent="flex-end">
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 0.5,
+                  flexWrap: "wrap",
+                  justifyContent: "flex-end"
+                }}>
                 {mod.preview && <Chip size="small" label="Vorschau" color="warning" variant="outlined" />}
                 {mod.enabled && <Chip size="small" label="Aktiv" color="success" />}
                 {mod.installed && !mod.enabled && <Chip size="small" label="Installiert" variant="outlined" />}
@@ -140,7 +176,9 @@ export function PlatformTenantModulesSection({ token, tenantId }: Props) {
         </Box>
       )}
 
-      <Box mt={2}>
+      <Box sx={{
+        mt: 2
+      }}>
         <Button
           variant="contained"
           startIcon={saving ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />}

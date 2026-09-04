@@ -32,9 +32,13 @@ export function StaffEventSelect({ events, value, onChange, labelId, compact = f
         renderValue={(selected) => {
           if (!selected) {
             return (
-              <Typography component="span" color="text.secondary" sx={{ fontSize: compact ? '0.875rem' : '1.15rem' }}>
-                Veranstaltung wählen
-              </Typography>
+              <Typography
+                component="span"
+                sx={{
+                  color: "text.secondary",
+                  fontSize: compact ? '0.875rem' : '1.15rem'
+                }}>Veranstaltung wählen
+                              </Typography>
             );
           }
           const event = events.find((item) => item.id === selected);

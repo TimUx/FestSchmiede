@@ -28,7 +28,13 @@ import {
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <Typography variant="h5" fontWeight={800} gutterBottom sx={{ mt: 1 }}>
+    <Typography
+      variant="h5"
+      gutterBottom
+      sx={{
+        fontWeight: 800,
+        mt: 1
+      }}>
       {children}
     </Typography>
   );
@@ -78,9 +84,17 @@ export function PlatformAboutDeveloperPage() {
             <Grid size={{ xs: 12, md: 6 }}>
               <Card variant="outlined" sx={{ height: '100%' }}>
                 <CardContent>
-                  <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{
+                      alignItems: "center",
+                      mb: 2
+                    }}>
                     <WorkIcon color="primary" />
-                    <Typography variant="h6" fontWeight={700}>
+                    <Typography variant="h6" sx={{
+                      fontWeight: 700
+                    }}>
                       Beruf – Hobby trifft Karriere
                     </Typography>
                   </Stack>
@@ -99,9 +113,17 @@ export function PlatformAboutDeveloperPage() {
             <Grid size={{ xs: 12, md: 6 }}>
               <Card variant="outlined" sx={{ height: '100%' }}>
                 <CardContent>
-                  <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{
+                      alignItems: "center",
+                      mb: 2
+                    }}>
                     <VolunteerActivismIcon color="primary" />
-                    <Typography variant="h6" fontWeight={700}>
+                    <Typography variant="h6" sx={{
+                      fontWeight: 700
+                    }}>
                       Ehrenamt – Feuerwehr im Herzen
                     </Typography>
                   </Stack>
@@ -113,7 +135,7 @@ export function PlatformAboutDeveloperPage() {
                   <List dense disablePadding>
                     {FIRE_DEPARTMENT_ROLES.map((role) => (
                       <ListItem key={role} disableGutters sx={{ py: 0.25 }}>
-                        <ListItemText primary={`• ${role}`} primaryTypographyProps={{ variant: 'body2' }} />
+                        <ListItemText primary={`• ${role}`} slotProps={{ primary: { variant: 'body2' } }} />
                       </ListItem>
                     ))}
                   </List>
@@ -135,7 +157,12 @@ export function PlatformAboutDeveloperPage() {
 
           <Box>
             <SectionHeading>Open-Source-Projekte</SectionHeading>
-            <Typography color="text.secondary" sx={{ mb: 3, lineHeight: 1.7 }}>
+            <Typography
+              sx={{
+                color: "text.secondary",
+                mb: 3,
+                lineHeight: 1.7
+              }}>
               Neben FestSchmiede entwickelt Timo auf{' '}
               <Link href={DEVELOPER_PROFILE.github} target="_blank" rel="noopener noreferrer">
                 GitHub
@@ -155,15 +182,29 @@ export function PlatformAboutDeveloperPage() {
                     }}
                   >
                     <CardContent>
-                      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={1}>
-                        <Typography variant="h6" fontWeight={700}>
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{
+                          justifyContent: "space-between",
+                          alignItems: "flex-start"
+                        }}>
+                        <Typography variant="h6" sx={{
+                          fontWeight: 700
+                        }}>
                           {project.name}
                         </Typography>
                         {project.language && (
                           <Chip label={project.language} size="small" color="primary" variant="outlined" />
                         )}
                       </Stack>
-                      <Typography color="text.secondary" sx={{ mt: 1, mb: 2, lineHeight: 1.6 }}>
+                      <Typography
+                        sx={{
+                          color: "text.secondary",
+                          mt: 1,
+                          mb: 2,
+                          lineHeight: 1.6
+                        }}>
                         {project.description}
                       </Typography>
                       <Link href={project.url} target="_blank" rel="noopener noreferrer" underline="hover">
@@ -180,13 +221,28 @@ export function PlatformAboutDeveloperPage() {
                 <Grid key={project.name} size={{ xs: 12, sm: 6, md: 4 }}>
                   <Card variant="outlined" sx={{ height: '100%' }}>
                     <CardContent>
-                      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={1}>
-                        <Typography fontWeight={700}>{project.name}</Typography>
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{
+                          justifyContent: "space-between",
+                          alignItems: "flex-start"
+                        }}>
+                        <Typography sx={{
+                          fontWeight: 700
+                        }}>{project.name}</Typography>
                         {project.language && (
                           <Chip label={project.language} size="small" variant="outlined" />
                         )}
                       </Stack>
-                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 1.5, lineHeight: 1.6 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "text.secondary",
+                          mt: 1,
+                          mb: 1.5,
+                          lineHeight: 1.6
+                        }}>
                         {project.description}
                       </Typography>
                       <Link
@@ -204,7 +260,12 @@ export function PlatformAboutDeveloperPage() {
               ))}
             </Grid>
 
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                mt: 2
+              }}>
               Alle öffentlichen Repositories finden Sie im{' '}
               <Link href={DEVELOPER_PROFILE.github} target="_blank" rel="noopener noreferrer">
                 GitHub-Profil @TimUx

@@ -143,7 +143,9 @@ export function PlatformUsersPage() {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Box>
           <Typography variant="h4" gutterBottom>Plattformadministratoren</Typography>
-          <Typography color="text.secondary">
+          <Typography sx={{
+            color: "text.secondary"
+          }}>
             Benutzer verwalten oder{' '}
             <RouterLink to="/platform/profil">eigenes Profil bearbeiten</RouterLink>.
           </Typography>
@@ -169,7 +171,11 @@ export function PlatformUsersPage() {
             {items.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6}>
-                  <Typography color="text.secondary" sx={{ py: 2 }}>
+                  <Typography
+                    sx={{
+                      color: "text.secondary",
+                      py: 2
+                    }}>
                     Noch keine Plattformadministratoren.
                   </Typography>
                 </TableCell>
@@ -180,7 +186,9 @@ export function PlatformUsersPage() {
                 <TableCell>
                   {u.firstName} {u.lastName}
                   {u.id === currentUser?.id && (
-                    <Typography component="span" variant="caption" color="text.secondary"> (Sie)</Typography>
+                    <Typography component="span" variant="caption" sx={{
+                      color: "text.secondary"
+                    }}> (Sie)</Typography>
                   )}
                 </TableCell>
                 <TableCell>{u.email}</TableCell>
@@ -263,7 +271,12 @@ export function PlatformUsersPage() {
             />
           )}
           {editingId === currentUser?.id && (
-            <Typography variant="caption" color="text.secondary" display="block">
+            <Typography
+              variant="caption"
+              sx={{
+                color: "text.secondary",
+                display: "block"
+              }}>
               Das eigene Konto kann hier nicht deaktiviert werden.
             </Typography>
           )}

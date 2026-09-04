@@ -6,10 +6,16 @@ export function TenantNotFoundPage() {
 
   return (
     <Container maxWidth="sm" sx={{ py: 8, textAlign: 'center' }}>
-      <Typography variant="h4" fontWeight={700} gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{
+        fontWeight: 700
+      }}>
         Veranstalter nicht gefunden
       </Typography>
-      <Typography color="text.secondary" sx={{ mb: 3 }}>
+      <Typography
+        sx={{
+          color: "text.secondary",
+          mb: 3
+        }}>
         Der angeforderte Veranstalter existiert nicht oder ist derzeit nicht erreichbar.
         {routing.tenantSlug ? ` („${routing.tenantSlug}")` : ''}
       </Typography>

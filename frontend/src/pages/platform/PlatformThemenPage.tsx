@@ -60,10 +60,22 @@ export function PlatformThemenPage() {
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         {clusters.map((group) => (
           <Box key={group.cluster} id={group.cluster} component="section" sx={{ mb: 6 }}>
-            <Typography variant="h2" component="h2" fontWeight={800} sx={{ fontSize: '1.5rem', mb: 1 }}>
+            <Typography
+              variant="h2"
+              component="h2"
+              sx={{
+                fontWeight: 800,
+                fontSize: '1.5rem',
+                mb: 1
+              }}>
               {group.title}
             </Typography>
-            <Typography color="text.secondary" sx={{ mb: 2, maxWidth: 720 }}>
+            <Typography
+              sx={{
+                color: "text.secondary",
+                mb: 2,
+                maxWidth: 720
+              }}>
               {group.description}
             </Typography>
             <Grid container spacing={2}>
@@ -72,10 +84,19 @@ export function PlatformThemenPage() {
                   <Card variant="outlined" sx={{ height: '100%' }}>
                     <CardActionArea component={Link} to={`/${page.slug}`} sx={{ height: '100%' }}>
                       <CardContent>
-                        <Typography variant="h3" component="h3" fontWeight={700} sx={{ fontSize: '1.05rem', mb: 1 }}>
+                        <Typography
+                          variant="h3"
+                          component="h3"
+                          sx={{
+                            fontWeight: 700,
+                            fontSize: '1.05rem',
+                            mb: 1
+                          }}>
                           {page.title}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{
+                          color: "text.secondary"
+                        }}>
                           {page.metaDescription}
                         </Typography>
                       </CardContent>

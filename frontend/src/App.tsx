@@ -35,16 +35,33 @@ function AppBootstrap() {
 
   if (loading) {
     return (
-      <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="100dvh" gap={2}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100dvh",
+          gap: 2
+        }}>
         <CircularProgress />
-        <Typography color="text.secondary">FestSchmiede wird geladen…</Typography>
+        <Typography sx={{
+          color: "text.secondary"
+        }}>FestSchmiede wird geladen…</Typography>
       </Box>
     );
   }
 
   if (error) {
     return (
-      <Box display="flex" alignItems="center" justifyContent="center" minHeight="100dvh" px={2}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100dvh",
+          px: 2
+        }}>
         <Typography color="error">{error}</Typography>
       </Box>
     );

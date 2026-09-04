@@ -10,11 +10,20 @@ export function GenericReportPage({ label = 'Bericht', description }: GenericRep
   return (
     <AdminLayout title={label}>
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h5" fontWeight={700} gutterBottom>{label}</Typography>
+        <Typography variant="h5" gutterBottom sx={{
+          fontWeight: 700
+        }}>{label}</Typography>
         {description && (
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>{description}</Typography>
+          <Typography
+            variant="body1"
+            sx={{
+              color: "text.secondary",
+              mb: 2
+            }}>{description}</Typography>
         )}
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{
+          color: "text.secondary"
+        }}>
           Dieser Bericht wird vom Modul über Metadaten registriert. Eine spezifische Report-Komponente
           kann im Frontend-Registry unter <code>REPORT_PAGE_COMPONENTS</code> hinterlegt werden.
         </Typography>

@@ -10,14 +10,18 @@ export function PlatformDownloadPage() {
     <PlatformPublicLayout>
       <BrandingHead titleSuffix="Download" path="/download" description="FestSchmiede herunterladen und selbst hosten – Open-Source-Veranstaltungsplattform für Vereine." />
       <Container maxWidth="md" sx={{ py: 4 }}>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
+        <Typography variant="h4" gutterBottom sx={{
+          fontWeight: 700
+        }}>
           Download
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" sx={{ mb: 2 }}>
           {platform.name} wird als Docker-Image ausgeliefert. Kontaktieren Sie Ihren Plattformadministrator
           für Zugangsdaten und Deployment-Anleitungen.
         </Typography>
-        <Typography color="text.secondary">
+        <Typography sx={{
+          color: "text.secondary"
+        }}>
           Aktuelle Version: {platform.version}
         </Typography>
       </Container>

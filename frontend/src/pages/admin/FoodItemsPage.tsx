@@ -161,7 +161,9 @@ export function FoodItemsPage() {
       </Alert>
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-        <Typography variant="h5" fontWeight={700}>Speisen & Getränke verwalten</Typography>
+        <Typography variant="h5" sx={{
+          fontWeight: 700
+        }}>Speisen & Getränke verwalten</Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
           Neuer Eintrag
         </Button>
@@ -182,7 +184,9 @@ export function FoodItemsPage() {
           {items.length === 0 ? (
             <TableRow>
               <TableCell colSpan={6} align="center" sx={{ py: 5 }}>
-                <Typography variant="body1" color="text.secondary" gutterBottom>
+                <Typography variant="body1" gutterBottom sx={{
+                  color: "text.secondary"
+                }}>
                   Noch keine Einträge im Katalog.
                 </Typography>
                 <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate} sx={{ mt: 1 }}>

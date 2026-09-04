@@ -4,10 +4,16 @@ import { Link } from 'react-router-dom';
 export function PlatformNotFoundPage() {
   return (
     <Container maxWidth="sm" sx={{ py: 8, textAlign: 'center' }}>
-      <Typography variant="h4" fontWeight={700} gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{
+        fontWeight: 700
+      }}>
         Seite nicht gefunden
       </Typography>
-      <Typography color="text.secondary" sx={{ mb: 3 }}>
+      <Typography
+        sx={{
+          color: "text.secondary",
+          mb: 3
+        }}>
         Die angeforderte Plattformseite existiert nicht.
       </Typography>
       <Button component={Link} to="/" variant="contained">

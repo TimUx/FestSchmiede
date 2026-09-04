@@ -17,17 +17,21 @@ export function PlatformDocsPage() {
     <PlatformPublicLayout>
       <BrandingHead titleSuffix="Dokumentation" path="/dokumentation" description="Dokumentation und Guides für FestSchmiede – Installation, Betrieb und Nutzung der Open-Source-Veranstaltungsplattform." />
       <Container maxWidth="md" sx={{ py: 4 }}>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
+        <Typography variant="h4" gutterBottom sx={{
+          fontWeight: 700
+        }}>
           Dokumentation
         </Typography>
-        <Typography paragraph>
+        <Typography component="p" sx={{ mb: 2 }}>
           Technische Dokumentation und Administratorhandbücher finden Sie im Projekt-Repository unter{' '}
           <MuiLink href={docsUrl} target="_blank" rel="noopener noreferrer">
             docs/
           </MuiLink>
           .
         </Typography>
-        <Typography color="text.secondary">
+        <Typography sx={{
+          color: "text.secondary"
+        }}>
           Für Mandantenadministratoren steht nach dem Login die integrierte Hilfe im Admin-Bereich zur Verfügung.
         </Typography>
       </Container>

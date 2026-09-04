@@ -15,7 +15,7 @@ import {
   ListItemText,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
@@ -170,7 +170,6 @@ export function PosPaymentDialog({
       fullScreen
       aria-labelledby="pos-payment-title"
       aria-describedby="pos-payment-description"
-      disableEscapeKeyDown={waiting}
     >
       <DialogContent
         sx={{
@@ -213,37 +212,68 @@ export function PosPaymentDialog({
         {success ? (
           <Box sx={{ maxWidth: 480 }}>
             <CheckCircleIcon color="success" sx={{ fontSize: { xs: 80, sm: 96 }, mb: 2 }} />
-            <Typography id="pos-payment-title" variant="h4" fontWeight={800} gutterBottom>
+            <Typography id="pos-payment-title" variant="h4" gutterBottom sx={{
+              fontWeight: 800
+            }}>
               Zahlung erfolgreich
             </Typography>
-            <Typography variant="h6" color="text.secondary" sx={{ mb: 3 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                color: "text.secondary",
+                mb: 3
+              }}>
               Vielen Dank. Die Bestellung wurde an die Küche übermittelt.
             </Typography>
-            <Typography variant="overline" color="text.secondary" sx={{ fontSize: '1rem' }}>
+            <Typography
+              variant="overline"
+              sx={{
+                color: "text.secondary",
+                fontSize: '1rem'
+              }}>
               Ihre Abholnummer
             </Typography>
             <Typography
               variant="h1"
-              fontWeight={900}
               color="primary"
-              sx={{ fontSize: { xs: '5rem', sm: '7rem' }, lineHeight: 1, my: 2 }}
-            >
+              sx={{
+                fontWeight: 900,
+                fontSize: { xs: '5rem', sm: '7rem' },
+                lineHeight: 1,
+                my: 2
+              }}>
               {order.displayNumber}
             </Typography>
           </Box>
         ) : (
           <Box sx={{ maxWidth: 520, width: '100%' }}>
-            <Typography id="pos-payment-title" variant="h4" fontWeight={800} gutterBottom>
+            <Typography id="pos-payment-title" variant="h4" gutterBottom sx={{
+              fontWeight: 800
+            }}>
               Zahlung erforderlich
             </Typography>
             {eventName && (
-              <Typography variant="body1" color="text.secondary" sx={{ mb: 2, fontSize: '1.1rem' }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: "text.secondary",
+                  mb: 2,
+                  fontSize: '1.1rem'
+                }}>
                 {eventName}
               </Typography>
             )}
 
-            <Typography variant="overline" color="text.secondary">Gesamtbetrag</Typography>
-            <Typography variant="h3" fontWeight={900} color="primary" sx={{ mb: 3 }}>
+            <Typography variant="overline" sx={{
+              color: "text.secondary"
+            }}>Gesamtbetrag</Typography>
+            <Typography
+              variant="h3"
+              color="primary"
+              sx={{
+                fontWeight: 900,
+                mb: 3
+              }}>
               {formatPrice(order.totalPrice)}
             </Typography>
 
@@ -263,11 +293,16 @@ export function PosPaymentDialog({
                       <ListItemIcon sx={{ minWidth: 32 }}>
                         <FiberManualRecordIcon sx={{ fontSize: 10 }} />
                       </ListItemIcon>
-                      <ListItemText primary={label} primaryTypographyProps={{ fontSize: '1.05rem' }} />
+                      <ListItemText primary={label} slotProps={{ primary: { sx: { fontSize: '1.05rem' } } }} />
                     </ListItem>
                   ))}
                 </List>
-                <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.05rem' }}>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: "text.secondary",
+                    fontSize: '1.05rem'
+                  }}>
                   Bitte scannen Sie den QR-Code mit Ihrem Smartphone.
                 </Typography>
               </>
@@ -279,24 +314,42 @@ export function PosPaymentDialog({
               aria-live="polite"
               aria-atomic="true"
             >
-              <Typography variant="overline" color="text.secondary">Status</Typography>
+              <Typography variant="overline" sx={{
+                color: "text.secondary"
+              }}>Status</Typography>
               {waiting && (
-                <Stack direction="row" alignItems="center" justifyContent="center" spacing={1.5} sx={{ mt: 1 }}>
+                <Stack
+                  direction="row"
+                  spacing={1.5}
+                  sx={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                    mt: 1
+                  }}>
                   <FiberManualRecordIcon sx={{ color: 'warning.main', fontSize: 16 }} aria-hidden />
-                  <Typography variant="h6" fontWeight={700}>
+                  <Typography variant="h6" sx={{
+                    fontWeight: 700
+                  }}>
                     {posPaymentStatusLabel(status)}
                   </Typography>
                 </Stack>
               )}
               {waiting && remaining && (
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "text.secondary",
+                    mt: 1
+                  }}>
                   Verbleibende Zeit: {remaining} · {paymentLabel}
                 </Typography>
               )}
 
               {failure && (
                 <Alert severity="error" icon={<ErrorOutlineIcon />} sx={{ mt: 2, textAlign: 'left' }}>
-                  <Typography fontWeight={700}>Zahlung konnte nicht abgeschlossen werden.</Typography>
+                  <Typography sx={{
+                    fontWeight: 700
+                  }}>Zahlung konnte nicht abgeschlossen werden.</Typography>
                 </Alert>
               )}
 

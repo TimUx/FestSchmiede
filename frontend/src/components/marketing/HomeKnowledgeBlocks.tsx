@@ -13,7 +13,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 import { Link } from 'react-router-dom';
 import type { HomeDefinition, HomeEventType, HomeProblemSection } from '@/content/homePageContent';
 
@@ -47,9 +47,12 @@ export function HeroBenefitList({
             component={Link}
             to={item.href}
             variant="body2"
-            fontWeight={600}
-            sx={{ color: 'text.primary', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
-          >
+            sx={{
+              fontWeight: 600,
+              color: 'text.primary',
+              textDecoration: 'none',
+              '&:hover': { textDecoration: 'underline' }
+            }}>
             {item.label}
           </Typography>
         </Box>
@@ -63,26 +66,50 @@ export function ProblemSolutionBlocks({ items }: { items: HomeProblemSection[] }
     <Stack spacing={4}>
       {items.map((item) => (
         <Box key={item.id} id={item.id} component="article" sx={{ scrollMarginTop: 96 }}>
-          <Typography variant="h3" component="h3" fontWeight={800} sx={{ fontSize: { xs: '1.2rem', md: '1.35rem' }, mb: 1.5 }}>
+          <Typography
+            variant="h3"
+            component="h3"
+            sx={{
+              fontWeight: 800,
+              fontSize: { xs: '1.2rem', md: '1.35rem' },
+              mb: 1.5
+            }}>
             {item.title}
           </Typography>
-          <Typography paragraph sx={{ lineHeight: 1.75, maxWidth: 820 }}>
+          <Typography component="p" sx={{ mb: 2, lineHeight: 1.75, maxWidth: 820 }}>
             {item.problem}
           </Typography>
-          <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 0.75 }}>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              fontWeight: 700,
+              mb: 0.75
+            }}>
             Typische Ursachen
           </Typography>
           <Box component="ul" sx={{ pl: 3, mb: 2 }}>
             {item.causes.map((cause) => (
-              <Typography key={cause} component="li" color="text.secondary" sx={{ mb: 0.5, lineHeight: 1.6 }}>
+              <Typography
+                key={cause}
+                component="li"
+                sx={{
+                  color: "text.secondary",
+                  mb: 0.5,
+                  lineHeight: 1.6
+                }}>
                 {cause}
               </Typography>
             ))}
           </Box>
-          <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 0.75 }}>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              fontWeight: 700,
+              mb: 0.75
+            }}>
             Digitale Alternative
           </Typography>
-          <Typography paragraph sx={{ lineHeight: 1.75, maxWidth: 820 }}>
+          <Typography component="p" sx={{ mb: 2, lineHeight: 1.75, maxWidth: 820 }}>
             {item.solution}
           </Typography>
           <Box component="ul" sx={{ pl: 3, mb: 1.5 }}>
@@ -109,10 +136,22 @@ export function DefinitionGrid({ items }: { items: HomeDefinition[] }) {
           <Card variant="outlined" sx={{ height: '100%' }}>
             <CardActionArea component={Link} to={item.to} sx={{ height: '100%', alignItems: 'stretch' }}>
               <CardContent>
-                <Typography variant="h3" component="h3" fontWeight={700} sx={{ fontSize: '1.05rem', mb: 1 }}>
+                <Typography
+                  variant="h3"
+                  component="h3"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: '1.05rem',
+                    mb: 1
+                  }}>
                   {item.term}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "text.secondary",
+                    lineHeight: 1.7
+                  }}>
                   {item.body}
                 </Typography>
               </CardContent>
@@ -132,10 +171,22 @@ export function EventTypeGrid({ items }: { items: HomeEventType[] }) {
           <Card variant="outlined" sx={{ height: '100%' }}>
             <CardActionArea component={Link} to={item.to} sx={{ height: '100%' }}>
               <CardContent>
-                <Typography variant="h3" component="h3" fontWeight={700} sx={{ fontSize: '1.05rem', mb: 1 }}>
+                <Typography
+                  variant="h3"
+                  component="h3"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: '1.05rem',
+                    mb: 1
+                  }}>
                   {item.title}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.65 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "text.secondary",
+                    lineHeight: 1.65
+                  }}>
                   {item.challenge}
                 </Typography>
               </CardContent>

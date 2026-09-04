@@ -124,12 +124,18 @@ export function PlatformHomePage() {
                   alt={s.alt}
                   loading="lazy"
                   decoding="async"
-                  width={800}
-                  height={600}
-                  sx={{ width: '100%', height: 'auto', display: 'block', borderBottom: 1, borderColor: 'divider' }}
-                />
+                  sx={{
+                    width: '100%',
+                    height: 'auto',
+                    display: 'block',
+                    aspectRatio: '4 / 3',
+                    borderBottom: 1,
+                    borderColor: 'divider'
+                  }} />
                 <CardContent>
-                  <Typography fontWeight={600}>{s.title}</Typography>
+                  <Typography sx={{
+                    fontWeight: 600
+                  }}>{s.title}</Typography>
                 </CardContent>
               </Card>
             </Grid>
@@ -144,25 +150,46 @@ export function PlatformHomePage() {
       >
         <Stack spacing={3} sx={{ maxWidth: 820 }}>
           <Box>
-            <Typography paragraph sx={{ lineHeight: 1.75 }}>{HOME_EEAT.whyBody}</Typography>
+            <Typography component="p" sx={{ mb: 2, lineHeight: 1.75 }}>{HOME_EEAT.whyBody}</Typography>
           </Box>
           <Box>
-            <Typography variant="h3" component="h3" fontWeight={700} sx={{ fontSize: '1.15rem', mb: 1 }}>
+            <Typography
+              variant="h3"
+              component="h3"
+              sx={{
+                fontWeight: 700,
+                fontSize: '1.15rem',
+                mb: 1
+              }}>
               {HOME_EEAT.whoTitle}
             </Typography>
-            <Typography paragraph sx={{ lineHeight: 1.75 }}>{HOME_EEAT.whoBody}</Typography>
+            <Typography component="p" sx={{ mb: 2, lineHeight: 1.75 }}>{HOME_EEAT.whoBody}</Typography>
           </Box>
           <Box>
-            <Typography variant="h3" component="h3" fontWeight={700} sx={{ fontSize: '1.15rem', mb: 1 }}>
+            <Typography
+              variant="h3"
+              component="h3"
+              sx={{
+                fontWeight: 700,
+                fontSize: '1.15rem',
+                mb: 1
+              }}>
               {HOME_EEAT.whenTitle}
             </Typography>
-            <Typography paragraph sx={{ lineHeight: 1.75 }}>{HOME_EEAT.whenBody}</Typography>
+            <Typography component="p" sx={{ mb: 2, lineHeight: 1.75 }}>{HOME_EEAT.whenBody}</Typography>
           </Box>
           <Box>
-            <Typography variant="h3" component="h3" fontWeight={700} sx={{ fontSize: '1.15rem', mb: 1 }}>
+            <Typography
+              variant="h3"
+              component="h3"
+              sx={{
+                fontWeight: 700,
+                fontSize: '1.15rem',
+                mb: 1
+              }}>
               {HOME_EEAT.diffTitle}
             </Typography>
-            <Typography paragraph sx={{ lineHeight: 1.75 }}>{HOME_EEAT.diffBody}</Typography>
+            <Typography component="p" sx={{ mb: 2, lineHeight: 1.75 }}>{HOME_EEAT.diffBody}</Typography>
           </Box>
         </Stack>
         <Button component={Link} to="/ueber-das-projekt" sx={{ mt: 1 }}>
@@ -235,7 +262,9 @@ export function PlatformHomePage() {
         title="Nächstes Fest ruhiger organisieren?"
         subtitle="Mandant beantragen, Themen nachlesen oder den Ablauf mit dem Team durchspielen – ohne Feature-Theater."
       >
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{
+          justifyContent: "center"
+        }}>
           {platform.registrationEnabled && (
             <Button component={Link} to="/mandant-beantragen" variant="contained" size="large">
               Mandant beantragen

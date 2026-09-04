@@ -175,10 +175,17 @@ export function OrderStatusPage() {
   if (verifyMode) {
     return (
       <PublicLayout>
-        <Typography variant="h4" fontWeight={800} gutterBottom>
+        <Typography variant="h4" gutterBottom sx={{
+          fontWeight: 800
+        }}>
           Bestellstatus
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+        <Typography
+          variant="body1"
+          sx={{
+            color: "text.secondary",
+            mb: 3
+          }}>
           Bitte bestätigen Sie Ihren Nachnamen, um den Bestellstatus anzuzeigen.
         </Typography>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
@@ -214,10 +221,17 @@ export function OrderStatusPage() {
 
     return (
       <PublicLayout>
-        <Typography variant="h4" fontWeight={800} gutterBottom>
+        <Typography variant="h4" gutterBottom sx={{
+          fontWeight: 800
+        }}>
           Bestellstatus abfragen
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+        <Typography
+          variant="body1"
+          sx={{
+            color: "text.secondary",
+            mb: 3
+          }}>
           Geben Sie Ihre Abholnummer und Ihren Nachnamen ein.
         </Typography>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
@@ -320,23 +334,38 @@ export function OrderStatusPage() {
       )}
 
       <Paper sx={{ p: 4, textAlign: 'center' }}>
-        <Typography variant="overline" color="text.secondary">
+        <Typography variant="overline" sx={{
+          color: "text.secondary"
+        }}>
           Ihre Abholnummer
         </Typography>
         <Typography
           variant="h1"
-          fontWeight={900}
           color="primary"
-          sx={{ fontSize: { xs: '4rem', sm: '6rem' }, lineHeight: 1.1, my: 2 }}
-        >
+          sx={{
+            fontWeight: 900,
+            fontSize: { xs: '4rem', sm: '6rem' },
+            lineHeight: 1.1,
+            my: 2
+          }}>
           {order.displayNumber}
         </Typography>
 
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
+        <Typography
+          variant="body1"
+          sx={{
+            color: "text.secondary",
+            mb: 1
+          }}>
           Bitte merken Sie sich unbedingt Ihre Abholnummer oder zeigen Sie diese später an der Kasse vor.
         </Typography>
         {order.eventDateLabel && (
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              mb: 3
+            }}>
             Veranstaltungstag: {order.eventDateLabel}
           </Typography>
         )}
@@ -346,7 +375,12 @@ export function OrderStatusPage() {
         </Box>
 
         <Box sx={{ mt: 2, textAlign: 'left', maxWidth: 520, mx: 'auto' }}>
-          <Typography variant="h6" fontWeight={800} sx={{ mb: 1 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 800,
+              mb: 1
+            }}>
             Zusammenfassung
           </Typography>
           <Stack spacing={0.5} sx={{ mb: 1.5 }}>
@@ -356,14 +390,24 @@ export function OrderStatusPage() {
                   {item.quantity}× {item.name}
                 </Typography>
                 {item.lineTotal !== undefined && (
-                  <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "text.secondary",
+                      flexShrink: 0
+                    }}>
                     {formatPrice(item.lineTotal)}
                   </Typography>
                 )}
               </Box>
             ))}
           </Stack>
-          <Typography variant="h6" fontWeight={800} sx={{ textAlign: 'right' }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 800,
+              textAlign: 'right'
+            }}>
             {formatPrice(order.totalPrice)}
           </Typography>
         </Box>
@@ -383,7 +427,12 @@ export function OrderStatusPage() {
         {order.canCancel && (
           <Box sx={{ mt: 3 }}>
             {order.cancellationDeadlineLabel && (
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "text.secondary",
+                  mb: 2
+                }}>
                 Stornierung möglich bis: {order.cancellationDeadlineLabel}
               </Typography>
             )}

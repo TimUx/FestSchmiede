@@ -151,7 +151,9 @@ export function PlatformDashboardPage() {
 function StatCard({ title, value, color }: { title: string; value: number; color?: 'success' | 'warning' }) {
   return (
     <Paper sx={{ p: 2, textAlign: 'center' }}>
-      <Typography variant="body2" color="text.secondary">{title}</Typography>
+      <Typography variant="body2" sx={{
+        color: "text.secondary"
+      }}>{title}</Typography>
       <Typography variant="h4" color={color ? `${color}.main` : 'text.primary'}>{value}</Typography>
     </Paper>
   );
@@ -160,7 +162,9 @@ function StatCard({ title, value, color }: { title: string; value: number; color
 function MetricPaper({ title, value }: { title: string; value: string }) {
   return (
     <Paper sx={{ p: 2 }}>
-      <Typography variant="body2" color="text.secondary">{title}</Typography>
+      <Typography variant="body2" sx={{
+        color: "text.secondary"
+      }}>{title}</Typography>
       <Typography variant="h5">{value}</Typography>
     </Paper>
   );

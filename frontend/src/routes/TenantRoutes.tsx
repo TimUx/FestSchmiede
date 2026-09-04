@@ -53,7 +53,13 @@ const AdminProfilePage = lazy(() =>
 
 function PageLoader() {
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" minHeight="40vh">
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "40vh"
+      }}>
       <CircularProgress />
     </Box>
   );
