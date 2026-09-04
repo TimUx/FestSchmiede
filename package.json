@@ -37,7 +37,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.52.0",
-    "@types/node": "^22.15.30",
+    "@types/node": "^26.4.0",
     "@types/supertest": "^7.2.1",
     "@vitest/coverage-v8": "^4.1.11",
     "depcheck": "^1.4.7",
