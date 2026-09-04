@@ -24,7 +24,7 @@ jobs:
             file: frontend/Dockerfile
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Build image
         run: docker build --file "${{ matrix.file }}" --tag "festschmiede/${{ matrix.name }}:${{ github.sha }}" "${{ matrix.context }}"
