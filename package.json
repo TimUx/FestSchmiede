@@ -38,7 +38,7 @@
     "@eslint/js": "^9.28.0",
     "@playwright/test": "^1.52.0",
     "@types/node": "^22.15.30",
-    "@types/supertest": "^6.0.3",
+    "@types/supertest": "^7.2.1",
     "@vitest/coverage-v8": "^4.1.11",
     "depcheck": "^1.4.7",
     "dotenv": "^16.5.0",
