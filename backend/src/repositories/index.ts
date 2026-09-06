@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import { AppError } from '../middleware/errorHandler';
 import { requireTenantId, tenantWhere } from '../platform/tenant/tenantScope';
 import { parseLoginIdentifier } from '../services/loginIdentifier';
+import { getTodayDate } from '../utils/helpers';
 
 export const userRepository = {
   findByEmail: (email: string) =>
@@ -99,6 +100,7 @@ export const eventRepository = {
         isActive: true,
         onlineOrdersActive: true,
         ordersClosed: false,
+        date: { gte: getTodayDate() },
       }),
       orderBy: [{ date: 'asc' }, { name: 'asc' }],
     }),
@@ -118,6 +120,25 @@ export const eventRepository = {
       where: tenantWhere({
         isActive: true,
         ordersClosed: false,
+      }),
+      orderBy: [{ date: 'asc' }, { name: 'asc' }],
+    }),
+
+  findPublicPickupEvents: () =>
+    prisma.event.findMany({
+      where: tenantWhere({
+        isActive: true,
+        ordersClosed: false,
+        date: { gte: getTodayDate() },
+      }),
+      orderBy: [{ date: 'asc' }, { name: 'asc' }],
+    }),
+
+  findPublicActiveEvents: () =>
+    prisma.event.findMany({
+      where: tenantWhere({
+        isActive: true,
+        date: { gte: getTodayDate() },
       }),
       orderBy: [{ date: 'asc' }, { name: 'asc' }],
     }),

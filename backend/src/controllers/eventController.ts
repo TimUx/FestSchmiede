@@ -11,10 +11,28 @@ export const eventController = {
     }
   },
 
+  async getPublicPickupEvents(_req: unknown, res: Response, next: NextFunction) {
+    try {
+      const events = await eventService.getPublicPickupEvents();
+      res.json(events);
+    } catch (err) {
+      next(err);
+    }
+  },
+
   async getPickupEvents(_req: unknown, res: Response, next: NextFunction) {
     try {
       const events = await eventService.getPickupEvents();
       res.json(events);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async getPublicActive(_req: unknown, res: Response, next: NextFunction) {
+    try {
+      const event = await eventService.getPublicActive();
+      res.json(event);
     } catch (err) {
       next(err);
     }
