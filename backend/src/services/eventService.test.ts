@@ -40,48 +40,6 @@ describe('eventService.delete', () => {
       isActive: false,
     });
 
-    describe('public event queries', () => {
-      const publicEvent = {
-        id: 'event-1',
-        name: 'Sommerfest',
-        description: null,
-        date: new Date('2030-07-01'),
-        startTime: '10:00',
-        endTime: '22:00',
-      };
-
-      beforeEach(() => {
-        vi.clearAllMocks();
-      });
-
-      it('uses the date-filtered repository query for online events', async () => {
-        mockFindOnlineOrderableEvents.mockResolvedValue([publicEvent]);
-
-        await expect(eventService.getPublicOnlineEvents()).resolves.toEqual([
-          expect.objectContaining({ id: publicEvent.id }),
-        ]);
-        expect(mockFindOnlineOrderableEvents).toHaveBeenCalledOnce();
-      });
-
-      it('uses the date-filtered repository query for public pickup events', async () => {
-        mockFindPublicPickupEvents.mockResolvedValue([publicEvent]);
-
-        await expect(eventService.getPublicPickupEvents()).resolves.toEqual([
-          expect.objectContaining({ id: publicEvent.id }),
-        ]);
-        expect(mockFindPublicPickupEvents).toHaveBeenCalledOnce();
-        expect(mockFindPickupEvents).not.toHaveBeenCalled();
-      });
-
-      it('chooses the public active event from the date-filtered repository query', async () => {
-        mockFindPublicActiveEvents.mockResolvedValue([publicEvent]);
-        mockFindById.mockResolvedValue(publicEvent);
-
-        await expect(eventService.getPublicActive()).resolves.toEqual(publicEvent);
-        expect(mockFindPublicActiveEvents).toHaveBeenCalledOnce();
-        expect(mockFindById).toHaveBeenCalledWith(publicEvent.id);
-      });
-    });
     mockDelete.mockResolvedValue(undefined);
   });
 
@@ -104,5 +62,48 @@ describe('eventService.delete', () => {
       )
     );
     expect(mockDelete).not.toHaveBeenCalled();
+  });
+});
+
+describe('public event queries', () => {
+  const publicEvent = {
+    id: 'event-1',
+    name: 'Sommerfest',
+    description: null,
+    date: new Date('2030-07-01'),
+    startTime: '10:00',
+    endTime: '22:00',
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('uses the date-filtered repository query for online events', async () => {
+    mockFindOnlineOrderableEvents.mockResolvedValue([publicEvent]);
+
+    await expect(eventService.getPublicOnlineEvents()).resolves.toEqual([
+      expect.objectContaining({ id: publicEvent.id }),
+    ]);
+    expect(mockFindOnlineOrderableEvents).toHaveBeenCalledOnce();
+  });
+
+  it('uses the date-filtered repository query for public pickup events', async () => {
+    mockFindPublicPickupEvents.mockResolvedValue([publicEvent]);
+
+    await expect(eventService.getPublicPickupEvents()).resolves.toEqual([
+      expect.objectContaining({ id: publicEvent.id }),
+    ]);
+    expect(mockFindPublicPickupEvents).toHaveBeenCalledOnce();
+    expect(mockFindPickupEvents).not.toHaveBeenCalled();
+  });
+
+  it('chooses the public active event from the date-filtered repository query', async () => {
+    mockFindPublicActiveEvents.mockResolvedValue([publicEvent]);
+    mockFindById.mockResolvedValue(publicEvent);
+
+    await expect(eventService.getPublicActive()).resolves.toEqual(publicEvent);
+    expect(mockFindPublicActiveEvents).toHaveBeenCalledOnce();
+    expect(mockFindById).toHaveBeenCalledWith(publicEvent.id);
   });
 });
