@@ -158,9 +158,9 @@ router.post(
 router.get('/public/tenant', tenantController.getPublic);
 router.get('/public/club', clubController.getPublic);
 router.get('/public/order-settings', clubController.getOrderSettings);
-router.get('/public/events/pickup', eventController.getPickupEvents);
+router.get('/public/events/pickup', eventController.getPublicPickupEvents);
 router.get('/public/events', eventController.getPublicEvents);
-router.get('/public/event', eventController.getActive);
+router.get('/public/event', eventController.getPublicActive);
 router.get('/public/menu', foodItemController.getPublic);
 router.post('/public/orders', publicOrderRateLimiter, validateBody(createOnlineOrderSchema), orderController.createOnline);
 router.post('/public/orders/lookup', lookupRateLimiter, validateBody(lookupOrderSchema), orderController.lookup);

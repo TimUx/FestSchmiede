@@ -57,6 +57,11 @@ export const eventService = {
     return events.map(mapPublicEvent);
   },
 
+  async getPublicPickupEvents() {
+    const events = await eventRepository.findPublicPickupEvents();
+    return events.map(mapPublicEvent);
+  },
+
   async getDefaultStaffEvent() {
     const events = await eventRepository.findActiveEvents();
     const event = pickDefaultStaffEvent(events);
@@ -68,6 +73,13 @@ export const eventService = {
     const event = await this.getDefaultStaffEvent();
     if (!event) throw new AppError(404, 'Keine aktive Veranstaltung');
     return event;
+  },
+
+  async getPublicActive() {
+    const events = await eventRepository.findPublicActiveEvents();
+    const event = pickDefaultStaffEvent(events);
+    if (!event) throw new AppError(404, 'Keine aktive Veranstaltung');
+    return eventRepository.findById(event.id);
   },
 
   async getById(id: string) {
