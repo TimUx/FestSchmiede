@@ -3,5 +3,12 @@ Allow: /
 
 # Marketing-Website (www.festschmiede.de)
 # Geschützte Plattformbereiche liegen unter app.* und werden hier nicht indexiert.
+# Mandanten- und Admin-Bereiche sind nicht für die Indexierung vorgesehen.
+Disallow: /platform
+Disallow: /admin
+Disallow: /service
+Disallow: /api
+Disallow: /socket.io
+Disallow: /uploads
 
 Sitemap: https://www.festschmiede.de/sitemap.xml
