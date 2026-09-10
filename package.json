@@ -42,7 +42,7 @@
     "@vitest/coverage-v8": "^4.1.11",
     "depcheck": "^1.4.7",
     "dotenv": "^17.4.2",
-    "eslint": "^10.9.1",
+    "eslint": "^10.10.0",
     "playwright": "^1.52.0",
     "supertest": "^7.1.1",
     "tsx": "^4.19.4",
