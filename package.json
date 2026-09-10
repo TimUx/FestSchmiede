@@ -39,7 +39,7 @@
     "@playwright/test": "^1.52.0",
     "@types/node": "^26.4.0",
     "@types/supertest": "^7.2.1",
-    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/coverage-v8": "^5.0.0",
     "depcheck": "^1.4.7",
     "dotenv": "^17.4.2",
     "eslint": "^10.9.1",
