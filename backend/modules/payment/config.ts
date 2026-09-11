@@ -28,7 +28,7 @@ export const paymentConfigSchema = z.object({
   defaultProvider: z.string().optional(),
   onlinePaymentForEvents: z.boolean().default(true),
   allowCashOnSite: z.boolean().default(true),
-  methodTypes: z.record(methodTypeConfigSchema).optional(),
+  methodTypes: z.record(z.string(), methodTypeConfigSchema).optional(),
   stripe: z.object({
     enabled: z.boolean().default(false),
     secretKey: z.string().optional(),

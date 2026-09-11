@@ -21,11 +21,11 @@ export const printerConfigSchema = z.object({
     kitchenOnOrderCreated: z.boolean().default(true),
     kitchenOnOrderPaid: z.boolean().default(true),
     receiptOnCashier: z.boolean().default(false),
-  }).default({}),
+  }).prefault({}),
   discovery: z.object({
     subnet: z.string().default('192.168.1'),
     port: z.number().default(9100),
-  }).default({}),
+  }).prefault({}),
   printer1: printerSlotSchema.default({ enabled: false, type: 'escpos-network', port: 9100, template: 'kitchen' }),
   printer2: printerSlotSchema.default({ enabled: false, type: 'browser', port: 9100, template: 'receipt' }),
   printer3: printerSlotSchema.default({ enabled: false, type: 'pdf', port: 9100, template: 'kitchen' }),
