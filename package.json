@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "description": "FestSchmiede-Plattform – QA & CI",
+  "engines": {
+    "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
+  },
   "scripts": {
     "qa:lint": "node --import ./scripts/qa/load-typescript-6-for-eslint.mjs ./node_modules/eslint/bin/eslint.js backend/src frontend/src tests scripts/qa --max-warnings 0",
     "qa:typecheck": "npm run build --prefix backend && npm run build --prefix frontend",
@@ -47,7 +50,6 @@
     "supertest": "^7.1.1",
     "tsx": "^4.19.4",
     "typescript": "^7.0.2",
-    "typescript-6": "npm:typescript@^6.0.3",
     "typescript-6": "npm:typescript@^6.0.3",
     "typescript-eslint": "^8.34.0",
     "vitest": "^5.0.0"
