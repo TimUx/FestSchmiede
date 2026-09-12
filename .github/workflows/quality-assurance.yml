@@ -72,7 +72,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci
+          npm ci --legacy-peer-deps
           npm ci --prefix backend
           npm ci --prefix frontend
 
@@ -158,7 +158,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install root QA deps
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Build & start CI stack
         run: |
@@ -265,7 +265,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci
+          npm ci --legacy-peer-deps
           npm ci --prefix backend
 
       - name: Start CI stack
@@ -358,7 +358,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Start CI stack
         run: |

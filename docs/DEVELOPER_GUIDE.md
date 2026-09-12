@@ -489,7 +489,7 @@ Installer (Shell, ohne Node):
 
 ```bash
 cd frontend && npm run build
-cd .. && npm install
+cd .. && npm install --legacy-peer-deps
 npm run screenshots
 ```
 
@@ -499,7 +499,7 @@ Alternativ per Docker (Playwright-Image + `python3-pil`):
 
 ```bash
 docker run --rm -v "$PWD":/work -w /work mcr.microsoft.com/playwright:v1.52.0-jammy \
-  bash -c "apt-get update -qq && apt-get install -y -qq python3-pil && cd frontend && npm install && npm run build && cd .. && npm install && npm run screenshots"
+  bash -c "apt-get update -qq && apt-get install -y -qq python3-pil && cd frontend && npm install && npm run build && cd .. && npm install --legacy-peer-deps && npm run screenshots"
 ```
 
 Neue Screenshots (u. a. `21-payment-admin.png`, `22-payment-einstellungen.png`) werden automatisch mit erzeugt. Die für die Landingpage benötigten Dateien werden zusätzlich nach `frontend/public/screenshots/` kopiert.
