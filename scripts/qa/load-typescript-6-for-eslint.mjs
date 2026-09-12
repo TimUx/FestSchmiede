@@ -42,6 +42,9 @@ const child = spawnSync(execPath, [eslintBin, ...lintArgs], {
     ...globalThis.process.env,
     FESTSCHMIEDE_REPO_ROOT: repoRoot,
     FESTSCHMIEDE_ESLINT_RUNTIME_NODE_MODULES: runtimeNodeModules,
+    NODE_PATH: [runtimeNodeModules, globalThis.process.env.NODE_PATH]
+      .filter(Boolean)
+      .join(path.delimiter),
   },
 });
 
