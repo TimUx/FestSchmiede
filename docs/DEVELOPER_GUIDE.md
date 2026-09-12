@@ -498,7 +498,7 @@ Voraussetzungen: Playwright-Browser (`npx playwright install chromium`), Python 
 Alternativ per Docker (Playwright-Image + `python3-pil`):
 
 ```bash
-docker run --rm -v "$PWD":/work -w /work mcr.microsoft.com/playwright:v1.52.0-jammy \
+docker run --rm -v "$PWD":/work -w /work mcr.microsoft.com/playwright:v1.63.0-jammy \
   bash -c "apt-get update -qq && apt-get install -y -qq python3-pil && cd frontend && npm install && npm run build && cd .. && npm install --legacy-peer-deps && npm run screenshots"
 ```
 

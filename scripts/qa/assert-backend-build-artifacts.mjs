@@ -20,13 +20,13 @@ function collectDeclarationOutputs(dir) {
 }
 
 if (!existsSync(backendEntry)) {
-  throw new Error(`Backend build output fehlt: ${path.relative(repoRoot, backendEntry)}`);
+  throw new Error(`Missing backend build output: ${path.relative(repoRoot, backendEntry)}`);
 }
 
 collectDeclarationOutputs(backendDist);
 
 if (declarationOutputs.length > 0) {
   throw new Error(
-    `Backend Build hat unerwartete Declaration-Dateien erzeugt:\n${declarationOutputs.join('\n')}`
+    `Backend build emitted unexpected declaration files:\n${declarationOutputs.join('\n')}`
   );
 }
