@@ -1,14 +1,14 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import supertest from 'supertest';
 import type { Express } from 'express';
-import { createTestApp, tenantApi, tenantApiPath, QA_TENANT_SLUG } from './setup';
+import { createTestApp, hasDb, tenantApi, tenantApiPath, QA_TENANT_SLUG } from './setup';
 import { QA_EVENT_ID } from '../fixtures/constants';
 
 const request = typeof supertest === 'function'
   ? supertest
   : (supertest as unknown as { default: typeof supertest }).default;
 
-describe('API platform public', () => {
+describe.skipIf(!hasDb)('API platform public', () => {
   let app: Express;
 
   beforeAll(async () => {

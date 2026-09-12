@@ -120,10 +120,10 @@ async function main() {
   ));
 
   const event = await prisma.event.upsert({
-    where: { id: '00000000-0000-0000-0000-000000000001' },
+    where: { id: '00000000-0000-4000-8000-000000000001' },
     update: { isActive: true },
     create: {
-      id: '00000000-0000-0000-0000-000000000001',
+      id: '00000000-0000-4000-8000-000000000001',
       tenantId: DEFAULT_TENANT_ID,
       name: 'Sommerfest 2026',
       description: 'Jährliches Vereins-Sommerfest mit leckerem Essen',
@@ -171,7 +171,7 @@ async function main() {
   ];
 
   for (const item of foodItems) {
-    const id = `00000000-0000-0000-0001-${item.sortOrder.toString().padStart(12, '0')}`;
+    const id = `00000000-0000-4000-8001-${item.sortOrder.toString().padStart(12, '0')}`;
     await prisma.foodItem.upsert({
       where: { id },
       update: {},

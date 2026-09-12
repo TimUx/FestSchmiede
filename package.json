@@ -3,13 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "description": "FestSchmiede-Plattform – QA & CI",
+  "engines": {
+    "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
+  },
   "scripts": {
-    "qa:lint": "eslint backend/src frontend/src tests scripts/qa --max-warnings 0",
-    "qa:typecheck": "npm run build --prefix backend && npm run build --prefix frontend",
+    "qa:lint": "node ./scripts/qa/load-typescript-6-for-eslint.mjs backend/src frontend/src tests scripts/qa --max-warnings 0",
+    "qa:typecheck": "node -e \"require('node:fs').rmSync('backend/dist',{recursive:true,force:true})\" && npm run prisma:generate --prefix backend && npm run build --prefix backend && node ./scripts/qa/assert-backend-build-artifacts.mjs && npm run build --prefix frontend",
     "qa:format": "node --print \"'Format-Check: TypeScript-Compiler als Gate'\"",
     "qa:depcheck": "npx depcheck backend --ignores pg,@types/pg,supertest,@types/supertest && npx depcheck frontend",
     "qa:unit": "npm run test:coverage --prefix backend && npm run test --prefix frontend",
-    "qa:api": "vitest run --config tests/vitest.config.ts",
+    "qa:api": "npm run prisma:generate --prefix backend && vitest run --config tests/vitest.config.ts",
     "qa:seed": "NODE_PATH=backend/node_modules npx tsx tests/seeds/qa-seed.ts",
     "qa:seed:demo": "NODE_PATH=backend/node_modules QA_DEMO_MODE=1 QA_ORDER_COUNT=50 npx tsx tests/seeds/qa-seed.ts",
     "qa:seed:nightly": "NODE_PATH=backend/node_modules QA_ORDER_COUNT=1000 npx tsx tests/seeds/qa-seed.ts",
@@ -36,18 +39,20 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "^1.52.0",
-    "@types/node": "^26.4.0",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.5.0",
     "@types/supertest": "^7.2.1",
-    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/coverage-v8": "^5.0.0",
     "depcheck": "^1.4.7",
     "dotenv": "^17.4.2",
-    "eslint": "^10.9.1",
-    "playwright": "^1.52.0",
+    "eslint": "^10.10.0",
+    "playwright": "^1.63.0",
     "supertest": "^7.1.1",
     "tsx": "^4.19.4",
-    "typescript": "^5.8.3",
+    "typescript": "^7.0.2",
+    "typescript-6": "npm:typescript@^6.0.3",
     "typescript-eslint": "^8.34.0",
-    "vitest": "^4.1.11"
+    "vite": "^8.3.0",
+    "vitest": "^5.0.0"
   }
 }

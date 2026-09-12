@@ -100,11 +100,11 @@ export const authModeUpdateSchema = z.object({
 
 export const setupStepSchema = z.object({
   step: z.number().int().min(0).max(7),
-  data: z.record(z.unknown()),
+  data: z.record(z.string(), z.unknown()),
 });
 
 export const setupCompleteSchema = z.object({
-  data: z.record(z.unknown()),
+  data: z.record(z.string(), z.unknown()),
 });
 
 export const refreshTokenSchema = z.object({
@@ -328,8 +328,8 @@ export const submitTenantApplicationSchema = z.object({
       .max(48)
       .regex(/^[a-z0-9-]+$/, 'Nur Buchstaben, Zahlen und Bindestriche')
   ),
-  privacyAccepted: z.literal(true, { errorMap: () => ({ message: 'Datenschutzerklärung muss akzeptiert werden' }) }),
-  termsAccepted: z.literal(true, { errorMap: () => ({ message: 'Nutzungsbedingungen müssen akzeptiert werden' }) }),
+  privacyAccepted: z.literal(true, { message: 'Datenschutzerklärung muss akzeptiert werden' }),
+  termsAccepted: z.literal(true, { message: 'Nutzungsbedingungen müssen akzeptiert werden' }),
   _hp: z.string().optional(),
   formStartedAt: z.number().int().positive(),
   turnstileToken: z.string().optional(),

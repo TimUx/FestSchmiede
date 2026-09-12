@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { submitTenantApplicationSchema } from './schemas';
+import { setupCompleteSchema, setupStepSchema, submitTenantApplicationSchema } from './schemas';
 
 const validBase = {
   organization: 'Test Verein',
@@ -42,5 +42,38 @@ describe('submitTenantApplicationSchema', () => {
       memberCount: 12.8,
     });
     expect(result.memberCount).toBe(12);
+  });
+
+  it('uses explicit error messages for required consent flags', () => {
+    const result = submitTenantApplicationSchema.safeParse({
+      ...validBase,
+      privacyAccepted: false,
+      termsAccepted: false,
+    });
+    expect(result.success).toBe(false);
+    if (result.success) return;
+    expect(result.error.issues.map((issue) => issue.message)).toEqual(
+      expect.arrayContaining([
+        'Datenschutzerklärung muss akzeptiert werden',
+        'Nutzungsbedingungen müssen akzeptiert werden',
+      ])
+    );
+  });
+});
+
+describe('setup schemas', () => {
+  it('accepts arbitrary object payloads with string keys', () => {
+    expect(
+      setupStepSchema.parse({
+        step: 2,
+        data: { slug: 'mein-verein', nested: { enabled: true } },
+      }).data
+    ).toEqual({ slug: 'mein-verein', nested: { enabled: true } });
+
+    expect(
+      setupCompleteSchema.parse({
+        data: { adminEmail: 'admin@example.com' },
+      }).data
+    ).toEqual({ adminEmail: 'admin@example.com' });
   });
 });

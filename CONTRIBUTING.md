@@ -12,9 +12,9 @@ Vielen Dank für Ihr Interesse an der FestSchmiede-Plattform!
 ## Tests
 
 ```bash
-npm ci && npm ci --prefix backend && npm ci --prefix frontend
+npm ci --legacy-peer-deps && npm ci --prefix backend && npm ci --prefix frontend
 npm run qa:unit
-npm run qa:api
+npm run qa:api   # generiert Prisma-Client und benötigt DATABASE_URL bzw. laufenden QA-Stack
 npm run qa:e2e
 ```
 

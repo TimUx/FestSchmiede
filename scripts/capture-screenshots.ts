@@ -27,7 +27,7 @@ const DEVICE_CAPTURES = {
 const IPHONE_UA =
   'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
 
-const EVENT_ID = '00000000-0000-0000-0000-000000000001';
+const EVENT_ID = '00000000-0000-4000-8000-000000000001';
 const ORDER_ID = '00000000-0000-0000-0000-000000000042';
 const ORDER_LOOKUP_TOKEN = 'a1b2c3d4e5f6789012345678abcdef12';
 
@@ -96,11 +96,11 @@ const mockEvent = {
 };
 
 const mockFoodItems = [
-  { id: '00000000-0000-0000-0001-000000000001', eventId: EVENT_ID, name: 'Bratwurst', description: 'Frische Bratwurst vom Grill mit Senf', price: 4.5, sortOrder: 1, active: true, soldOut: false },
-  { id: '00000000-0000-0000-0001-000000000002', eventId: EVENT_ID, name: 'Pommes', description: 'Knusprige Pommes frites', price: 3.5, sortOrder: 2, active: true, soldOut: true },
-  { id: '00000000-0000-0000-0001-000000000003', eventId: EVENT_ID, name: 'Steak', description: 'Rumpsteak vom Grill mit Kräuterbutter', price: 12.0, sortOrder: 3, active: true, soldOut: false },
-  { id: '00000000-0000-0000-0001-000000000004', eventId: EVENT_ID, name: 'Cola', description: 'Erfrischungsgetränk 0,33 l', price: 2.5, sortOrder: 4, active: true, soldOut: false },
-  { id: '00000000-0000-0000-0001-000000000005', eventId: EVENT_ID, name: 'Apfelwein', description: 'Regionaler Apfelwein 0,25 l', price: 3.0, sortOrder: 5, active: true, soldOut: false },
+  { id: '00000000-0000-4000-8001-000000000001', eventId: EVENT_ID, name: 'Bratwurst', description: 'Frische Bratwurst vom Grill mit Senf', price: 4.5, sortOrder: 1, active: true, soldOut: false },
+  { id: '00000000-0000-4000-8001-000000000002', eventId: EVENT_ID, name: 'Pommes', description: 'Knusprige Pommes frites', price: 3.5, sortOrder: 2, active: true, soldOut: true },
+  { id: '00000000-0000-4000-8001-000000000003', eventId: EVENT_ID, name: 'Steak', description: 'Rumpsteak vom Grill mit Kräuterbutter', price: 12.0, sortOrder: 3, active: true, soldOut: false },
+  { id: '00000000-0000-4000-8001-000000000004', eventId: EVENT_ID, name: 'Cola', description: 'Erfrischungsgetränk 0,33 l', price: 2.5, sortOrder: 4, active: true, soldOut: false },
+  { id: '00000000-0000-4000-8001-000000000005', eventId: EVENT_ID, name: 'Apfelwein', description: 'Regionaler Apfelwein 0,25 l', price: 3.0, sortOrder: 5, active: true, soldOut: false },
 ];
 
 const mockOrderBase = {

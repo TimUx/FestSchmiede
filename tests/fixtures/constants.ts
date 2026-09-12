@@ -11,4 +11,4 @@ export const QA_API_BASE =
   process.env.QA_API_BASE || `http://localhost:3001/${QA_TENANT_SLUG}/api`;
 export const QA_FRONTEND_BASE = process.env.QA_FRONTEND_BASE || 'http://localhost:5173';
 
-export const QA_EVENT_ID = '00000000-0000-0000-0000-000000000001';
+export const QA_EVENT_ID = '00000000-0000-4000-8000-000000000001';

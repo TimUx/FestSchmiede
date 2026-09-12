@@ -18,6 +18,7 @@ process.env.PLATFORM_DOMAIN = process.env.PLATFORM_DOMAIN ?? 'localhost';
 process.env.PLATFORM_BASE_DOMAIN = process.env.PLATFORM_BASE_DOMAIN ?? 'localhost';
 
 export const BACKEND_ROOT = backendRoot;
+export const hasDb = Boolean(process.env.DATABASE_URL);
 export const QA_TENANT_SLUG = process.env.QA_TENANT_SLUG || 'default';
 export const QA_TENANT_HOST = process.env.QA_TENANT_HOST || 'localhost';
 

@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { createTestApp, tenantApi } from './setup';
+import { createTestApp, hasDb, tenantApi } from './setup';
 import { QA_USERS, QA_EVENT_ID } from '../fixtures/constants';
 import type { Express } from 'express';
 
-describe('API authorization matrix — tenant role templates', () => {
+describe.skipIf(!hasDb)('API authorization matrix — tenant role templates', () => {
   let app: Express;
   let kasseToken: string;
   let kitchenToken: string;

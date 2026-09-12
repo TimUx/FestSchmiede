@@ -47,7 +47,7 @@ deshalb nicht in jeder statischen Aufnahme sichtbar.
 
 ```bash
 cd frontend && npm run build
-cd .. && npm install
+cd .. && npm install --legacy-peer-deps
 npm run screenshots
 ```
 

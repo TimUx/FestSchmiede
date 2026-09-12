@@ -200,15 +200,15 @@ FestSchmiede/
 
 ### Voraussetzungen
 
-- **Node.js 20 LTS** (empfohlen) oder 22+ — Node 18 wird nicht unterstützt (Vitest/Vite ESM-Fehler)
+- **Node.js 22.12+** (oder 24+/26+) — die aktuellen Vitest-5- und Playwright-Abhängigkeiten setzen diese Runtime voraus
 - PostgreSQL 16+
 - npm (optional: [nvm](https://github.com/nvm-sh/nvm) für mehrere Node-Versionen)
 
 ```bash
 # Beispiel mit nvm
-nvm install 20
-nvm use 20
-node --version   # v20.x
+nvm install 22.12.0
+nvm use 22.12.0
+node --version   # v22.12.x
 ```
 
 **Prisma Client lokal erzeugen:** Wurde der Client im Docker-Container (Alpine/`linux-musl`) generiert, schlägt die lokale Entwicklung auf Debian/Ubuntu fehl. Einmalig nach `npm install`:
@@ -217,6 +217,10 @@ node --version   # v20.x
 cd backend
 npm run prisma:generate
 ```
+
+**TypeScript-7-Hinweis:** Das Backend baut ohne Declaration-Emit, weil TypeScript 7 zusammen mit dem Prisma-Adapter sonst nicht portable `.d.ts`-Typen erzeugt (`TS2883`). `npm run qa:typecheck` prüft diesen Übergang aktuell zusätzlich über die erzeugten Build-Artefakte. Sobald die betroffenen Upstream-Pakete kompatibel sind, kann `declaration`/`declarationMap` wieder geprüft werden.
+
+**Lint-Hinweis:** `npm run qa:lint` lädt vorübergehend eine kleine Bridge (`scripts/qa/load-typescript-6-for-eslint.mjs`), damit `typescript-eslint` intern weiter die TypeScript-6-API nutzen kann, während das Repository selbst bereits mit TypeScript 7 gebaut wird. Diese Bridge ist nur als Übergang gedacht und sollte nach nativer TS-7-Unterstützung entfernt werden.
 
 Symptom: `Prisma Client could not locate the Query Engine for runtime "debian-openssl-3.0.x"`.
 
@@ -471,6 +475,8 @@ cd backend && npm run prisma:generate && npm test
 cd frontend && npm test
 ```
 
+`npm run qa:api` generiert vorab den Prisma-Client und benötigt eine erreichbare PostgreSQL-Instanz via `DATABASE_URL` (typisch über den QA-Docker-Stack). Ohne DB werden die datenbankabhängigen API-Tests lokal übersprungen.
+
 Details zu CI-Jobs und Artefakten: [ADR-011](architecture/011-quality-assurance.md).
 
 Installer (Shell, ohne Node):
@@ -483,7 +489,7 @@ Installer (Shell, ohne Node):
 
 ```bash
 cd frontend && npm run build
-cd .. && npm install
+cd .. && npm install --legacy-peer-deps
 npm run screenshots
 ```
 
@@ -492,8 +498,8 @@ Voraussetzungen: Playwright-Browser (`npx playwright install chromium`), Python 
 Alternativ per Docker (Playwright-Image + `python3-pil`):
 
 ```bash
-docker run --rm -v "$PWD":/work -w /work mcr.microsoft.com/playwright:v1.52.0-jammy \
-  bash -c "apt-get update -qq && apt-get install -y -qq python3-pil && cd frontend && npm install && npm run build && cd .. && npm install && npm run screenshots"
+docker run --rm -v "$PWD":/work -w /work mcr.microsoft.com/playwright:v1.63.0-jammy \
+  bash -c "apt-get update -qq && apt-get install -y -qq python3-pil && cd frontend && npm install && npm run build && cd .. && npm install --legacy-peer-deps && npm run screenshots"
 ```
 
 Neue Screenshots (u. a. `21-payment-admin.png`, `22-payment-einstellungen.png`) werden automatisch mit erzeugt. Die für die Landingpage benötigten Dateien werden zusätzlich nach `frontend/public/screenshots/` kopiert.

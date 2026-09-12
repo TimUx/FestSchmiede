@@ -15,7 +15,7 @@ const refundWithReasonSchema = refundPaymentSchema.extend({
 });
 
 const methodTypesSchema = z.object({
-  methodTypes: z.record(z.object({
+  methodTypes: z.record(z.string(), z.object({
     enabled: z.boolean().optional(),
     recommended: z.boolean().optional(),
     sortOrder: z.number().optional(),

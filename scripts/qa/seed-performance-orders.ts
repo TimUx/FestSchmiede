@@ -10,8 +10,8 @@ const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }),
 });
 const TENANT_ID = '00000000-0000-0000-0000-000000000010';
-const EVENT_ID = '00000000-0000-0000-0000-000000000001';
-const FOOD_ITEM_ID = '00000000-0000-0000-0001-000000000001';
+const EVENT_ID = '00000000-0000-4000-8000-000000000001';
+const FOOD_ITEM_ID = '00000000-0000-4000-8001-000000000001';
 const TARGET = Number(process.argv[2] ?? 1000);
 
 const STATUSES: StatusCode[] = ['NEW', 'IN_PROGRESS', 'READY', 'PICKED_UP'];

@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { createTestApp, tenantApi } from './setup';
+import { createTestApp, hasDb, tenantApi } from './setup';
 import { QA_USERS } from '../fixtures/constants';
 import type { Express } from 'express';
 
-describe('API /auth v2.1', () => {
+describe.skipIf(!hasDb)('API /auth v2.1', () => {
   let app: Express;
 
   beforeAll(async () => {
@@ -47,7 +47,7 @@ describe('API /auth v2.1', () => {
   });
 });
 
-describe('API /setup', () => {
+describe.skipIf(!hasDb)('API /setup', () => {
   let app: Express;
   let adminToken: string;
 
