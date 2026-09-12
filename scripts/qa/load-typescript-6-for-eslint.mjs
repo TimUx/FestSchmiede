@@ -59,6 +59,7 @@ globalThis.process.argv = [execPath, eslintBin, ...lintArgs];
 try {
   await import(pathToFileURL(eslintBin).href);
 } finally {
+  Module._load = originalLoad;
   if (typeof globalThis.process.exitCode === 'number') {
     globalThis.process.exit(globalThis.process.exitCode);
   }
