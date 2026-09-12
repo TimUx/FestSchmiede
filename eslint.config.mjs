@@ -1,7 +1,20 @@
-import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const repoRoot = process.env.FESTSCHMIEDE_REPO_ROOT ?? import.meta.dirname;
+const runtimeNodeModules = process.env.FESTSCHMIEDE_ESLINT_RUNTIME_NODE_MODULES;
+
+const loadFromRuntime = async (specifier, runtimePath) => {
+  if (!runtimeNodeModules) {
+    return import(specifier);
+  }
+  return import(pathToFileURL(path.join(runtimeNodeModules, runtimePath)).href);
+};
+
+const eslintModule = await loadFromRuntime('@eslint/js', '@eslint/js/src/index.js');
+const tseslintModule = await loadFromRuntime('typescript-eslint', 'typescript-eslint/dist/index.js');
+const eslint = eslintModule.default ?? eslintModule;
+const tseslint = tseslintModule.default ?? tseslintModule;
 
 export default tseslint.config(
   eslint.configs.recommended,
