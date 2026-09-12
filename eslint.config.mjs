@@ -1,6 +1,8 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
+const repoRoot = process.env.FESTSCHMIEDE_REPO_ROOT ?? import.meta.dirname;
+
 export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
@@ -11,7 +13,7 @@ export default tseslint.config(
     files: ['backend/src/**/*.ts', 'backend/modules/**/*.ts'],
     ignores: ['**/*.test.ts', '**/qa/**'],
     languageOptions: {
-      parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
+      parserOptions: { projectService: true, tsconfigRootDir: repoRoot },
     },
     rules: {
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
@@ -22,7 +24,7 @@ export default tseslint.config(
     files: ['frontend/src/**/*.{ts,tsx}'],
     ignores: ['**/*.test.ts'],
     languageOptions: {
-      parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
+      parserOptions: { projectService: true, tsconfigRootDir: repoRoot },
     },
     rules: {
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
