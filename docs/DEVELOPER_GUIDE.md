@@ -218,7 +218,7 @@ cd backend
 npm run prisma:generate
 ```
 
-**TypeScript-7-Hinweis:** Das Backend baut ohne Declaration-Emit, weil TypeScript 7 zusammen mit dem Prisma-Adapter sonst nicht portable `.d.ts`-Typen erzeugt (`TS2883`). Sobald die betroffenen Upstream-Pakete kompatibel sind, kann `declaration`/`declarationMap` wieder geprüft werden.
+**TypeScript-7-Hinweis:** Das Backend baut ohne Declaration-Emit, weil TypeScript 7 zusammen mit dem Prisma-Adapter sonst nicht portable `.d.ts`-Typen erzeugt (`TS2883`). `npm run qa:typecheck` prüft diesen Übergang aktuell zusätzlich über die erzeugten Build-Artefakte. Sobald die betroffenen Upstream-Pakete kompatibel sind, kann `declaration`/`declarationMap` wieder geprüft werden.
 
 **Lint-Hinweis:** `npm run qa:lint` lädt vorübergehend eine kleine Bridge (`scripts/qa/load-typescript-6-for-eslint.mjs`), damit `typescript-eslint` intern weiter die TypeScript-6-API nutzen kann, während das Repository selbst bereits mit TypeScript 7 gebaut wird. Diese Bridge ist nur als Übergang gedacht und sollte nach nativer TS-7-Unterstützung entfernt werden.
 
