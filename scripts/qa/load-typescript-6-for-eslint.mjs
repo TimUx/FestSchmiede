@@ -55,4 +55,11 @@ const eslintBin = path.resolve(path.dirname(eslintEntry), '../bin/eslint.js');
 const { argv, execPath } = globalThis.process;
 const [, , ...lintArgs] = argv;
 globalThis.process.argv = [execPath, eslintBin, ...lintArgs];
-await import(pathToFileURL(eslintBin).href);
+
+try {
+  await import(pathToFileURL(eslintBin).href);
+} finally {
+  if (typeof globalThis.process.exitCode === 'number') {
+    globalThis.process.exit(globalThis.process.exitCode);
+  }
+}
