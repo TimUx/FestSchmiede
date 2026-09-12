@@ -3,7 +3,7 @@
 // ESLint against a temporary symlinked node_modules tree that swaps only the
 // `typescript` package to the local `typescript-6` alias. Remove it once
 // upstream supports TS 7 natively and `qa:lint` can call ESLint directly again.
-import { cp, mkdtemp, mkdir, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
+import { cp, mkdtemp, mkdir, readFile, readdir, rm, stat, symlink, writeFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
@@ -27,11 +27,12 @@ for (const entry of await readdir(rootNodeModules)) {
   if (copiedEntries.has(entry)) {
     await cp(source, target, { recursive: true });
   } else {
-    await symlink(source, target);
+    const sourceType = (await stat(source)).isDirectory() ? 'dir' : 'file';
+    await symlink(source, target, sourceType);
   }
 }
 
-await symlink(path.join(rootNodeModules, 'typescript-6'), path.join(runtimeNodeModules, 'typescript'));
+await symlink(path.join(rootNodeModules, 'typescript-6'), path.join(runtimeNodeModules, 'typescript'), 'dir');
 await writeFile(
   runtimeConfig,
   await readFile(path.join(repoRoot, 'eslint.config.mjs'), 'utf8')
