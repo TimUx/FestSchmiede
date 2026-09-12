@@ -102,10 +102,10 @@ export async function runQaSeed(options: { orderCount?: number; demoMode?: boole
 
   const eventDate = new Date(Date.UTC(2026, 6, 15));
   const event = await prisma.event.upsert({
-    where: { id: '00000000-0000-0000-0000-000000000001' },
+    where: { id: '00000000-0000-4000-8000-000000000001' },
     update: { isActive: true, onlineOrdersActive: true, cashierActive: true },
     create: {
-      id: '00000000-0000-0000-0000-000000000001',
+      id: '00000000-0000-4000-8000-000000000001',
       tenantId: DEFAULT_TENANT_ID,
       name: 'Sommerfest 2026',
       description: 'Jährliches Vereins-Sommerfest – QA Testdaten',
@@ -120,11 +120,11 @@ export async function runQaSeed(options: { orderCount?: number; demoMode?: boole
   });
 
   const dishes = [
-    { id: '00000000-0000-0000-0001-000000000001', name: 'Bratwurst mit Brötchen', price: 4.5, sortOrder: 1 },
-    { id: '00000000-0000-0000-0001-000000000002', name: 'Currywurst', price: 6.0, sortOrder: 2 },
-    { id: '00000000-0000-0000-0001-000000000003', name: 'Schnitzel mit Pommes', price: 8.5, sortOrder: 3 },
-    { id: '00000000-0000-0000-0001-000000000004', name: 'Vegetarischer Burger', price: 7.0, sortOrder: 4 },
-    { id: '00000000-0000-0000-0001-000000000005', name: 'Apfelstrudel', price: 3.5, sortOrder: 5 },
+    { id: '00000000-0000-4000-8001-000000000001', name: 'Bratwurst mit Brötchen', price: 4.5, sortOrder: 1 },
+    { id: '00000000-0000-4000-8001-000000000002', name: 'Currywurst', price: 6.0, sortOrder: 2 },
+    { id: '00000000-0000-4000-8001-000000000003', name: 'Schnitzel mit Pommes', price: 8.5, sortOrder: 3 },
+    { id: '00000000-0000-4000-8001-000000000004', name: 'Vegetarischer Burger', price: 7.0, sortOrder: 4 },
+    { id: '00000000-0000-4000-8001-000000000005', name: 'Apfelstrudel', price: 3.5, sortOrder: 5 },
   ];
 
   for (const dish of dishes) {
