@@ -1,3 +1,7 @@
+// Temporary compatibility bridge: while the repo compiles with TypeScript 7,
+// typescript-eslint and ts-api-utils still require the TypeScript 6 API.
+// This hook only remaps imports originating from those package paths to the
+// `typescript-6` alias and should be removed once upstream supports TS 7 natively.
 import Module from 'node:module';
 import path from 'node:path';
 

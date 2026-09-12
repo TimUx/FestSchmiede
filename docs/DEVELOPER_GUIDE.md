@@ -200,15 +200,15 @@ FestSchmiede/
 
 ### Voraussetzungen
 
-- **Node.js 20 LTS** (empfohlen) oder 22+ — Node 18 wird nicht unterstützt (Vitest/Vite ESM-Fehler)
+- **Node.js 22.12+** (oder 24+/26+) — die aktuellen Vitest-5- und Playwright-Abhängigkeiten setzen diese Runtime voraus
 - PostgreSQL 16+
 - npm (optional: [nvm](https://github.com/nvm-sh/nvm) für mehrere Node-Versionen)
 
 ```bash
 # Beispiel mit nvm
-nvm install 20
-nvm use 20
-node --version   # v20.x
+nvm install 22.12.0
+nvm use 22.12.0
+node --version   # v22.12.x
 ```
 
 **Prisma Client lokal erzeugen:** Wurde der Client im Docker-Container (Alpine/`linux-musl`) generiert, schlägt die lokale Entwicklung auf Debian/Ubuntu fehl. Einmalig nach `npm install`:
@@ -217,6 +217,10 @@ node --version   # v20.x
 cd backend
 npm run prisma:generate
 ```
+
+**TypeScript-7-Hinweis:** Das Backend baut ohne Declaration-Emit, weil TypeScript 7 zusammen mit dem Prisma-Adapter sonst nicht portable `.d.ts`-Typen erzeugt (`TS2883`). Sobald die betroffenen Upstream-Pakete kompatibel sind, kann `declaration`/`declarationMap` wieder geprüft werden.
+
+**Lint-Hinweis:** `npm run qa:lint` lädt vorübergehend eine kleine Bridge (`scripts/qa/load-typescript-6-for-eslint.mjs`), damit `typescript-eslint` intern weiter die TypeScript-6-API nutzen kann, während das Repository selbst bereits mit TypeScript 7 gebaut wird. Diese Bridge ist nur als Übergang gedacht und sollte nach nativer TS-7-Unterstützung entfernt werden.
 
 Symptom: `Prisma Client could not locate the Query Engine for runtime "debian-openssl-3.0.x"`.
 
