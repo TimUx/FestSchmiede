@@ -50,7 +50,8 @@ registerHooks({
   },
 });
 
-const eslintBin = path.resolve(import.meta.dirname, '../../node_modules/eslint/bin/eslint.js');
+const eslintEntry = Module.createRequire(import.meta.url).resolve('eslint');
+const eslintBin = path.resolve(path.dirname(eslintEntry), '../bin/eslint.js');
 const { argv, execPath } = globalThis.process;
 globalThis.process.argv = [execPath, eslintBin, ...argv.slice(2)];
 await import(pathToFileURL(eslintBin).href);
