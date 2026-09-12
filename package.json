@@ -7,7 +7,7 @@
     "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
   },
   "scripts": {
-    "qa:lint": "node --import ./scripts/qa/load-typescript-6-for-eslint.mjs ./node_modules/eslint/bin/eslint.js backend/src frontend/src tests scripts/qa --max-warnings 0",
+    "qa:lint": "node ./scripts/qa/load-typescript-6-for-eslint.mjs backend/src frontend/src tests scripts/qa --max-warnings 0",
     "qa:typecheck": "npm run build --prefix backend && npm run build --prefix frontend",
     "qa:format": "node --print \"'Format-Check: TypeScript-Compiler als Gate'\"",
     "qa:depcheck": "npx depcheck backend --ignores pg,@types/pg,supertest,@types/supertest && npx depcheck frontend",

@@ -36,4 +36,18 @@ describe('payment module QA', () => {
     const { paymentConfigSchema, defaultPaymentConfig } = await import('../config');
     expect(paymentConfigSchema.parse(defaultPaymentConfig)).toBeDefined();
   });
+
+  it('parses method type overrides keyed by string ids', async () => {
+    const { paymentConfigSchema } = await import('../config');
+    const parsed = paymentConfigSchema.parse({
+      methodTypes: {
+        'stripe:card': {
+          enabled: false,
+          sortOrder: 2,
+        },
+      },
+    });
+    expect(parsed.methodTypes?.['stripe:card']?.enabled).toBe(false);
+    expect(parsed.methodTypes?.['stripe:card']?.sortOrder).toBe(2);
+  });
 });
