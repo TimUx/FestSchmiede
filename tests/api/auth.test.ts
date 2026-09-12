@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { createTestApp, tenantApi } from './setup';
+import { createTestApp, hasDb, tenantApi } from './setup';
 import { QA_USERS } from '../fixtures/constants';
 import type { Express } from 'express';
 
-describe('API /auth', () => {
+describe.skipIf(!hasDb)('API /auth', () => {
   let app: Express;
   let adminToken: string;
 

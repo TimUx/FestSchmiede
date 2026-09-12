@@ -14,7 +14,7 @@ Vielen Dank für Ihr Interesse an der FestSchmiede-Plattform!
 ```bash
 npm ci && npm ci --prefix backend && npm ci --prefix frontend
 npm run qa:unit
-npm run qa:api
+npm run qa:api   # benötigt DATABASE_URL bzw. laufenden QA-Stack
 npm run qa:e2e
 ```
 

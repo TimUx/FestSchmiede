@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { createTestApp, tenantApi } from './setup';
+import { createTestApp, hasDb, tenantApi } from './setup';
 import type { Express } from 'express';
 
-describe('API /public/health', () => {
+describe.skipIf(!hasDb)('API /public/health', () => {
   let app: Express;
 
   beforeAll(async () => {

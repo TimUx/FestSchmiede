@@ -475,6 +475,8 @@ cd backend && npm run prisma:generate && npm test
 cd frontend && npm test
 ```
 
+`npm run qa:api` benötigt eine erreichbare PostgreSQL-Instanz via `DATABASE_URL` (typisch über den QA-Docker-Stack). Ohne DB werden die datenbankabhängigen API-Tests lokal übersprungen.
+
 Details zu CI-Jobs und Artefakten: [ADR-011](architecture/011-quality-assurance.md).
 
 Installer (Shell, ohne Node):
