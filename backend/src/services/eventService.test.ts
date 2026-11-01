@@ -8,6 +8,7 @@ const mockFindOnlineOrderableEvents = vi.fn();
 const mockFindPickupEvents = vi.fn();
 const mockFindPublicPickupEvents = vi.fn();
 const mockFindPublicActiveEvents = vi.fn();
+const mockHasPendingCheckoutForEvent = vi.fn();
 
 vi.mock('../repositories', () => ({
   eventRepository: {
@@ -23,6 +24,12 @@ vi.mock('../repositories', () => ({
 
 vi.mock('../socket', () => ({
   emitEventUpdate: vi.fn(),
+}));
+
+vi.mock('../core/extensionPoints', () => ({
+  getPaymentServiceRegistry: () => ({
+    hasPendingCheckoutForEvent: (...args: unknown[]) => mockHasPendingCheckoutForEvent(...args),
+  }),
 }));
 
 vi.mock('../platform/bootstrap', () => ({
@@ -42,6 +49,7 @@ describe('eventService.delete', () => {
     });
 
     mockDelete.mockResolvedValue(undefined);
+    mockHasPendingCheckoutForEvent.mockResolvedValue(false);
   });
 
   it('löscht Veranstaltungen ohne Bestellungen', async () => {
@@ -73,6 +81,21 @@ describe('eventService.delete', () => {
 
     expect(mockDelete).toHaveBeenCalledWith('event-1', { includeOrders: true });
     expect(emitEventUpdate).toHaveBeenCalledWith({ id: 'event-1', deleted: true });
+  });
+
+  it('verweigert das Löschen bei einer offenen Zahlungssession', async () => {
+    mockCountOrders.mockResolvedValue(2);
+    mockHasPendingCheckoutForEvent.mockResolvedValue(true);
+
+    await expect(eventService.delete('event-1', { includeOrders: true }))
+      .rejects.toEqual(new AppError(
+        409,
+        'Die Veranstaltung kann nicht gelöscht werden, solange eine offene Zahlung für eine zugehörige Bestellung besteht. Schließen oder stornieren Sie zuerst den Checkout.',
+        'EVENT_HAS_PENDING_PAYMENT'
+      ));
+    expect(mockHasPendingCheckoutForEvent).toHaveBeenCalledWith('event-1');
+    expect(mockDelete).not.toHaveBeenCalled();
+    expect(emitEventUpdate).not.toHaveBeenCalled();
   });
 
   it('verweigert Löschen einer unbekannten oder fremden Veranstaltung', async () => {

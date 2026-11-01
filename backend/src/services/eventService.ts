@@ -1,5 +1,6 @@
 import { eventRepository } from '../repositories';
 import { AppError } from '../middleware/errorHandler';
+import { getPaymentServiceRegistry } from '../core/extensionPoints';
 import { emitEventUpdate } from '../socket';
 import { hookSystem } from '../platform/bootstrap';
 import { CORE_HOOKS } from '../platform/types';
@@ -185,11 +186,19 @@ export const eventService = {
 
   async delete(id: string, { includeOrders = false } = {}) {
     await this.getById(id);
-    if (!includeOrders && await eventRepository.countOrders(id) > 0) {
+    const orderCount = await eventRepository.countOrders(id);
+    if (!includeOrders && orderCount > 0) {
       throw new AppError(
         409,
         'Die Veranstaltung kann nicht gelöscht werden, weil bereits Bestellungen existieren. Deaktivieren Sie sie stattdessen oder schließen Sie die Bestellungen.',
         'EVENT_HAS_ORDERS'
+      );
+    }
+    if (includeOrders && orderCount > 0 && await getPaymentServiceRegistry().hasPendingCheckoutForEvent(id)) {
+      throw new AppError(
+        409,
+        'Die Veranstaltung kann nicht gelöscht werden, solange eine offene Zahlung für eine zugehörige Bestellung besteht. Schließen oder stornieren Sie zuerst den Checkout.',
+        'EVENT_HAS_PENDING_PAYMENT'
       );
     }
     await eventRepository.delete(id, { includeOrders });

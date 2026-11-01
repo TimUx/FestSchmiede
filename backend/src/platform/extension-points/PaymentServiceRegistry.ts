@@ -74,6 +74,11 @@ class PaymentServiceRegistryImpl {
       return ids;
     }
   }
+
+  async hasPendingCheckoutForEvent(eventId: string): Promise<boolean> {
+    if (!this.service) return false;
+    return this.service.hasPendingCheckoutForEvent(eventId);
+  }
 }
 
 export const paymentServiceRegistry = new PaymentServiceRegistryImpl();
