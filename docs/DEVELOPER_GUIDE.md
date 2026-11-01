@@ -477,6 +477,15 @@ cd frontend && npm test
 
 `npm run qa:api` generiert vorab den Prisma-Client und benötigt eine erreichbare PostgreSQL-Instanz via `DATABASE_URL` (typisch über den QA-Docker-Stack). Ohne DB werden die datenbankabhängigen API-Tests lokal übersprungen.
 
+Die PostgreSQL-Integrationstests zur Veranstaltungslöschung verwenden ausschließlich `EVENT_DELETE_TEST_DATABASE_URL`.
+Setzen Sie diese Variable auf eine separate Testdatenbank mit angewendeten Prisma-Migrationen und führen Sie im Projektroot aus:
+
+```bash
+npm test --prefix backend -- src/services/eventService.test.ts src/controllers/eventDeletion.integration.test.ts
+```
+
+Ohne diese Variable werden die Integrationstests übersprungen; die Service-Tests laufen weiterhin.
+
 Details zu CI-Jobs und Artefakten: [ADR-011](architecture/011-quality-assurance.md).
 
 Installer (Shell, ohne Node):
