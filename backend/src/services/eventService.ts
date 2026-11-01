@@ -183,17 +183,16 @@ export const eventService = {
     return event;
   },
 
-  async delete(id: string) {
+  async delete(id: string, { includeOrders = false } = {}) {
     await this.getById(id);
-    const orderCount = await eventRepository.countOrders(id);
-    if (orderCount > 0) {
+    if (!includeOrders && await eventRepository.countOrders(id) > 0) {
       throw new AppError(
         409,
         'Die Veranstaltung kann nicht gelöscht werden, weil bereits Bestellungen existieren. Deaktivieren Sie sie stattdessen oder schließen Sie die Bestellungen.',
         'EVENT_HAS_ORDERS'
       );
     }
-    await eventRepository.delete(id);
+    await eventRepository.delete(id, { includeOrders });
     emitEventUpdate({ id, deleted: true });
   },
 };

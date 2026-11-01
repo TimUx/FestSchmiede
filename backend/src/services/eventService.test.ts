@@ -30,6 +30,7 @@ vi.mock('../platform/bootstrap', () => ({
 }));
 
 import { eventService } from './eventService';
+import { emitEventUpdate } from '../socket';
 
 describe('eventService.delete', () => {
   beforeEach(() => {
@@ -48,10 +49,10 @@ describe('eventService.delete', () => {
 
     await eventService.delete('event-1');
 
-    expect(mockDelete).toHaveBeenCalledWith('event-1');
+    expect(mockDelete).toHaveBeenCalledWith('event-1', { includeOrders: false });
   });
 
-  it('verweigert Löschen bei vorhandenen Bestellungen', async () => {
+  it('verweigert Löschen bei vorhandenen Bestellungen ohne Admin-Freigabe', async () => {
     mockCountOrders.mockResolvedValue(2);
 
     await expect(eventService.delete('event-1')).rejects.toEqual(
@@ -62,6 +63,32 @@ describe('eventService.delete', () => {
       )
     );
     expect(mockDelete).not.toHaveBeenCalled();
+    expect(emitEventUpdate).not.toHaveBeenCalled();
+  });
+
+  it('löscht mit Admin-Freigabe auch Veranstaltungen mit Bestellungen', async () => {
+    mockCountOrders.mockResolvedValue(2);
+
+    await eventService.delete('event-1', { includeOrders: true });
+
+    expect(mockDelete).toHaveBeenCalledWith('event-1', { includeOrders: true });
+    expect(emitEventUpdate).toHaveBeenCalledWith({ id: 'event-1', deleted: true });
+  });
+
+  it('verweigert Löschen einer unbekannten oder fremden Veranstaltung', async () => {
+    mockFindById.mockResolvedValue(null);
+
+    await expect(eventService.delete('event-1', { includeOrders: true }))
+      .rejects.toMatchObject({ statusCode: 404 });
+    expect(mockDelete).not.toHaveBeenCalled();
+  });
+
+  it('sendet bei fehlgeschlagener Löschung kein Update', async () => {
+    mockDelete.mockRejectedValueOnce(new Error('Transaktion fehlgeschlagen'));
+
+    await expect(eventService.delete('event-1', { includeOrders: true }))
+      .rejects.toThrow('Transaktion fehlgeschlagen');
+    expect(emitEventUpdate).not.toHaveBeenCalled();
   });
 });
 
