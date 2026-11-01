@@ -173,9 +173,17 @@ export const eventRepository = {
       where: tenantWhere({ eventId }),
     }),
 
-  delete: async (id: string) => {
-    const result = await prisma.event.deleteMany({ where: tenantWhere({ id }) });
-    if (result.count === 0) throw new Error('Veranstaltung nicht gefunden');
+  delete: async (id: string, { includeOrders = false } = {}) => {
+    const eventWhere = tenantWhere({ id });
+    const orderWhere = tenantWhere({ eventId: id });
+    await prisma.$transaction(async (tx) => {
+      if (includeOrders) {
+        // Order items/history cascade; customer and catalog records remain shared.
+        await tx.order.deleteMany({ where: orderWhere });
+      }
+      const result = await tx.event.deleteMany({ where: eventWhere });
+      if (result.count === 0) throw new AppError(404, 'Veranstaltung nicht gefunden');
+    });
   },
 };
 

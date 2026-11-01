@@ -87,6 +87,10 @@ export function createPaymentService(context: FeatureContext): PaymentService {
     async filterReleasedIds(type: string, ids: string[]): Promise<string[]> {
       return paymentRepository.getReleasedResourceIds(type, ids);
     },
+
+    async hasPendingCheckoutForEvent(eventId: string): Promise<boolean> {
+      return paymentRepository.hasPendingCheckoutForEvent(eventId);
+    },
   };
 }
 

@@ -19,6 +19,7 @@ export interface PaymentServiceRegistryAccess {
   cancelCheckout(sessionId: string): Promise<import('../platform/extension-points').PaymentCheckoutResult>;
   isResourceReleased(type: string, id: string): Promise<boolean>;
   filterReleasedIds(type: string, ids: string[]): Promise<string[]>;
+  hasPendingCheckoutForEvent(eventId: string): Promise<boolean>;
 }
 
 export interface NotificationServiceRegistryAccess {
