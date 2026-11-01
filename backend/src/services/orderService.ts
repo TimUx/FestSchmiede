@@ -408,6 +408,7 @@ export const orderService = {
       // (oder automatisch nach erfolgreicher Online-Zahlung).
       skipKitchenNotify: true,
     });
+    hookSystem.emitAsync(CORE_HOOKS.ORDER_SUBMITTED, mapped);
 
     if (payOnline && data.paymentMethodId) {
       const { config } = await import('../config');
