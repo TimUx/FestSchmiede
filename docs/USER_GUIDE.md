@@ -156,6 +156,17 @@ Zeigt alle Bestellungen mit Abholnummer, Uhrzeit, Gerichten, Quelle (Online / Vo
 | Fertig | Bereit zur Abholung |
 | Stornieren | Bestellung storniert |
 
+### Falsche, Fake- oder Doppelbestellung
+
+Für reguläre Absagen **Stornieren** verwenden: Die Bestellung bleibt nachvollziehbar.
+Bei einer echten Fehlbestellung wenden Sie sich an einen Mandanten-Administrator.
+Nur diese Rolle sieht **Endgültig löschen** in der Bestellübersicht und kann die
+Bestellung nach Eingabe ihrer Bestellnummer unwiderruflich entfernen.
+Sie entfällt anschließend aus Bestellstatistiken, Bestelllisten und künftigen Exporten.
+Zahlungsnachweise bleiben erhalten; Rückerstattungen und laufende Onlinezahlungen
+müssen separat behandelt werden.
+Siehe [Admin Guide](ADMIN_GUIDE.md#einzelne-fehlbestellungen-endgültig-löschen).
+
 ---
 
 ## Verfügbarkeit (Ausverkauft)

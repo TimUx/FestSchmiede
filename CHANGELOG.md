@@ -3,6 +3,18 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
+## Unveröffentlicht
+
+### Hinzugefügt
+
+- **Bestellverwaltung:** Mandanten-Administratoren können Fehl-, Fake- und Doppelbestellungen in jedem Status nach Eingabe der Bestellnummer endgültig löschen. Positionen und Statusverlauf werden ebenfalls entfernt; Bestellstatistiken, Bestelllisten, Küche, Abholboard und künftige Exporte werden bereinigt.
+- **Qualitätssicherung:** Reproduzierbare Playwright-Tests für Bestelllöschung und ein isolierter PostgreSQL-Testlauf mit und ohne Payment-Schema, eingebunden in CI.
+
+### Geändert
+
+- **Öffentlicher Bestellstatus:** Gelöschte Bestellungen werden über WebSocket und Polling als nicht mehr vorhanden angezeigt. Die Realtime-API liefert bei einer nicht mehr vorhandenen Bestellung nun explizit `data: null` statt eines fehlenden `data`-Felds. Externe Clients müssen diesen Fall berücksichtigen.
+- **Zahlungsnachweise:** Bleiben beim endgültigen Löschen erhalten, ebenso gemeinsam genutzte Kunden-/Katalogdaten und Bestellnummernzähler. Das Löschen erstattet keine Zahlungen und beendet keine laufenden Onlinezahlungen; Zahlungsstatistiken bleiben davon unberührt.
+
 ## 2.6.5 - 2026-11-01
 
 ### Behoben
