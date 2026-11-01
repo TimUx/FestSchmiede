@@ -37,6 +37,13 @@ export function createNotificationHookSubscriptions(context: FeatureContext): Ho
   return [
     {
       moduleId: 'notifications',
+      hook: CORE_HOOKS.ORDER_SUBMITTED,
+      handler: wrap('ORDER_SUBMITTED', (payload) =>
+        notificationManager.handleOrderSubmitted(context, payload as OrderHookPayload)),
+      priority: 40,
+    },
+    {
+      moduleId: 'notifications',
       hook: CORE_HOOKS.ORDER_CREATED,
       handler: wrap('ORDER_CREATED', (payload) =>
         notificationManager.handleOrderCreated(context, payload as OrderHookPayload)),
