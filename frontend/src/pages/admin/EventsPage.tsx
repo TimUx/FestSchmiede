@@ -60,7 +60,7 @@ const emptyForm: EventForm = {
 };
 
 export function EventsPage() {
-  const { token } = useAuth();
+  const { token, isAdmin } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -162,7 +162,9 @@ export function EventsPage() {
   const handleDelete = async (event: Event) => {
     if (!token) return;
     const confirmed = confirm(
-      `Veranstaltung „${event.name}“ wirklich löschen?\n\nZuordnungen für Speisen & Getränke werden entfernt. Nicht möglich, wenn bereits Bestellungen existieren.`
+      isAdmin
+        ? `Veranstaltung „${event.name}“ und ALLE zugehörigen Bestellungen endgültig löschen?\n\nAlle Bestellpositionen, Statusverläufe und Zuordnungen für Speisen & Getränke werden ebenfalls gelöscht. Diese Aktion kann nicht rückgängig gemacht werden. Bereits erfolgte Zahlungen werden nicht erstattet.\n\nMöchten Sie wirklich fortfahren?`
+        : `Veranstaltung „${event.name}“ wirklich löschen?\n\nZuordnungen für Speisen & Getränke werden entfernt. Nicht möglich, wenn bereits Bestellungen existieren. Diese Aktion kann nicht rückgängig gemacht werden.`
     );
     if (!confirmed) return;
     setError('');

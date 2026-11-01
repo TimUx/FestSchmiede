@@ -1,5 +1,6 @@
 import { Response, NextFunction } from 'express';
 import { eventService } from '../services/eventService';
+import type { AuthRequest } from '../middleware/auth';
 
 export const eventController = {
   async getPublicEvents(_req: unknown, res: Response, next: NextFunction) {
@@ -105,9 +106,9 @@ export const eventController = {
     }
   },
 
-  async delete(req: { params: { id: string } }, res: Response, next: NextFunction) {
+  async delete(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      await eventService.delete(req.params.id);
+      await eventService.delete(req.params.id as string, { includeOrders: req.user?.role === 'ADMIN' });
       res.status(204).send();
     } catch (err) {
       next(err);
