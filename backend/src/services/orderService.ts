@@ -21,7 +21,7 @@ import {
   canStaffEditOrderItems,
   resolveCancellationDeadlineHours,
 } from '../utils/helpers';
-import { emitOrderCreated, emitOrderUpdate } from '../socket';
+import { emitOrderCreated, emitOrderUpdate, emitOrderDeleted } from '../socket';
 import { hookSystem } from '../platform/bootstrap';
 import { CORE_HOOKS } from '../platform/types';
 import { logger } from '../utils/logger';
@@ -658,6 +658,15 @@ export const orderService = {
     }
 
     return mapped;
+  },
+
+  async delete(id: string, deletedBy?: string) {
+    const order = await orderRepository.findById(id);
+    if (!order) throw new AppError(404, 'Bestellung nicht gefunden');
+
+    await orderRepository.delete(id);
+    logger.info('Bestellung endgültig gelöscht', { orderId: id, eventId: order.eventId, deletedBy });
+    emitOrderDeleted(order.eventId, id);
   },
 
   async updateItems(

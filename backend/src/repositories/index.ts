@@ -347,6 +347,12 @@ export const foodItemRepository = {
 };
 
 export const orderRepository = {
+  delete: async (id: string) => {
+    // Positions and status history cascade; shared records and payment evidence remain.
+    const result = await prisma.order.deleteMany({ where: tenantWhere({ id }) });
+    if (result.count === 0) throw new AppError(404, 'Bestellung nicht gefunden');
+  },
+
   findById: (id: string) =>
     prisma.order.findFirst({
       where: tenantWhere({ id }),

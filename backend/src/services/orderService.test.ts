@@ -11,9 +11,13 @@ const mockGetNextOrderNumber = vi.fn();
 const mockCreateCustomer = vi.fn();
 const mockFindByEventFood = vi.fn();
 const mockIsPaymentAvailable = vi.fn();
+const mockFindById = vi.fn();
+const mockDeleteOrder = vi.fn();
 
 vi.mock('../repositories', () => ({
   orderRepository: {
+    findById: (...args: unknown[]) => mockFindById(...args),
+    delete: (...args: unknown[]) => mockDeleteOrder(...args),
     findByEvent: (...args: unknown[]) => mockFindByEvent(...args),
     findByOrderNumber: (...args: unknown[]) => mockFindByOrderNumber(...args),
     create: (...args: unknown[]) => mockCreateOrder(...args),
@@ -63,6 +67,7 @@ vi.mock('../core/extensionPoints', () => ({
 vi.mock('../socket', () => ({
   emitOrderCreated: vi.fn(),
   emitOrderUpdate: vi.fn(),
+  emitOrderDeleted: vi.fn(),
 }));
 
 vi.mock('../platform/bootstrap', () => ({
@@ -88,6 +93,7 @@ vi.mock('./clubService', () => ({
 import { orderService } from './orderService';
 import { hookSystem } from '../platform/bootstrap';
 import { CORE_HOOKS } from '../platform/types';
+import { emitOrderDeleted } from '../socket';
 
 const eventDate = new Date('2026-07-11T00:00:00.000Z');
 
@@ -126,6 +132,45 @@ describe('orderService.getByEvent', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockFindLatestByResources.mockResolvedValue(new Map());
+  });
+
+  describe('orderService.delete', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+      mockDeleteOrder.mockResolvedValue(undefined);
+    });
+
+    it.each(['NEW', 'IN_PROGRESS', 'READY', 'PICKED_UP', 'CANCELLED'])(
+      'permanently deletes a %s order without payment changes or cancellation hooks',
+      async (status) => {
+        mockFindById.mockResolvedValue(buildOrder({ status }));
+
+        await orderService.delete('order-1', 'admin-1');
+
+        expect(mockDeleteOrder).toHaveBeenCalledWith('order-1');
+        expect(emitOrderDeleted).toHaveBeenCalledWith('event-1', 'order-1');
+        expect(mockFindByResource).not.toHaveBeenCalled();
+        expect(hookSystem.emitAsync).not.toHaveBeenCalled();
+      }
+    );
+
+    it('rejects unknown and foreign-tenant orders', async () => {
+      mockFindById.mockResolvedValue(null);
+
+      await expect(orderService.delete('foreign-order')).rejects.toMatchObject({ statusCode: 404 });
+
+      expect(mockDeleteOrder).not.toHaveBeenCalled();
+      expect(emitOrderDeleted).not.toHaveBeenCalled();
+    });
+
+    it('does not announce a failed deletion', async () => {
+      mockFindById.mockResolvedValue(buildOrder());
+      mockDeleteOrder.mockRejectedValueOnce(new Error('Database unavailable'));
+
+      await expect(orderService.delete('order-1')).rejects.toThrow('Database unavailable');
+
+      expect(emitOrderDeleted).not.toHaveBeenCalled();
+    });
   });
 
   it('liefert Kassenbestellungen auch ohne freigegebene Zahlung', async () => {

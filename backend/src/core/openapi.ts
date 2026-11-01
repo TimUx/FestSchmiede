@@ -26,6 +26,21 @@ export const openApiDocument = {
     '/staff/events': {
       get: { summary: 'Veranstaltungen (Mitarbeiter)' },
     },
+    '/staff/orders/{id}': {
+      delete: {
+        summary: 'Bestellung endgültig löschen (nur Mandanten-Administratoren)',
+        description: 'Entfernt Bestellung, Positionen und Statusverlauf. Zahlungsnachweise bleiben erhalten; keine automatische Rückerstattung oder Abbruch laufender Onlinezahlungen.',
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } }],
+        responses: {
+          '204': { description: 'Endgültig gelöscht' },
+          '400': { description: 'Ungültige Bestell-ID' },
+          '401': { description: 'Nicht authentifiziert' },
+          '403': { description: 'Keine Administratorberechtigung' },
+          '404': { description: 'Bestellung nicht gefunden' },
+        },
+      },
+    },
     '/admin/settings': {
       get: { summary: 'Settings-Namespaces' },
     },

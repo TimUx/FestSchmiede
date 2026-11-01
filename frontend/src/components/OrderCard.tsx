@@ -20,6 +20,7 @@ interface OrderCardProps {
   onStatusChange?: (status: OrderStatus) => void;
   onAdvance?: () => void;
   onEdit?: () => void;
+  onDelete?: () => void;
   onReleaseToKitchen?: () => void;
   showActions?: boolean;
   compact?: boolean;
@@ -31,6 +32,7 @@ export function OrderCard({
   onStatusChange,
   onAdvance,
   onEdit,
+  onDelete,
   onReleaseToKitchen,
   showActions = false,
   compact = false,
@@ -190,6 +192,11 @@ export function OrderCard({
                   {action.label}
                 </Button>
               ))}
+            {!kitchenMode && onDelete && (
+              <Button variant="outlined" color="error" size="small" onClick={onDelete}>
+                Endgültig löschen
+              </Button>
+            )}
           </Stack>
         )}
       </CardContent>

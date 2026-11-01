@@ -266,6 +266,8 @@ export const api = {
   },
   getOrdersExport: (token: string, eventId: string) =>
     request<import('@/types/ordersExport').EventOrdersExport>(`/staff/events/${eventId}/orders/export`, {}, token),
+  deleteOrder: (token: string, id: string) =>
+    request<void>(`/staff/orders/${id}`, { method: 'DELETE' }, token),
   downloadOrdersExport: async (token: string, eventId: string, filename: string) => {
     const url = buildApiUrl(`/staff/events/${eventId}/orders/export.xlsx`);
     const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
@@ -329,7 +331,7 @@ export const api = {
     if (lastName) params.set('lastName', lastName);
     if (etag) params.set('etag', etag);
     const q = params.toString();
-    return request<SyncResult<Order>>(`/realtime/orders/${lookupToken}${q ? `?${q}` : ''}`, {});
+    return request<SyncResult<Order | null>>(`/realtime/orders/${lookupToken}${q ? `?${q}` : ''}`, {});
   },
   syncPaymentStatus: (sessionId: string, etag?: string) => {
     const q = etag ? `?etag=${encodeURIComponent(etag)}` : '';

@@ -257,6 +257,15 @@ export function emitOrderCreated(eventId: string, order: unknown): void {
   io.to(scopedRoom(tenantId, `staff:event:${eventId}`)).emit('order:created', order);
 }
 
+export function emitOrderDeleted(eventId: string, orderId: string): void {
+  if (!io) return;
+  const tenantId = requireTenantRoomPrefix();
+  io.to(scopedRoom(tenantId, `staff:event:${eventId}`))
+    .to(scopedRoom(tenantId, `pickup:${eventId}`))
+    .to(scopedRoom(tenantId, `order:${orderId}`))
+    .emit('order:deleted', { id: orderId });
+}
+
 export function emitEventUpdate(event: unknown): void {
   if (!io) return;
   const tenantId = requireTenantRoomPrefix();

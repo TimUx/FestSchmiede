@@ -1,5 +1,33 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { buildApiUrl, configureApiBase, formatPrice, getImageUrl } from '@/services/api';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { api, buildApiUrl, configureApiBase, formatPrice, getImageUrl } from '@/services/api';
+
+describe('api.deleteOrder', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    configureApiBase('/api');
+  });
+
+  it('deletes through the tenant-scoped API and accepts an empty 204 response', async () => {
+    configureApiBase('/test-tenant/api');
+    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(api.deleteOrder('admin-token', 'order-id')).resolves.toBeUndefined();
+    expect(fetchMock).toHaveBeenCalledWith('/test-tenant/api/staff/orders/order-id', expect.objectContaining({
+      method: 'DELETE',
+      headers: expect.objectContaining({ Authorization: 'Bearer admin-token' }),
+    }));
+  });
+
+  it('surfaces permission and deletion failures', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(
+      JSON.stringify({ error: 'Keine Berechtigung' }),
+      { status: 403 }
+    )));
+
+    await expect(api.deleteOrder('staff-token', 'order-id')).rejects.toThrow('Keine Berechtigung');
+  });
+});
 
 describe('buildApiUrl', () => {
   beforeEach(() => {

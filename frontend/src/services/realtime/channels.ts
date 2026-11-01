@@ -5,7 +5,7 @@ import { api } from '@/services/api';
 import { realtimeService } from './RealtimeService';
 import type { ActivityLevel, SubscribeOptions } from './types';
 
-const ORDER_WS_EVENTS = ['order:created', 'order:updated'];
+const ORDER_WS_EVENTS = ['order:created', 'order:updated', 'order:deleted'];
 
 export function subscribeEventOrders(
   token: string,
@@ -57,7 +57,7 @@ export function subscribePickupBoard(
     `pickup:${eventId}`,
     () => {},
     {
-      wsEvents: ['order:updated'],
+      wsEvents: ['order:updated', 'order:deleted'],
       join: () => realtimeService.joinPickupBoard(eventId),
       activity: 'high',
       poll: (etag) => api.syncPickupBoard(eventId, etag),
@@ -69,22 +69,26 @@ export function subscribePickupBoard(
 export function subscribeOrderStatus(
   lookupToken: string,
   lastName: string | undefined,
-  onData: (order: Order) => void
+  onData: (order: Order | null) => void,
+  orderId: string
 ): () => void {
   return realtimeService.subscribe(
     `order:${lookupToken}`,
     (msg) => {
       if (msg.type === 'order:updated' && msg.payload) {
         onData(msg.payload as Order);
+      } else if (msg.type === 'order:deleted' && typeof msg.payload === 'object' &&
+          msg.payload !== null && 'id' in msg.payload && msg.payload.id === orderId) {
+        onData(null);
       }
     },
     {
-      wsEvents: ['order:updated'],
+      wsEvents: ['order:updated', 'order:deleted'],
       join: () => realtimeService.joinOrder(lookupToken, lastName),
       activity: 'normal',
       poll: (etag) => api.syncOrder(lookupToken, lastName, etag),
       onPollData: (data) => {
-        if (data) onData(data as Order);
+        onData(data ? data as Order : null);
       },
     }
   );
