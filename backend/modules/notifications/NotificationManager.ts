@@ -292,6 +292,30 @@ class NotificationManager {
   }
 
   async handleOrderCreated(context: FeatureContext, payload: OrderHookPayload): Promise<void> {
+    if (payload.source === 'ONLINE') return;
+
+    const club = await loadClubContact(context);
+    const config = await this.resolveConfig(context);
+
+    const adminMessage = buildAdminPushNotification(
+      'orderCreated',
+      {
+        displayNumber: payload.displayNumber,
+        clubName: club.clubName,
+        totalPrice: formatPrice(payload.totalPrice),
+        eventDateLabel: payload.eventDateLabel ?? '',
+      },
+      config
+    );
+    if (adminMessage) {
+      await this.dispatchAdminEmails(context, 'orderCreated', {
+        ...adminMessage,
+        priority: 'high',
+      });
+    }
+  }
+
+  async handleOrderSubmitted(context: FeatureContext, payload: OrderHookPayload): Promise<void> {
     const club = await loadClubContact(context);
     const config = await this.resolveConfig(context);
 

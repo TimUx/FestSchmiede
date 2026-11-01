@@ -141,6 +141,7 @@ export interface ModuleInfo {
 }
 
 export const CORE_HOOKS = {
+  ORDER_SUBMITTED: 'onOrderSubmitted',
   ORDER_CREATED: 'onOrderCreated',
   ORDER_PAID: 'onOrderPaid',
   ORDER_CANCELLED: 'onOrderCancelled',
