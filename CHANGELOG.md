@@ -8,6 +8,7 @@ Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1
 ### Behoben
 
 - **Bestell-E-Mails:** Kundenbestätigungen und Benachrichtigungen an abonnierte Tenant-Admins werden direkt nach Eingang einer Online-Bestellung versendet, unabhängig von Zahlung und Küchenfreigabe.
+- **CI:** High-Befunde in `body-parser` und `zod` durch aktualisierte Abhängigkeiten behoben; Admin-Smoke-Tests nutzen die Navigation statt eines Seitenneuladens während der Sitzungsprüfung.
 
 ## 2.5.6 - 2026-07-17
 
