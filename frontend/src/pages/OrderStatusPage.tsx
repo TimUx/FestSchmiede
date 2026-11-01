@@ -88,10 +88,20 @@ export function OrderStatusPage() {
       order.lookupToken,
       order.customer?.lastName,
       (updated) => {
-        if (updated.id === order.id) setOrder(updated);
-      }
+        if (!updated) {
+          setOrder(null);
+          setShowReadyAlert(false);
+          setCancelDialogOpen(false);
+          setVerifyMode(Boolean(lookupToken));
+          setLookupMode(!lookupToken);
+          setError('Bestellung nicht mehr vorhanden');
+        } else if (updated.id === order.id) {
+          setOrder(updated);
+        }
+      },
+      order.id
     );
-  }, [order?.id, order?.lookupToken, order?.customer?.lastName]);
+  }, [order?.id, order?.lookupToken, order?.customer?.lastName, lookupToken]);
 
   useEffect(() => {
     if (!order) return;

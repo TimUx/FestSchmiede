@@ -5,6 +5,12 @@ import {
   CircularProgress,
   Alert,
   Stack,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from '@mui/material';
 import { StaffLayout } from '@/components/StaffLayout';
 import { OrderCard } from '@/components/OrderCard';
@@ -17,12 +23,16 @@ import { subscribeEventOrders } from '@/services/realtime/channels';
 import { Order, OrderStatus } from '@/types';
 
 export function OrdersPage() {
-  const { token } = useAuth();
+  const { token, isAdmin } = useAuth();
   const { selectedEventId, selectedEvent, loading: eventsLoading } = useStaffEvent();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
+  const [deletingOrder, setDeletingOrder] = useState<Order | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   useEffect(() => {
     if (eventsLoading) return;
@@ -65,6 +75,23 @@ export function OrdersPage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!token || !isAdmin || !deletingOrder || deleting ||
+        deleteConfirmation.trim() !== deletingOrder.displayNumber) return;
+    setDeleting(true);
+    setDeleteError('');
+    try {
+      await api.deleteOrder(token, deletingOrder.id);
+      setOrders((prev) => prev.filter((order) => order.id !== deletingOrder.id));
+      setEditingOrder((prev) => prev?.id === deletingOrder.id ? null : prev);
+      setDeletingOrder(null);
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : 'Löschen fehlgeschlagen');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (loading || eventsLoading) {
     return (
       <StaffLayout title="Bestellungen">
@@ -94,11 +121,59 @@ export function OrdersPage() {
             order={order}
             showActions
             onEdit={() => setEditingOrder(order)}
+            onDelete={isAdmin ? () => {
+              setDeletingOrder(order);
+              setDeleteConfirmation('');
+              setDeleteError('');
+            } : undefined}
             onStatusChange={(status) => void handleStatusChange(order.id, status)}
             onReleaseToKitchen={() => void handleReleaseToKitchen(order.id)}
           />
         ))}
       </Stack>
+      <Dialog
+        open={deletingOrder !== null}
+        onClose={() => { if (!deleting) setDeletingOrder(null); }}
+        aria-labelledby="delete-order-title"
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle id="delete-order-title">
+          Bestellung #{deletingOrder?.displayNumber} endgültig löschen?
+        </DialogTitle>
+        <DialogContent>
+          <Alert severity="warning" sx={{ mb: 2 }}>
+            Nur für falsche, Fake- oder Doppelbestellungen: Die Bestellung einschließlich
+            Positionen und Statusverlauf wird unwiderruflich gelöscht und aus Bestellstatistiken,
+            Bestelllisten und künftigen Exporten entfernt. Für reguläre Absagen bitte stornieren.
+          </Alert>
+          <Typography sx={{ mb: 2 }}>
+            Zahlungsnachweise bleiben erhalten und können weiterhin in Zahlungsstatistiken
+            enthalten sein. Bereits erfolgte Zahlungen werden nicht automatisch erstattet.
+            Laufende Onlinezahlungen werden durch das Löschen nicht abgebrochen.
+          </Typography>
+          {deleteError && <Alert severity="error" sx={{ mb: 2 }}>{deleteError}</Alert>}
+          <TextField
+            autoFocus
+            fullWidth
+            label={`Zur Bestätigung Bestellnummer ${deletingOrder?.displayNumber ?? ''} eingeben`}
+            value={deleteConfirmation}
+            onChange={(event) => setDeleteConfirmation(event.target.value)}
+            disabled={deleting}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeletingOrder(null)} disabled={deleting}>Abbrechen</Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={() => void handleDelete()}
+            disabled={deleting || deleteConfirmation.trim() !== deletingOrder?.displayNumber}
+          >
+            {deleting ? 'Wird gelöscht …' : 'Endgültig löschen'}
+          </Button>
+        </DialogActions>
+      </Dialog>
       {token && (
         <OrderEditDialog
           open={editingOrder !== null}

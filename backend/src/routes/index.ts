@@ -224,6 +224,7 @@ router.post('/staff/orders/:id/release-to-kitchen', requireAnyStaffPermission('o
 });
 router.patch('/staff/orders/:id/status', requireAnyStaffPermission('orders.kitchen', 'orders.manage'), validateParams(idParamSchema), validateBody(updateOrderStatusSchema), orderController.updateStatus);
 router.patch('/staff/orders/:id/items', requireAnyStaffPermission('orders.kitchen', 'orders.manage'), validateParams(idParamSchema), validateBody(updateOrderItemsSchema), orderController.updateItems);
+router.delete('/staff/orders/:id', requireRole('ADMIN'), validateParams(idParamSchema), orderController.delete);
 router.post('/staff/orders/:id/advance', requireAnyStaffPermission('orders.kitchen', 'orders.pickup', 'orders.manage'), validateParams(idParamSchema), orderController.advanceStatus);
 
 // Realtime sync (delta/ETag) — für Polling-Fallback

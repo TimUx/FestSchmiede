@@ -886,6 +886,28 @@ Neu → In Bearbeitung → Fertig → Abgeholt
                     Storniert
 ```
 
+### Einzelne Fehlbestellungen endgültig löschen
+
+Für versehentliche, Fake- oder Doppelbestellungen können **Mandanten-Administratoren**
+in der **Bestellübersicht** bei der betreffenden Bestellung **Endgültig löschen** wählen.
+Die Aktion ist in jedem Bestellstatus verfügbar, auch für bereits stornierte Bestellungen.
+Mitarbeitende können Bestellungen nicht endgültig löschen.
+
+Die Sicherheitsabfrage nennt die Bestellnummer. Geben Sie diese ohne `#` ein und bestätigen
+Sie die Löschung. Die Bestellung, ihre Positionen und ihr Statusverlauf werden unwiderruflich
+entfernt. Sie zählt danach nicht mehr in Bestellstatistiken (Anzahl, Umsatz, beliebte
+Gerichte, Bearbeitungszeit) und erscheint nicht mehr in Bestelllisten, Küche, Abholboard
+oder künftigen Exporten. Der öffentliche Bestellstatus ist nicht mehr abrufbar.
+
+Gemeinsam genutzte Kunden- und Katalogdaten bleiben erhalten. Bestellnummern werden nicht
+neu vergeben; Lücken sind beabsichtigt. **Zahlungsnachweise bleiben erhalten**, auch bei
+bezahlten Bestellungen, und können weiterhin in Zahlungsstatistiken enthalten sein.
+Das Löschen erstattet keine Zahlungen und bricht laufende Onlinezahlungen nicht ab;
+Rückerstattungen müssen separat über die Zahlungsverwaltung erfolgen.
+
+Für reguläre Absagen weiterhin **Stornieren** verwenden, damit die Bestellung
+nachvollziehbar erhalten bleibt.
+
 ---
 
 ## Mitarbeiter & Rollen

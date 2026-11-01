@@ -7,6 +7,15 @@ import { AuthRequest } from '../middleware/auth';
 import { validateOrderBotProtection, BotProtectionPayload } from '../middleware/botProtection';
 
 export const orderController = {
+  async delete(req: AuthRequest & { params: { id: string } }, res: Response, next: NextFunction) {
+    try {
+      await orderService.delete(req.params.id, req.user?.userId);
+      res.status(204).send();
+    } catch (err) {
+      next(err);
+    }
+  },
+
   async createOnline(
     req: { body: Parameters<typeof orderService.createOnlineOrder>[0] & BotProtectionPayload },
     res: Response,

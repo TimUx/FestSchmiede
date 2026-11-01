@@ -102,7 +102,7 @@ export const realtimeSyncService = {
     lookupToken: string,
     lastName: string | undefined,
     clientEtag?: string
-  ): Promise<SyncResult<Awaited<ReturnType<typeof orderService.getByLookupToken>>>> {
+  ): Promise<SyncResult<Awaited<ReturnType<typeof orderService.getByLookupToken>> | null>> {
     return trackRealtimePoll('order-token', async () => {
       const order = await prisma.order.findFirst({
         where: tenantWhere({ lookupToken }),
@@ -111,7 +111,7 @@ export const realtimeSyncService = {
       if (!order) {
         const etag = buildEtag(['order', lookupToken, 'missing']);
         if (clientEtag === etag) return unchanged(etag);
-        return { changed: true, etag, serverTime: new Date().toISOString(), data: undefined };
+        return { changed: true, etag, serverTime: new Date().toISOString(), data: null };
       }
       const etag = buildEtag(['order', order.id, order.status, order.updatedAt.toISOString()]);
       if (clientEtag && clientEtag === etag) return unchanged(etag);
