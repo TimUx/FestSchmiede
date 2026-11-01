@@ -104,4 +104,5 @@ export interface PaymentService {
   healthCheck(): Promise<Record<string, { ok: boolean; message?: string }>>;
   isResourceReleased(type: string, id: string): Promise<boolean>;
   filterReleasedIds(type: string, ids: string[]): Promise<string[]>;
+  hasPendingCheckoutForEvent(eventId: string): Promise<boolean>;
 }

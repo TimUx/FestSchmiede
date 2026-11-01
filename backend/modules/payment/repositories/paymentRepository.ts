@@ -217,6 +217,26 @@ export const paymentRepository = {
     }, null);
   },
 
+  async hasPendingCheckoutForEvent(eventId: string): Promise<boolean> {
+    return safePaymentsRead(async () => {
+      const tenantId = requireTenantId();
+      const rows = await prisma.$queryRaw<{ id: string }[]>`
+        SELECT p.id
+        FROM payments p
+        INNER JOIN "Order" o ON p.resource_type = 'order' AND p.resource_id = o.id
+        WHERE p.tenant_id = ${tenantId}
+          AND o.tenant_id = ${tenantId}
+          AND o.event_id = ${eventId}
+          AND (
+            p.payment_status IN ('CREATED', 'PAYMENT_PENDING', 'PAYMENT_PROCESSING')
+            OR (p.payment_status IS NULL AND p.status = 'pending')
+          )
+        LIMIT 1
+      `;
+      return rows.length > 0;
+    }, false);
+  },
+
   async findLatestByResources(
     resourceType: string,
     ids: string[]
