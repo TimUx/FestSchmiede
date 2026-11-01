@@ -754,6 +754,19 @@ Eine aktive Veranstaltung nimmt Bestellungen entgegen, wenn zusätzlich gilt:
 
 Nicht jede Veranstaltung muss alle Katalogeinträge anbieten.
 
+### Veranstaltung endgültig löschen
+
+Tenant-Administratoren können unter **Veranstaltungen** über **Löschen** auch Veranstaltungen mit Bestellungen entfernen, etwa versehentlich angelegte Testveranstaltungen.
+Die Sicherheitsabfrage nennt die Veranstaltung und warnt vor der unwiderruflichen Löschung **aller zugehörigen Bestellungen**.
+Mit **Abbrechen** bleiben sämtliche Daten erhalten.
+
+Nach Bestätigung werden Veranstaltung, Bestellungen einschließlich Positionen und Statusverläufen, veranstaltungsbezogene Bestellzähler und Speisenzuordnungen gemeinsam gelöscht.
+Kunden, der Speisenkatalog und andere Veranstaltungen bleiben erhalten.
+Bereits erfolgte Zahlungen werden dadurch **nicht erstattet**; Zahlungs- und Auditdaten bleiben unverändert.
+Solange für eine zugehörige Bestellung noch ein offener Checkout besteht, wird das Löschen abgelehnt, damit keine Zahlung ohne erfüllbare Bestellung ausgelöst werden kann. Schließen oder stornieren Sie zuerst den Checkout.
+Mitarbeitende mit `events.manage` können weiterhin nur Veranstaltungen ohne Bestellungen löschen.
+Wenn Bestelldaten erhalten bleiben sollen, deaktivieren Sie die Veranstaltung oder schließen Sie die Bestellungen stattdessen.
+
 ### Mehrere Veranstaltungen parallel
 
 | Bereich | Verhalten |
