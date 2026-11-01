@@ -13,7 +13,7 @@ test.describe('Administrator', () => {
     await page.getByLabel('Passwort').fill(admin.password);
     await page.getByRole('button', { name: /anmelden/i }).click();
     await expect(page).toHaveURL(/\/admin\/?$/, { timeout: 15_000 });
-    await page.goto(tenantPath('/admin/module'));
+    await page.locator('.MuiDrawer-paper').getByRole('link', { name: 'Funktionen', exact: true }).click();
     await expect(page.getByRole('heading', { name: /funktionen/i }).first()).toBeVisible({ timeout: 30_000 });
   });
 
@@ -23,10 +23,10 @@ test.describe('Administrator', () => {
     await page.getByLabel('Passwort').fill(admin.password);
     await page.getByRole('button', { name: /anmelden/i }).click();
     await expect(page).toHaveURL(/\/admin\/?$/, { timeout: 15_000 });
-    await page.goto(tenantPath('/admin/benutzer'));
+    await page.locator('.MuiDrawer-paper').getByRole('link', { name: 'Team', exact: true }).click();
     await expect(page).toHaveURL(/\/admin\/benutzer/, { timeout: 15_000 });
     await expect(page.getByRole('heading', { name: /team/i }).first()).toBeVisible({ timeout: 30_000 });
-    await page.goto(tenantPath('/admin/verein'));
+    await page.locator('.MuiDrawer-paper').getByRole('link', { name: 'Veranstalter', exact: true }).click();
     await expect(page.getByText(/veranstalter|verein/i).first()).toBeVisible({ timeout: 30_000 });
   });
 });

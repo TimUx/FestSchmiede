@@ -76,7 +76,8 @@ Wenn das optionale Legal-Modul aktiv ist, ergaenzt `MessageTemplateService` Kund
 
 | Ereignis | Standard-Kanäle | Auslöser |
 |----------|-----------------|----------|
-| `orderCreated` | E-Mail | Hook `ORDER_CREATED` |
+| `orderCreated` | E-Mail | Hook `ORDER_CREATED` bei Küchenfreigabe für Kassenbestellungen |
+| `orderSubmitted` | E-Mail | Hook `ORDER_SUBMITTED` direkt nach Eingang einer Online-Bestellung; Kundenbestätigung und Admin-E-Mail an abonnierte Tenant-Admins |
 | `orderCancelled` | E-Mail | Hook `ORDER_CANCELLED` |
 | `orderPaid` | optional Team | Hook `ORDER_PAID` |
 | `kitchenCompleted` | ntfy | Hook `KITCHEN_COMPLETED` |
