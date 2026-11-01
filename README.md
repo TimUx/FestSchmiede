@@ -24,9 +24,16 @@ jeweiligen Veranstaltung ab.
 
 - **Gäste:** Speisekarte, Vorausbestellung, Live-Status, Abholboard
 - **Mitarbeiter:** Küchenmonitor, Abholung, Kassenbestellung, Bestellübersicht mit Bearbeitung
-- **Administration:** Veranstaltungen (mehrere parallel), Speisen-&-Getränke-Katalog mit Zuordnung, Team & Rollen
+- **Administration:** Veranstaltungen (mehrere parallel), Speisen-&-Getränke-Katalog mit Zuordnung, Team & Rollen; Fehl-, Fake- und Doppelbestellungen endgültig löschen
 - **Plattform:** Mehrere Mandanten (Vereine) auf einer Instanz
 - **Optional:** Online-Zahlung, E-Mail/Push-Benachrichtigungen, Bondruck, Rechtstexte
+
+**Fehlbestellungen bereinigen:** Nur Mandanten-Administratoren können in der
+Bestellübersicht nach Bestätigung der Bestellnummer endgültig löschen. Die Bestellung
+entfällt aus Bestellstatistiken und künftigen Exporten. Zahlungsnachweise bleiben erhalten;
+keine automatische Rückerstattung oder Beendigung laufender Onlinezahlungen.
+Für reguläre Absagen weiterhin stornieren.
+[Details im Admin Guide](docs/ADMIN_GUIDE.md#einzelne-fehlbestellungen-endgültig-löschen).
 
 ## Schnellstart
 

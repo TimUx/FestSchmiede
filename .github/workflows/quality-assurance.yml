@@ -103,6 +103,9 @@ jobs:
       - name: Migration tests (fresh DB + upgrade)
         run: bash scripts/qa/test-migrations.sh
 
+      - name: Order deletion integration tests (isolated PostgreSQL)
+        run: bash scripts/qa/test-order-deletion.sh
+
       - name: Upload coverage
         uses: actions/upload-artifact@v7
         if: always()

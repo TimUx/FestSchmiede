@@ -328,8 +328,8 @@ Basis-URL: `/api`
 | GET | `/public/menu?eventId=` | Speisekarte + Event-Info |
 | POST | `/public/orders` | Online-Bestellung (Body: `eventId`, …) |
 | POST | `/public/orders/lookup` | Status per Nummer + Nachname (Body: `eventId`, …) |
-| GET | `/public/orders/:id` | Bestellung per ID (inkl. Storno-Infos) |
-| POST | `/public/orders/:id/cancel` | Online-Bestellung stornieren (Nachname) |
+| GET | `/public/orders/status/:token` | Bestellung per Lookup-Token und Nachname (inkl. Storno-Infos) |
+| POST | `/public/orders/:token/cancel` | Online-Bestellung stornieren (Nachname) |
 | GET | `/public/pickup-board?eventId=` | Fertige Bestellungen einer Veranstaltung |
 | GET | `/public/payment/status` | Onlinezahlung verfügbar? |
 | GET | `/public/legal-links` | Veröffentlichte Rechtslinks für Footer/E-Mail |
@@ -364,6 +364,7 @@ Vollständige Modul-API: siehe [ADR-003](architecture/003-module-system.md) und 
 | POST | `/staff/orders/cashier` | Body: `eventId`, `items`, … |
 | POST | `/staff/orders/lookup` | Body: `eventId`, `orderNumber`, optional `lastName` |
 | PATCH | `/staff/orders/:id/status` | ADMIN, STAFF |
+| DELETE | `/staff/orders/:id` | Nur Mandanten-ADMIN; endgültige Löschung, Zahlungsnachweise bleiben erhalten |
 | PUT | `/staff/club` | ADMIN |
 | POST | `/staff/club/logo` | ADMIN |
 
@@ -389,6 +390,7 @@ Vollständige Liste: siehe `backend/src/routes/index.ts` und Modul-`routes.ts`.
 |-------|-------------|
 | `order:created` | Neue Bestellung |
 | `order:updated` | Statusänderung |
+| `order:deleted` | Bestellung endgültig gelöscht; Payload `{ id }`, Listen/Statistiken neu laden und passenden Kundenstatus leeren |
 | `event:updated` | Veranstaltung geändert |
 | `fooditems:updated` | Speisekarte geändert |
 
@@ -485,6 +487,51 @@ npm test --prefix backend -- src/services/eventService.test.ts src/controllers/e
 ```
 
 Ohne diese Variable werden die Integrationstests übersprungen; die Service-Tests laufen weiterhin.
+
+### Endgültige Bestelllöschung prüfen
+
+`DELETE /api/staff/orders/:id` verlangt eine angemeldete, aktive Mandanten-Administratorrolle.
+Bestellung, Positionen und Statusverlauf werden physisch entfernt. Zahlungsnachweise,
+gemeinsam genutzte Kunden-/Katalogdaten und Bestellnummernzähler bleiben erhalten.
+`order:deleted` mit `{ id }` aktualisiert die Bestellansichten. Bei gelöschten Bestellungen
+liefert die Realtime-Status-API `{ changed: true, data: null, ... }`; Clients müssen
+den bisherigen Bestellstatus dann leeren.
+
+Der vollständige PostgreSQL-Testlauf benötigt Docker und installierte Backend-Abhängigkeiten:
+
+```bash
+bash scripts/qa/test-order-deletion.sh
+```
+
+Das Skript erzeugt ausschließlich für diesen Lauf einen PostgreSQL-Container mit
+zufälligem Passwort und freiem lokalen Port, wendet Prisma-Migrationen an und führt
+die Löschtests zunächst ohne, dann mit den Payment-Migrationen aus.
+Container und Datenvolume werden auch bei Fehlern entfernt. Der zweite Lauf prüft
+zusätzlich, dass bezahlte Zahlungsnachweise, Transaktionen und Audit-Einträge erhalten bleiben.
+Der Quality-Assurance-Workflow führt das Skript automatisch aus.
+
+Alternativ kann `ORDER_DELETE_TEST_DATABASE_URL` explizit auf eine separate, migrierte
+Testdatenbank gesetzt werden:
+
+```bash
+npm test --prefix backend -- src/controllers/orderDeletion.integration.test.ts src/services/orderService.test.ts
+```
+
+Ohne diese Variable werden die PostgreSQL-Tests übersprungen. Ohne Payment-Schema
+wird nur der Zahlungsnachweis-Test übersprungen. Niemals eine produktive Datenbank verwenden.
+
+Der reproduzierbare UI-Test arbeitet mit API-Mocks gegen ein laufendes Frontend:
+
+```bash
+# Terminal 1
+npm run dev --prefix frontend
+# Terminal 2
+npx playwright test --config tests/e2e/playwright.config.ts tests/e2e/specs/order-deletion.spec.ts
+```
+
+Er prüft Bestellnummernbestätigung, Abbrechen ohne Löschrequest, Fehleranzeige,
+erneuten Versuch und Rollenbeschränkung. Er läuft auch im bestehenden Smoke-E2E-Job;
+die Datenbankwirkung wird separat durch die PostgreSQL-Tests geprüft.
 
 Details zu CI-Jobs und Artefakten: [ADR-011](architecture/011-quality-assurance.md).
 
