@@ -86,6 +86,8 @@ vi.mock('./clubService', () => ({
 }));
 
 import { orderService } from './orderService';
+import { hookSystem } from '../platform/bootstrap';
+import { CORE_HOOKS } from '../platform/types';
 
 const eventDate = new Date('2026-07-11T00:00:00.000Z');
 
@@ -267,6 +269,29 @@ describe('orderService.createOnlineOrder', () => {
     expect(result.id).toBe('online-new');
     expect(result.paymentLabel).toBe('Bar vor Ort');
     expect(mockCreateOrder).toHaveBeenCalled();
+  });
+
+  it('meldet eine Online-Bestellung direkt nach dem Eingang, noch vor der Küchenfreigabe', async () => {
+    const result = await orderService.createOnlineOrder({
+      eventId: 'event-1',
+      firstName: 'Max',
+      lastName: 'Mustermann',
+      email: 'max@example.de',
+      items: [{ foodItemId: 'food-1', quantity: 1 }],
+    });
+
+    expect(hookSystem.emitAsync).toHaveBeenCalledWith(
+      CORE_HOOKS.ORDER_SUBMITTED,
+      expect.objectContaining({
+        id: result.id,
+        source: 'ONLINE',
+        releasedToKitchen: false,
+      })
+    );
+    expect(hookSystem.emitAsync).not.toHaveBeenCalledWith(
+      CORE_HOOKS.ORDER_CREATED,
+      expect.anything()
+    );
   });
 });
 
