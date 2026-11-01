@@ -3,7 +3,7 @@
 Alle wesentlichen Aenderungen an **FestSchmiede** werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
-## 2.5.7 - 2026-11-01
+## 2.6.5 - 2026-11-01
 
 ### Behoben
 

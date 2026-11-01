@@ -128,7 +128,7 @@ docker compose up -d
 docker compose exec backend npm run seed
 ```
 
-Standard-Images: `ghcr.io/timux/festschmiede/backend:v2.5.7` und `ghcr.io/timux/festschmiede/frontend:v2.5.7`
+Standard-Images: `ghcr.io/timux/festschmiede/backend:v2.6.5` und `ghcr.io/timux/festschmiede/frontend:v2.6.5`
 Produktive Deployments verwenden standardmäßig einen expliziten Release-Tag. Für ein Upgrade
 `IMAGE_TAG` in `.env` auf den gewünschten Release-Tag setzen; `latest` nicht verwenden.
 
@@ -347,7 +347,7 @@ Traefik muss im selben Docker-Netzwerk wie die Anwendung laufen. Beispiel mit Le
 # docker-compose.yml – Ergänzung am frontend-Service
 services:
   frontend:
-    image: ghcr.io/timux/festschmiede/frontend:v2.5.7
+    image: ghcr.io/timux/festschmiede/frontend:v2.6.5
     container_name: festschmiede-frontend
     restart: unless-stopped
     networks:
