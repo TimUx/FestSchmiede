@@ -49,6 +49,20 @@ Nach der Anmeldung sehen Sie das **Dashboard** mit aktuellen Zahlen:
 
 ![Dashboard](screenshots/06-dashboard.png)
 
+Unter den Bestellkennzahlen zeigt **Speisen & Getränke** die Stückzahlen je Artikel
+für die oben ausgewählte Veranstaltung:
+
+- **Gesamt bestellt:** Summe der bestellten Mengen, einschließlich bereits abgeholter Bestellungen.
+- **Noch auszugeben:** Mengen aus neuen, in Bearbeitung befindlichen und fertigen, aber noch nicht abgeholten Bestellungen.
+
+Stornierte Bestellungen zählen nicht mit. Online-Vorausbestellungen werden auch vor
+der Küchenfreigabe berücksichtigt. Zugeordnete Artikel ohne Bestellungen erscheinen
+mit null. Die Übersicht enthält ausschließlich Artikel, die der ausgewählten
+Veranstaltung aktuell zugewiesen sind. Entfernte Zuordnungen werden auch dann
+nicht angezeigt, wenn dafür bereits Bestellungen vorliegen.
+Die Zahlen aktualisieren sich automatisch. Der Bereich lässt sich einklappen;
+bei mehr als zehn Artikeln hilft eine Suche beim Eingrenzen.
+
 | Menüpunkt | Für wen | Aufgabe |
 |-----------|---------|---------|
 | Dashboard | Alle | Übersicht, Statistiken, Schnellzugriff Abholung/Bestellung |

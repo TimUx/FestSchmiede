@@ -208,6 +208,7 @@ export const setFoodSoldOutSchema = z.object({
 
 export const setEventFoodAssignmentsSchema = z.object({
   foodItemIds: z.array(z.string().uuid()),
+  confirmRemoval: z.boolean().optional(),
 });
 
 export const orderItemSchema = z.object({

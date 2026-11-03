@@ -1,6 +1,32 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { api, buildApiUrl, configureApiBase, formatPrice, getImageUrl } from '@/services/api';
 
+describe('event assignment confirmation', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    configureApiBase('/api');
+  });
+
+  it('preserves the server confirmation error code for the admin dialog', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(
+      JSON.stringify({ error: 'Bestätigung erforderlich', code: 'FOOD_ASSIGNMENT_CONFIRMATION_REQUIRED' }),
+      { status: 409 }
+    )));
+    await expect(api.setEventFoodAssignments('token', 'event', [])).rejects.toMatchObject({
+      status: 409, code: 'FOOD_ASSIGNMENT_CONFIRMATION_REQUIRED',
+    });
+  });
+
+  it('sends explicit confirmation only when requested', async () => {
+    const fetchMock = vi.fn().mockImplementation(async () => new Response('[]', { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+    await api.setEventFoodAssignments('token', 'event', []);
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({ foodItemIds: [], confirmRemoval: false });
+    await api.setEventFoodAssignments('token', 'event', [], true);
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({ foodItemIds: [], confirmRemoval: true });
+  });
+});
+
 describe('api.deleteOrder', () => {
   afterEach(() => {
     vi.unstubAllGlobals();

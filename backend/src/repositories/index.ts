@@ -4,7 +4,23 @@ import crypto from 'crypto';
 import { AppError } from '../middleware/errorHandler';
 import { requireTenantId, tenantWhere } from '../platform/tenant/tenantScope';
 import { parseLoginIdentifier } from '../services/loginIdentifier';
-import { getTodayDate } from '../utils/helpers';
+import { canStaffEditOrderItems, canTransition, getTodayDate } from '../utils/helpers';
+
+async function lockAndValidateEventItems(tx: Prisma.TransactionClient, eventId: string, foodItemIds: string[]) {
+  const tenantId = requireTenantId();
+  // Assignment removal takes an exclusive lock on the same event until orders are corrected.
+  await tx.$queryRaw`SELECT id FROM "Event" WHERE id = ${eventId} AND tenant_id = ${tenantId} FOR SHARE`;
+  const assignments = await tx.eventFoodItem.findMany({
+    where: { tenantId, eventId, foodItemId: { in: foodItemIds } },
+    include: { foodItem: true },
+  });
+  const availableIds = new Set(assignments
+    .filter((row) => row.foodItem.active && !row.soldOut)
+    .map((row) => row.foodItemId));
+  if (foodItemIds.some((id) => !availableIds.has(id))) {
+    throw new AppError(409, 'Das Angebot wurde geändert. Bitte die verfügbaren Artikel erneut prüfen.');
+  }
+}
 
 export const userRepository = {
   findByEmail: (email: string) =>
@@ -249,39 +265,80 @@ export const foodItemRepository = {
       include: { foodItem: true },
     }),
 
-  setEventAssignments: async (eventId: string, foodItemIds: string[]) => {
+  setEventAssignments: async (
+    eventId: string,
+    foodItemIds: string[],
+    confirmedRemovalBy?: string
+  ) => {
     const tenantId = requireTenantId();
-    const existing = await prisma.eventFoodItem.findMany({
-      where: tenantWhere({ eventId }),
-    });
-    const existingByFoodId = new Map(existing.map((row) => [row.foodItemId, row]));
     const targetIds = [...new Set(foodItemIds)];
-
-    await prisma.eventFoodItem.deleteMany({
-      where: tenantWhere({
-        eventId,
-        foodItemId: { notIn: targetIds.length > 0 ? targetIds : ['__none__'] },
-      }),
-    });
-
-    const catalog = await prisma.foodItem.findMany({
-      where: tenantWhere({ id: { in: targetIds } }),
-    });
-    const catalogById = new Map(catalog.map((item) => [item.id, item]));
-
-    for (const foodItemId of targetIds) {
-      const foodItem = catalogById.get(foodItemId);
-      if (!foodItem) continue;
-      if (existingByFoodId.has(foodItemId)) continue;
-      await prisma.eventFoodItem.create({
-        data: {
-          tenantId,
-          eventId,
-          foodItemId,
-          sortOrder: foodItem.sortOrder,
-        },
+    return prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "Event" WHERE id = ${eventId} AND tenant_id = ${tenantId} FOR UPDATE`;
+      const existing = await tx.eventFoodItem.findMany({
+        where: { tenantId, eventId },
+        include: { foodItem: true },
       });
-    }
+      const existingIds = new Set(existing.map((row) => row.foodItemId));
+      const removed = existing.filter((row) => !targetIds.includes(row.foodItemId));
+      const removedIds = removed.map((row) => row.foodItemId);
+      if (removedIds.length > 0) {
+        // Protect pickup/status changes while deciding which orders still need correction.
+        await tx.$queryRaw`
+          SELECT id FROM "Order"
+          WHERE tenant_id = ${tenantId} AND "eventId" = ${eventId}
+          ORDER BY id FOR UPDATE
+        `;
+      }
+      const affectedOrders = removedIds.length === 0 ? [] : await tx.order.findMany({
+        where: { tenantId, eventId, items: { some: { foodItemId: { in: removedIds } } } },
+        include: { items: true },
+      });
+      if (affectedOrders.length > 0 && !confirmedRemovalBy) {
+        const orderedIds = new Set(affectedOrders.flatMap((order) => order.items.map((item) => item.foodItemId)));
+        const names = removed.filter((row) => orderedIds.has(row.foodItemId)).map((row) => row.foodItem.name);
+        const openCount = affectedOrders.filter((order) => order.status !== 'CANCELLED' && order.status !== 'PICKED_UP').length;
+        throw new AppError(
+          409,
+          `Bereits bestellte Artikel entfernen: ${names.join(', ')}. Betroffen sind ${openCount} noch nicht abgeholte Bestellungen. Nur ein Admin darf dies ausdrücklich bestätigen. Bei Ausverkauf bitte stattdessen unter Verfügbarkeit als nicht verfügbar markieren.`,
+          'FOOD_ASSIGNMENT_CONFIRMATION_REQUIRED'
+        );
+      }
+
+      const changes = [];
+      for (const order of affectedOrders) {
+        if (order.status === 'CANCELLED' || order.status === 'PICKED_UP') continue;
+        const remaining = order.items.filter((item) => !removedIds.includes(item.foodItemId));
+        const cancelled = remaining.length === 0;
+        const totalPrice = remaining.reduce((sum, item) => sum.add(item.lineTotal), new Prisma.Decimal(0));
+        await tx.orderItem.deleteMany({ where: { orderId: order.id, foodItemId: { in: removedIds } } });
+        const updated = await tx.order.update({
+          where: { id: order.id },
+          data: { totalPrice, ...(cancelled ? { status: StatusCode.CANCELLED, cancelledAt: new Date() } : {}) },
+          include: { customer: true, event: true, items: { include: { foodItem: true } } },
+        });
+        if (cancelled) {
+          await tx.orderStatus.create({
+            data: { orderId: order.id, status: StatusCode.CANCELLED, changedBy: confirmedRemovalBy },
+          });
+        }
+        changes.push({
+          order: updated,
+          removedItems: order.items.filter((item) => removedIds.includes(item.foodItemId)),
+          previousTotal: order.totalPrice,
+        });
+      }
+
+      await tx.eventFoodItem.deleteMany({ where: { tenantId, eventId, foodItemId: { in: removedIds } } });
+      const catalog = await tx.foodItem.findMany({ where: { tenantId, id: { in: targetIds } } });
+      if (catalog.length !== targetIds.length) throw new AppError(400, 'Ungültiger Katalogeintrag');
+      for (const foodItem of catalog) {
+        if (existingIds.has(foodItem.id)) continue;
+        await tx.eventFoodItem.create({
+          data: { tenantId, eventId, foodItemId: foodItem.id, sortOrder: foodItem.sortOrder },
+        });
+      }
+      return changes;
+    }, { timeout: 15000 });
   },
 
   updateAssignmentSoldOut: async (eventId: string, foodItemId: string, soldOut: boolean) => {
@@ -415,20 +472,24 @@ export const orderRepository = {
   },
 
   create: (
-    data: Omit<Prisma.OrderUncheckedCreateWithoutTenantInput, 'lookupToken' | 'tenantId'> & {
+    data: Omit<Prisma.OrderUncheckedCreateWithoutTenantInput, 'lookupToken' | 'tenantId' | 'items'> & {
       lookupToken?: string;
+      items: { create: Prisma.OrderItemUncheckedCreateWithoutOrderInput[] };
     }
   ) =>
-    prisma.order.create({
-      data: {
-        ...data,
-        tenantId: requireTenantId(),
-        lookupToken: data.lookupToken ?? crypto.randomBytes(32).toString('hex'),
-      },
-      include: {
-        customer: true,
-        items: { include: { foodItem: true } },
-      },
+    prisma.$transaction(async (tx) => {
+      await lockAndValidateEventItems(tx, data.eventId, data.items.create.map((item) => item.foodItemId));
+      return tx.order.create({
+        data: {
+          ...data,
+          tenantId: requireTenantId(),
+          lookupToken: data.lookupToken ?? crypto.randomBytes(32).toString('hex'),
+        },
+        include: {
+          customer: true,
+          items: { include: { foodItem: true } },
+        },
+      });
     }),
 
   setReleasedToKitchen: async (id: string, released: boolean) => {
@@ -449,8 +510,12 @@ export const orderRepository = {
   ) => {
     const tenantId = requireTenantId();
     return prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "Order" WHERE id = ${id} AND tenant_id = ${tenantId} FOR UPDATE`;
       const existing = await tx.order.findFirst({ where: { tenantId, id } });
       if (!existing) throw new Error('Bestellung nicht gefunden');
+      if (!canTransition(existing.status, status)) {
+        throw new AppError(409, 'Bestellstatus wurde zwischenzeitlich geändert. Bitte neu laden.');
+      }
 
       const order = await tx.order.update({
         where: { id },
@@ -487,6 +552,12 @@ export const orderRepository = {
       const existing = await tx.order.findFirst({ where: { tenantId, id } });
       if (!existing) throw new Error('Bestellung nicht gefunden');
 
+      await lockAndValidateEventItems(tx, existing.eventId, items.map((item) => item.foodItemId));
+      await tx.$queryRaw`SELECT id FROM "Order" WHERE id = ${id} AND tenant_id = ${tenantId} FOR UPDATE`;
+      const current = await tx.order.findFirst({ where: { tenantId, id } });
+      if (!current || !canStaffEditOrderItems(current.status)) {
+        throw new AppError(409, 'Bestellung kann in diesem Status nicht mehr bearbeitet werden');
+      }
       await tx.orderItem.deleteMany({ where: { orderId: id } });
       if (items.length > 0) {
         await tx.orderItem.createMany({

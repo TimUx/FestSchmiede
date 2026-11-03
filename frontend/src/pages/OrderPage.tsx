@@ -15,7 +15,7 @@ import {
 import { useTheme } from '@mui/material/styles';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { PublicLayout } from '@/components/PublicLayout';
 import { PublicNoEventsNotice } from '@/components/PublicNoEventsNotice';
 import { FoodItemCard } from '@/components/FoodItemCard';
@@ -48,9 +48,12 @@ function isFormValid(
 
 export function OrderPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedEventId = searchParams.get('eventId');
   const theme = useTheme();
   const isMobileMenu = useMediaQuery(theme.breakpoints.down('sm'));
   const formStartedAt = useRef(Date.now());
+  const menuRequestId = useRef(0);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -79,10 +82,12 @@ export function OrderPage() {
   const turnstileRequired = Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY);
 
   const loadMenu = useCallback(async (eventId: string) => {
+    const requestId = ++menuRequestId.current;
     setLoading(true);
     setError('');
     try {
       const menuData = await api.getPublicMenu(eventId);
+      if (requestId !== menuRequestId.current) return;
       setEventName(menuData.event.name);
       setEventDateLabel((menuData.event as { eventDateLabel?: string }).eventDateLabel || '');
       setItems(menuData.items);
@@ -90,35 +95,50 @@ export function OrderPage() {
       menuData.items.forEach((i) => { initial[i.id] = 0; });
       setQuantities(initial);
     } catch (err) {
+      if (requestId !== menuRequestId.current) return;
       setItems([]);
       setError(err instanceof Error ? err.message : 'Speisekarte konnte nicht geladen werden');
     } finally {
-      setLoading(false);
+      if (requestId === menuRequestId.current) setLoading(false);
     }
   }, []);
 
   const handleSelectEvent = (eventId: string) => {
-    setSelectedEventId(eventId);
+    setSearchParams({ eventId });
     setOrderStep('dishes');
-    void loadMenu(eventId);
   };
 
   useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setError('');
     Promise.all([api.getPublicEvents(), api.getOrderSettings()])
       .then(([events, settings]) => {
+        if (!active) return;
         setAvailableEvents(events);
         setFieldConfig(settings.fields);
-        if (events.length === 1) {
-          setSelectedEventId(events[0].id);
-          return loadMenu(events[0].id);
+        const selected = requestedEventId
+          ? events.find((event) => event.id === requestedEventId)
+          : events.length === 1 ? events[0] : undefined;
+        if (selected) {
+          setSelectedEventId(selected.id);
+          return loadMenu(selected.id);
         }
+        setSelectedEventId(null);
+        setItems([]);
+        if (requestedEventId) setError('Diese Veranstaltung ist nicht für Onlinebestellungen verfügbar.');
         setLoading(false);
       })
       .catch((err) => {
+        if (!active) return;
         setError(err.message);
         setLoading(false);
       });
-  }, [loadMenu]);
+    return () => {
+      active = false;
+      menuRequestId.current += 1;
+    };
+  }, [loadMenu, requestedEventId]);
 
   const { totalCount, totalPrice, selectedItems } = useMemo(() => {
     let count = 0;
@@ -396,6 +416,7 @@ export function OrderPage() {
           onBack={
             availableEvents.length > 1
               ? () => {
+                  setSearchParams({});
                   setSelectedEventId(null);
                   setItems([]);
                   setOrderStep('dishes');
@@ -430,6 +451,7 @@ export function OrderPage() {
                   setError('');
                   return;
                 }
+                setSearchParams({});
                 setSelectedEventId(null);
                 setItems([]);
                 setOrderStep('dishes');

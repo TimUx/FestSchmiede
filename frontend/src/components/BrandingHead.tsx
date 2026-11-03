@@ -45,9 +45,8 @@ function upsertMeta(name: string, content: string, attr: 'name' | 'property' = '
 
 function absoluteUrl(origin: string, pathOrUrl: string): string {
   if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl;
-  const base = origin.replace(/\/$/, '');
   const path = pathOrUrl.startsWith('/') ? pathOrUrl : `/${pathOrUrl}`;
-  return `${base}${path}`;
+  return new URL(path, origin).href;
 }
 
 export function BrandingHead({
@@ -68,14 +67,18 @@ export function BrandingHead({
   useEffect(() => {
     let title: string;
     let favicon: string | undefined;
-    const desc = description ?? DEFAULT_DESCRIPTION;
+    const desc = description ?? (routing.scope === 'tenant'
+      ? tenant.description?.trim() || `Speisen und Getränke bei ${tenant.name} online bestellen.`
+      : DEFAULT_DESCRIPTION);
     const origin =
       routing.scope === 'www'
         ? routing.wwwUrl
         : routing.scope === 'app'
           ? routing.appUrl
           : (routing.tenantUrl || routing.appUrl || (typeof window !== 'undefined' ? window.location.origin : ''));
-    const pagePath = path ?? (typeof window !== 'undefined' ? window.location.pathname : '/');
+    const eventId = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('eventId') : null;
+    const pagePath = path ?? (typeof window !== 'undefined'
+      ? `${window.location.pathname}${eventId ? `?eventId=${encodeURIComponent(eventId)}` : ''}` : '/');
     const canonical = absoluteUrl(origin, pagePath);
 
     if (isPlatformSurfaceScope(routing.scope)) {
@@ -113,13 +116,13 @@ export function BrandingHead({
     upsertMeta('og:description', desc, 'property');
     upsertMeta('og:type', ogType, 'property');
     upsertMeta('og:url', canonical, 'property');
-    upsertMeta('og:site_name', platform.name, 'property');
+    upsertMeta('og:site_name', routing.scope === 'tenant' ? tenant.name : platform.name, 'property');
     upsertMeta('og:locale', 'de_DE', 'property');
 
     const defaultOgImage = absoluteUrl(origin, ogImagePath ?? FESTSCHMIEDE_LOGO_URL);
     const ogImage = isPlatformSurfaceScope(routing.scope)
       ? defaultOgImage
-      : (getImageUrl(tenant.logoUrl ?? undefined) ?? defaultOgImage);
+      : absoluteUrl(origin, getImageUrl(tenant.logoUrl ?? undefined) ?? defaultOgImage);
     upsertMeta('og:image', ogImage, 'property');
     upsertMeta('twitter:card', 'summary_large_image');
     upsertMeta('twitter:image', ogImage);
@@ -237,6 +240,7 @@ export function BrandingHead({
     routing.wwwUrl,
     routing.appUrl,
     tenant.name,
+    tenant.description,
     tenant.logoUrl,
     tenant.locale,
     platform.name,

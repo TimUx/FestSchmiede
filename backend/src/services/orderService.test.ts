@@ -13,9 +13,11 @@ const mockFindByEventFood = vi.fn();
 const mockIsPaymentAvailable = vi.fn();
 const mockFindById = vi.fn();
 const mockDeleteOrder = vi.fn();
+const mockGetStats = vi.fn();
 
 vi.mock('../repositories', () => ({
   orderRepository: {
+    getStats: (...args: unknown[]) => mockGetStats(...args),
     findById: (...args: unknown[]) => mockFindById(...args),
     delete: (...args: unknown[]) => mockDeleteOrder(...args),
     findByEvent: (...args: unknown[]) => mockFindByEvent(...args),
@@ -230,27 +232,16 @@ describe('orderService.getStats', () => {
     vi.clearAllMocks();
   });
 
-  it('zählt alle nicht stornierten Bestellungen', async () => {
-    const visibleOnline = buildOrder({
-      id: 'online-1',
-      source: 'ONLINE',
-      status: 'NEW',
-      customer: { firstName: 'Max', lastName: 'Mustermann', email: null, phone: null },
-    });
-    const hiddenOnline = buildOrder({
-      id: 'online-2',
-      source: 'ONLINE',
-      status: 'NEW',
-      releasedToKitchen: false,
-      customer: { firstName: 'Erika', lastName: 'Beispiel', email: null, phone: null },
-    });
-    mockFindByEvent.mockResolvedValue([visibleOnline, hiddenOnline]);
-
-    const stats = await orderService.getStats('event-1');
-
-    expect(stats.totalOrders).toBe(2);
-    expect(stats.openOrders).toBe(2);
-    expect(stats.revenue).toBe(20);
+  it('delegates event statistics to database aggregations without loading full orders', async () => {
+    const expected = {
+      totalOrders: 2, openOrders: 2, readyOrders: 0, pickedUpOrders: 0,
+      revenue: 20, popularDishes: [], avgProcessingMinutes: 0,
+      dishQuantities: [{ foodItemId: 'food-1', name: 'Bratwurst', totalQuantity: 2, outstandingQuantity: 2 }],
+    };
+    mockGetStats.mockResolvedValue(expected);
+    expect(await orderService.getStats('event-1')).toEqual(expected);
+    expect(mockGetStats).toHaveBeenCalledWith('event-1');
+    expect(mockFindByEvent).not.toHaveBeenCalled();
   });
 });
 

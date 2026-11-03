@@ -38,7 +38,8 @@ class ApiError extends Error {
     public status: number,
     message: string,
     public details?: Array<{ field: string; message: string }>,
-    public rateLimit?: RateLimitInfo
+    public rateLimit?: RateLimitInfo,
+    public code?: string
   ) {
     super(message);
     this.name = 'ApiError';
@@ -106,7 +107,7 @@ async function request<T>(
       ? details.map((d) => d.message).join(' ')
       : body.error || 'Anfrage fehlgeschlagen';
     const rateLimit = res.status === 429 ? parseRateLimitInfo(res.headers) : undefined;
-    throw new ApiError(res.status, message, details, rateLimit);
+    throw new ApiError(res.status, message, details, rateLimit, body.code);
   }
 
   if (res.status === 204) return undefined as T;
@@ -225,10 +226,10 @@ export const api = {
     request<FoodItem[]>(`/staff/events/${eventId}/food-items`, {}, token),
   getEventFoodAssignments: (token: string, eventId: string) =>
     request<FoodItem[]>(`/staff/events/${eventId}/food-item-assignments`, {}, token),
-  setEventFoodAssignments: (token: string, eventId: string, foodItemIds: string[]) =>
+  setEventFoodAssignments: (token: string, eventId: string, foodItemIds: string[], confirmRemoval = false) =>
     request<FoodItem[]>(`/staff/events/${eventId}/food-item-assignments`, {
       method: 'PUT',
-      body: JSON.stringify({ foodItemIds }),
+      body: JSON.stringify({ foodItemIds, confirmRemoval }),
     }, token),
   createFoodItem: (token: string, eventId: string, data: Partial<FoodItem>) =>
     request<FoodItem>(`/staff/events/${eventId}/food-items`, { method: 'POST', body: JSON.stringify(data) }, token),

@@ -14,6 +14,7 @@ import DoneAllIcon from '@mui/icons-material/DoneAll';
 import EuroIcon from '@mui/icons-material/Euro';
 import { StaffLayout } from '@/components/StaffLayout';
 import { StaffKioskActions } from '@/components/StaffKioskActions';
+import { DishQuantityOverview } from '@/components/DishQuantityOverview';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStaffEvent } from '@/contexts/StaffEventContext';
 import { api, formatPrice } from '@/services/api';
@@ -56,27 +57,46 @@ function StatCard({ title, value, icon, color }: StatCardProps) {
 export function DashboardPage() {
   const { token } = useAuth();
   const { selectedEventId, loading: eventsLoading } = useStaffEvent();
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [snapshot, setSnapshot] = useState<{ eventId: string; data: DashboardStats } | null>(null);
+  const [loadedEventId, setLoadedEventId] = useState<string | null>(null);
   const [error, setError] = useState('');
+  const stats = snapshot?.eventId === selectedEventId ? snapshot.data : null;
 
   useEffect(() => {
-    if (eventsLoading) return;
-    setLoading(false);
-  }, [eventsLoading]);
-
-  useEffect(() => {
+    setError('');
+    setSnapshot(null);
+    setLoadedEventId(null);
     if (!token || !selectedEventId) {
-      setStats(null);
       return;
     }
+    let active = true;
+    let receivedRealtimeStats = false;
+    const updateStats = (data: DashboardStats) => {
+      if (!active) return;
+      setSnapshot({ eventId: selectedEventId, data });
+      setLoadedEventId(selectedEventId);
+      setError('');
+    };
     api.getStats(token, selectedEventId)
-      .then(setStats)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Fehler'));
-    return subscribeEventStats(token, selectedEventId, setStats, 'normal');
+      .then((data) => {
+        if (!receivedRealtimeStats) updateStats(data);
+      })
+      .catch((err) => {
+        if (!active || receivedRealtimeStats) return;
+        setError(err instanceof Error ? err.message : 'Fehler');
+        setLoadedEventId(selectedEventId);
+      });
+    const unsubscribe = subscribeEventStats(token, selectedEventId, (data) => {
+      receivedRealtimeStats = true;
+      updateStats(data);
+    }, 'normal');
+    return () => {
+      active = false;
+      unsubscribe();
+    };
   }, [selectedEventId, token]);
 
-  if (loading || eventsLoading) {
+  if (eventsLoading || (token && selectedEventId && loadedEventId !== selectedEventId)) {
     return (
       <StaffLayout title="Dashboard">
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
@@ -97,6 +117,7 @@ export function DashboardPage() {
   return (
     <StaffLayout title="Dashboard">
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {!selectedEventId && <Alert severity="info" sx={{ mb: 2 }}>Bitte eine Veranstaltung auswählen.</Alert>}
 
       <Box
         sx={{
@@ -110,6 +131,8 @@ export function DashboardPage() {
           <StatCard key={item.title} {...item} />
         ))}
       </Box>
+
+      {stats && <DishQuantityOverview key={selectedEventId} dishes={stats.dishQuantities} />}
 
       <Box>
         <Typography variant="h5" gutterBottom sx={{

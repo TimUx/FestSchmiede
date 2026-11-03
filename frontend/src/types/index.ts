@@ -127,6 +127,12 @@ export interface DashboardStats {
   revenue: number;
   popularDishes: { name: string; count: number }[];
   avgProcessingMinutes: number;
+  dishQuantities: {
+    foodItemId: string;
+    name: string;
+    totalQuantity: number;
+    outstandingQuantity: number;
+  }[];
 }
 
 export interface PickupBoardOrder {
