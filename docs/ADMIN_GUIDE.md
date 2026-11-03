@@ -754,6 +754,32 @@ Eine aktive Veranstaltung nimmt Bestellungen entgegen, wenn zusätzlich gilt:
 
 Nicht jede Veranstaltung muss alle Katalogeinträge anbieten.
 
+**Links teilen:** Ein Link zur öffentlichen Tenant-Seite verwendet in WhatsApp und
+anderen Diensten den Veranstalternamen, die Beschreibung und das hochgeladene Logo.
+Ohne eigenes Logo wird das FestSchmiede-Logo verwendet. Bei genau einer öffentlich
+bestellbaren Veranstaltung erscheinen automatisch deren Name, Datum, Uhrzeit und
+Beschreibung. Bei mehreren Veranstaltungen wählen Sie die gewünschte Veranstaltung
+auf der öffentlichen Bestellseite und kopieren dann die Adresse mit `?eventId=…`.
+Dieser Link öffnet dieselbe Veranstaltung und verwendet ihre Daten in der Vorschau.
+Bereits erzeugte Vorschauen können beim jeweiligen Dienst noch zwischengespeichert sein.
+
+**Ausverkauft ist kein Grund, eine Zuordnung zu entfernen:** Markieren Sie den Artikel
+im Service unter **Verfügbarkeit** als nicht verfügbar. Er bleibt der Veranstaltung
+zugewiesen und in der Mengenübersicht erhalten, kann aber nicht mehr bestellt werden.
+
+Sobald ein Artikel in Bestellungen dieser Veranstaltung vorkommt, ist das Entfernen
+seiner Zuordnung geschützt. Nur ein **Admin** kann es nach einer zusätzlichen
+Sicherheitsabfrage ausnahmsweise bestätigen. Ohne Bestätigung bleiben Zuordnungen
+und Bestellungen unverändert.
+
+Bei Bestätigung werden ausschließlich die betroffenen Positionen aus allen noch
+nicht abgeholten Bestellungen entfernt, einschließlich bereits fertiger Bestellungen.
+Andere Positionen bleiben erhalten; die Beträge werden aus den ursprünglichen
+Positionspreisen neu berechnet. Leere Bestellungen werden storniert.
+Bereits abgeholte oder stornierte Bestellungen bleiben unverändert.
+**Zahlungen und laufende Checkouts werden nicht automatisch angepasst oder erstattet:**
+Prüfen Sie betroffene Zahlungen und veranlassen Sie nötige Erstattungen manuell.
+
 ### Veranstaltung endgültig löschen
 
 Tenant-Administratoren können unter **Veranstaltungen** über **Löschen** auch Veranstaltungen mit Bestellungen entfernen, etwa versehentlich angelegte Testveranstaltungen.

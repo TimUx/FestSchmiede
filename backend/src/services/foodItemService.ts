@@ -4,6 +4,8 @@ import { AppError } from '../middleware/errorHandler';
 import { emitFoodItemsUpdate } from '../socket';
 import { Prisma } from '@prisma/client';
 import { formatEventDate } from '../utils/helpers';
+import { orderService } from './orderService';
+import { logger } from '../utils/logger';
 
 function mapCatalogItem(item: {
   id: string;
@@ -52,7 +54,14 @@ export const foodItemService = {
     }));
   },
 
-  async setEventAssignments(eventId: string, foodItemIds: string[]) {
+  async setEventAssignments(
+    eventId: string,
+    foodItemIds: string[],
+    options?: { confirmRemoval?: boolean; actor?: { userId: string; role: string } }
+  ) {
+    if (options?.confirmRemoval && options.actor?.role !== 'ADMIN') {
+      throw new AppError(403, 'Nur ein Admin darf bereits bestellte Artikel nach Bestätigung entfernen.');
+    }
     await eventService.getById(eventId);
     const catalog = await foodItemRepository.findCatalog();
     const validIds = new Set(catalog.map((item) => item.id));
@@ -61,7 +70,20 @@ export const foodItemService = {
         throw new AppError(400, 'Ungültiger Katalogeintrag');
       }
     }
-    await foodItemRepository.setEventAssignments(eventId, foodItemIds);
+    const changes = await foodItemRepository.setEventAssignments(
+      eventId, foodItemIds, options?.confirmRemoval ? options.actor?.userId : undefined
+    );
+    if (options?.confirmRemoval) {
+      logger.warn('Bestellte Artikel nach Admin-Bestätigung aus Veranstaltung entfernt; Erstattungen manuell prüfen', {
+        eventId,
+        assignedFoodItemIds: foodItemIds,
+        changedBy: options?.actor?.userId,
+        changes: changes.map(({ order, removedItems, previousTotal }) => ({
+          orderId: order.id, removedItems, previousTotal, totalPrice: order.totalPrice, status: order.status,
+        })),
+      });
+    }
+    for (const { order } of changes) await orderService.notifyRemovedItems(order);
     const items = await foodItemRepository.findByEvent(eventId);
     emitFoodItemsUpdate(eventId, items);
     return items;

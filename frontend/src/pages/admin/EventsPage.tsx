@@ -32,7 +32,7 @@ import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { AdminLayout } from '@/components/AdminLayout';
 import { useAuth } from '@/contexts/AuthContext';
-import { api, formatPrice } from '@/services/api';
+import { api, ApiError, formatPrice } from '@/services/api';
 import { Event, FoodItem } from '@/types';
 
 interface EventForm {
@@ -72,6 +72,8 @@ export function EventsPage() {
   const [foodAssignments, setFoodAssignments] = useState<FoodItem[]>([]);
   const [foodLoading, setFoodLoading] = useState(false);
   const [foodSaving, setFoodSaving] = useState(false);
+  const [foodError, setFoodError] = useState('');
+  const [removalWarning, setRemovalWarning] = useState('');
 
   const loadEvents = () => {
     if (!token) return;
@@ -110,12 +112,15 @@ export function EventsPage() {
     setFoodEvent(event);
     setFoodDialogOpen(true);
     setFoodLoading(true);
+    setFoodAssignments([]);
+    setFoodError('');
+    setRemovalWarning('');
     setError('');
     try {
       const assignments = await api.getEventFoodAssignments(token, event.id);
       setFoodAssignments(assignments);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Zuordnungen konnten nicht geladen werden');
+      setFoodError(err instanceof Error ? err.message : 'Zuordnungen konnten nicht geladen werden');
     } finally {
       setFoodLoading(false);
     }
@@ -127,17 +132,23 @@ export function EventsPage() {
     );
   };
 
-  const handleSaveFoodAssignments = async () => {
+  const handleSaveFoodAssignments = async (confirmRemoval = false) => {
     if (!token || !foodEvent) return;
     setFoodSaving(true);
-    setError('');
+    setFoodError('');
     try {
       const foodItemIds = foodAssignments.filter((item) => item.assigned).map((item) => item.id);
-      await api.setEventFoodAssignments(token, foodEvent.id, foodItemIds);
+      await api.setEventFoodAssignments(token, foodEvent.id, foodItemIds, confirmRemoval);
+      setRemovalWarning('');
       setFoodDialogOpen(false);
       setFoodEvent(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Speichern fehlgeschlagen');
+      if (err instanceof ApiError && err.code === 'FOOD_ASSIGNMENT_CONFIRMATION_REQUIRED' && isAdmin) {
+        setRemovalWarning(err.message);
+      } else {
+        setRemovalWarning('');
+        setFoodError(err instanceof Error ? err.message : 'Speichern fehlgeschlagen');
+      }
     } finally {
       setFoodSaving(false);
     }
@@ -271,11 +282,12 @@ export function EventsPage() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={foodDialogOpen} onClose={() => setFoodDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog open={foodDialogOpen} onClose={() => { if (!foodSaving) setFoodDialogOpen(false); }} maxWidth="sm" fullWidth>
         <DialogTitle>
           Speisen & Getränke für {foodEvent?.name}
         </DialogTitle>
         <DialogContent>
+          {foodError && <Alert severity="error" sx={{ mb: 2 }}>{foodError}</Alert>}
           <Typography
             variant="body2"
             sx={{
@@ -284,6 +296,10 @@ export function EventsPage() {
             }}>
             Wählen Sie die Einträge aus dem Katalog, die bei dieser Veranstaltung angeboten werden sollen.
           </Typography>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Vorübergehend ausverkauft? Bitte unter Verfügbarkeit als nicht verfügbar markieren,
+            statt die Zuordnung zu entfernen. Der Artikel bleibt dann erhalten und kann nicht mehr bestellt werden.
+          </Alert>
           {foodLoading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
               <CircularProgress />
@@ -296,7 +312,7 @@ export function EventsPage() {
             <List dense disablePadding>
               {foodAssignments.map((item) => (
                 <ListItem key={item.id} disablePadding>
-                  <ListItemButton onClick={() => toggleFoodAssignment(item.id)}>
+                  <ListItemButton disabled={foodSaving} onClick={() => toggleFoodAssignment(item.id)}>
                     <ListItemIcon sx={{ minWidth: 36 }}>
                       <Checkbox
                         edge="start"
@@ -325,13 +341,45 @@ export function EventsPage() {
             }}>
             {assignedCount} von {foodAssignments.length} ausgewählt
           </Typography>
-          <Button onClick={() => setFoodDialogOpen(false)}>Abbrechen</Button>
+          <Button disabled={foodSaving} onClick={() => setFoodDialogOpen(false)}>Abbrechen</Button>
           <Button
             variant="contained"
             onClick={() => void handleSaveFoodAssignments()}
             disabled={foodLoading || foodSaving || foodAssignments.length === 0}
           >
             Speichern
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={Boolean(removalWarning)}
+        onClose={() => { if (!foodSaving) setRemovalWarning(''); }}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Bereits bestellte Artikel aus {foodEvent?.name} entfernen?</DialogTitle>
+        <DialogContent>
+          <Alert severity="warning" sx={{ mb: 2 }}>{removalWarning}</Alert>
+          <Typography sx={{ mb: 2 }}>
+            Dies ist eine Ausnahmeaktion: Die betroffenen Artikelpositionen werden aus allen noch
+            nicht abgeholten Bestellungen entfernt. Andere Positionen bleiben erhalten und der
+            Bestellbetrag wird neu berechnet. Bleibt keine Position übrig, wird die Bestellung storniert.
+            Bereits abgeholte oder stornierte Bestellungen bleiben unverändert.
+          </Typography>
+          <Alert severity="warning">
+            Zahlungen werden nicht automatisch erstattet oder angepasst. Prüfen Sie bereits bezahlte
+            Bestellungen und laufende Zahlungen und veranlassen Sie nötige Rückerstattungen manuell.
+          </Alert>
+        </DialogContent>
+        <DialogActions>
+          <Button disabled={foodSaving} onClick={() => setRemovalWarning('')}>Abbrechen</Button>
+          <Button
+            color="error"
+            variant="contained"
+            disabled={foodSaving || !isAdmin}
+            onClick={() => void handleSaveFoodAssignments(true)}
+          >
+            Entfernen und Bestellungen korrigieren
           </Button>
         </DialogActions>
       </Dialog>

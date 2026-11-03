@@ -1,5 +1,6 @@
 import { Response, NextFunction } from 'express';
 import { foodItemService } from '../services/foodItemService';
+import type { AuthRequest } from '../middleware/auth';
 
 export const foodItemController = {
   async getPublic(req: { query: { eventId?: string } }, res: Response, next: NextFunction) {
@@ -57,12 +58,15 @@ export const foodItemController = {
   },
 
   async setEventAssignments(
-    req: { params: { eventId: string }; body: { foodItemIds: string[] } },
+    req: AuthRequest & { params: { eventId: string }; body: { foodItemIds: string[]; confirmRemoval?: boolean } },
     res: Response,
     next: NextFunction
   ) {
     try {
-      const items = await foodItemService.setEventAssignments(req.params.eventId, req.body.foodItemIds);
+      const items = await foodItemService.setEventAssignments(req.params.eventId, req.body.foodItemIds, {
+        confirmRemoval: req.body.confirmRemoval,
+        actor: req.user,
+      });
       res.json(items);
     } catch (err) {
       next(err);

@@ -46,12 +46,12 @@ export const realtimeSyncService = {
     return trackRealtimePoll('event-orders', async () => {
       const data = await orderService.getByEvent(eventId, statusFilter, { kitchenOnly });
       const etag = buildEtag([
-        'orders-v2',
+        'orders-v3',
         eventId,
         statusFilter?.join(',') ?? '',
         kitchenOnly ? 'kitchen' : 'all',
         data.length,
-        data.map((o) => `${o.id}:${o.status}:${o.createdAt}`).join('|'),
+        JSON.stringify(data),
       ]);
       if (clientEtag && clientEtag === etag) return unchanged(etag);
       return { changed: true, etag, serverTime: new Date().toISOString(), data };
@@ -65,7 +65,7 @@ export const realtimeSyncService = {
     return trackRealtimePoll('event-stats', async () => {
       const data = await orderService.getStats(eventId);
       const etag = buildEtag([
-        'stats-v2',
+        'stats-v3',
         eventId,
         data.totalOrders,
         data.openOrders,
@@ -74,6 +74,7 @@ export const realtimeSyncService = {
         data.revenue,
         data.avgProcessingMinutes,
         data.popularDishes.map((d) => `${d.name}:${d.count}`).join('|'),
+        JSON.stringify(data.dishQuantities),
       ]);
       if (clientEtag && clientEtag === etag) return unchanged(etag);
       return { changed: true, etag, serverTime: new Date().toISOString(), data };

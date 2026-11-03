@@ -12,6 +12,7 @@ import { registerCorePayables } from './core/payable/registerPayables';
 import { migrateLegacySettingsSecrets } from './core/settings/migrateLegacySecrets';
 import { createUploadAccessMiddleware } from './middleware/uploadAccess';
 import { createTenantPathRewriteMiddleware } from './middleware/tenantPathRewrite';
+import { sharePreview } from './middleware/sharePreview';
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use(express.json({
   },
 }));
 
+app.use('/__share-head', sharePreview);
 app.use(createTenantPathRewriteMiddleware());
 
 for (const middleware of createTenantMiddlewareStack()) {

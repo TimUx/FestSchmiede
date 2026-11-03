@@ -9,6 +9,25 @@ server {
     server_name localhost *.localhost;
     root /usr/share/nginx/html;
     index index.html;
+    ssi on;
+    ssi_silent_errors on;
+
+    location ^~ /__share-head/ {
+        internal;
+        set $backend_upstream ${BACKEND_HOST};
+        proxy_pass http://$backend_upstream:${BACKEND_PORT}$uri$is_args$args;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-Host $http_host;
+        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+        proxy_connect_timeout 10s;
+        proxy_read_timeout 15s;
+        proxy_intercept_errors on;
+        error_page 400 403 404 500 502 503 504 = @share_preview_unavailable;
+    }
+
+    location @share_preview_unavailable {
+        return 204;
+    }
 
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-Content-Type-Options "nosniff" always;

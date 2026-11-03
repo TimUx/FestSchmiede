@@ -282,6 +282,19 @@ async function buildOrderItems(
 export const orderService = {
   mapOrder,
 
+  async notifyRemovedItems(order: OrderWithRelations) {
+    const mapped = await mapOrderWithCancellation(order);
+    emitOrderUpdate(order.eventId, mapped);
+    if (order.status === 'CANCELLED') {
+      hookSystem.emitAsync(CORE_HOOKS.ORDER_STATUS_CHANGED, mapped);
+      hookSystem.emitAsync(CORE_HOOKS.ORDER_CANCELLED, {
+        ...mapped,
+        initiatedByStaff: true,
+        cancelledAtLabel: formatDateTimeDE(order.cancelledAt ?? new Date()),
+      });
+    }
+  },
+
   async getByEvent(
     eventId: string,
     statusFilter?: StatusCode[],
@@ -735,51 +748,6 @@ export const orderService = {
   },
 
   async getStats(eventId: string) {
-    const { buildOrderEventStats } = await import('../repositories/orderStats');
-    const orders = await orderRepository.findByEvent(eventId);
-    const visible = orders.filter((o) => o.status !== 'CANCELLED');
-
-    const statusCounts: Partial<Record<StatusCode, number>> = {};
-    for (const order of visible) {
-      statusCounts[order.status] = (statusCounts[order.status] ?? 0) + 1;
-    }
-
-    const revenue = visible.reduce((sum, order) => sum + Number(order.totalPrice), 0);
-
-    const itemCounts = new Map<string, { name: string; count: number }>();
-    for (const order of visible) {
-      for (const item of order.items) {
-        const existing = itemCounts.get(item.foodItemId);
-        if (existing) {
-          existing.count += item.quantity;
-        } else {
-          itemCounts.set(item.foodItemId, {
-            name: item.foodItem.name,
-            count: item.quantity,
-          });
-        }
-      }
-    }
-    const popularDishes = [...itemCounts.values()]
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
-
-    const readyOrders = visible.filter((o) => o.readyAt);
-    const avgProcessingMinutes =
-      readyOrders.length > 0
-        ? Math.round(
-            readyOrders.reduce(
-              (sum, o) => sum + (o.readyAt!.getTime() - o.createdAt.getTime()) / 60_000,
-              0
-            ) / readyOrders.length
-          )
-        : 0;
-
-    return buildOrderEventStats({
-      statusCounts,
-      revenue,
-      popularDishes,
-      avgProcessingMinutes,
-    });
+    return orderRepository.getStats(eventId);
   },
 };
