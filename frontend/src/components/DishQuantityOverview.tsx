@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Accordion, AccordionSummary, AccordionDetails, Box, Card, CardContent, TextField, Tooltip, Typography,
+  Accordion, AccordionSummary, AccordionDetails, Box, Card, CardContent, IconButton, TextField, Tooltip, Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -20,25 +20,20 @@ export function DishQuantityOverview({ dishes }: { dishes: DashboardStats['dishQ
         <Typography variant="h6" component="span" sx={{ fontWeight: 800 }}>
           Speisen &amp; Getränke ({dishes.length})
         </Typography>
-        <Tooltip
-          title={<Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>{quantityHint}</Typography>}
-          arrow
-          placement="top"
-          describeChild
-        >
-          <Box
-            component="span"
-            role="img"
-            aria-label="Hinweis zu den Artikelmengen"
-            tabIndex={0}
-            onClick={(event) => event.stopPropagation()}
-            sx={{ display: 'inline-flex', color: 'text.secondary', ml: 1 }}
-          >
-            <InfoOutlinedIcon fontSize="small" />
-          </Box>
-        </Tooltip>
       </AccordionSummary>
       <AccordionDetails id="dish-quantities-content">
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+          <Tooltip
+            title={<Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>{quantityHint}</Typography>}
+            arrow
+            placement="top"
+            describeChild
+          >
+            <IconButton size="small" aria-label="Hinweis zu den Artikelmengen">
+              <InfoOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
         {(dishes.length > 10 || search !== '') && (
           <TextField
             label="Speisen & Getränke suchen"

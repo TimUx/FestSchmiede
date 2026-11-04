@@ -15,6 +15,7 @@ describe('DishQuantityOverview', () => {
     expect(html).toContain('>0<');
     expect(html).toContain('Gesamt bestellt');
     expect(html).toContain('Noch auszugeben');
+    expect(html).toContain('aria-label="Hinweis zu den Artikelmengen"');
     expect(html).not.toContain('suchen');
   });
 
