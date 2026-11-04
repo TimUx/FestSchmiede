@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import {
-  Accordion, AccordionSummary, AccordionDetails, Box, Card, CardContent, TextField, Typography,
+  Accordion, AccordionSummary, AccordionDetails, Box, Card, CardContent, TextField, Tooltip, Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import type { DashboardStats } from '@/types';
+
+const quantityHint = 'Mengen aus allen Bestellungen dieser Veranstaltung.\n\nNoch auszugeben umfasst auch fertige, noch nicht abgeholte Bestellungen. Stornierte Bestellungen werden nicht mitgezählt.';
 
 export function DishQuantityOverview({ dishes }: { dishes: DashboardStats['dishQuantities'] }) {
   const [search, setSearch] = useState('');
@@ -17,12 +20,25 @@ export function DishQuantityOverview({ dishes }: { dishes: DashboardStats['dishQ
         <Typography variant="h6" component="span" sx={{ fontWeight: 800 }}>
           Speisen &amp; Getränke ({dishes.length})
         </Typography>
+        <Tooltip
+          title={<Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>{quantityHint}</Typography>}
+          arrow
+          placement="top"
+          describeChild
+        >
+          <Box
+            component="span"
+            role="img"
+            aria-label="Hinweis zu den Artikelmengen"
+            tabIndex={0}
+            onClick={(event) => event.stopPropagation()}
+            sx={{ display: 'inline-flex', color: 'text.secondary', ml: 1 }}
+          >
+            <InfoOutlinedIcon fontSize="small" />
+          </Box>
+        </Tooltip>
       </AccordionSummary>
       <AccordionDetails id="dish-quantities-content">
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Mengen aus allen Bestellungen dieser Veranstaltung. Noch auszugeben umfasst auch fertige,
-          noch nicht abgeholte Bestellungen. Stornierte Bestellungen werden nicht mitgezählt.
-        </Typography>
         {(dishes.length > 10 || search !== '') && (
           <TextField
             label="Speisen & Getränke suchen"
@@ -38,9 +54,9 @@ export function DishQuantityOverview({ dishes }: { dishes: DashboardStats['dishQ
         ) : filteredDishes.length === 0 ? (
           <Typography color="text.secondary">Keine passenden Speisen oder Getränke gefunden.</Typography>
         ) : (
-          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: 2 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))', lg: 'repeat(3, minmax(0, 1fr))' }, gap: 2 }}>
             {filteredDishes.map((dish) => (
-              <Card key={dish.foodItemId} variant="outlined" component="article">
+              <Card key={dish.foodItemId} variant="outlined" component="article" sx={{ height: '100%' }}>
                 <CardContent>
                   <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 700, mb: 2, overflowWrap: 'anywhere' }}>
                     {dish.name}
