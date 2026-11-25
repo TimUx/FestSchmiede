@@ -307,7 +307,7 @@ export function BestellungPage() {
         </Paper>
       )}
 
-      <Grid container spacing={2} sx={{ mb: 12 }}>
+      <Grid container spacing={2} sx={{ mb: { xs: 32, sm: 14 } }}>
         {cashierReady && items.map((item) => (
           <Grid key={item.id} size={{ xs: 12, sm: 6, md: 4 }}>
             <FoodItemCard
@@ -319,19 +319,6 @@ export function BestellungPage() {
           </Grid>
         ))}
       </Grid>
-
-      {cashierReady && totalCount > 0 && (
-        <TextField
-          label="Name (optional)"
-          placeholder="z. B. für den Abholaufruf"
-          fullWidth
-          value={customerName}
-          onChange={(e) => setCustomerName(e.target.value)}
-          disabled={posPaymentOpen}
-          slotProps={{ htmlInput: { maxLength: 100, autoComplete: 'off' } }}
-          sx={{ mb: 2 }}
-        />
-      )}
 
       {!changeMethodMode && paymentSelection.showSelection && totalCount > 0 && (
         paymentMethodsLoading ? (
@@ -381,6 +368,17 @@ export function BestellungPage() {
               {formatPrice(totalPrice)}
             </Typography>
           </Box>
+          {/* In der fixierten Leiste, damit das Feld nie von ihr verdeckt wird. */}
+          <TextField
+            label="Name (optional)"
+            placeholder="z. B. für den Abholaufruf"
+            size="small"
+            value={customerName}
+            onChange={(e) => setCustomerName(e.target.value)}
+            disabled={!cashierReady || posPaymentOpen}
+            slotProps={{ htmlInput: { maxLength: 100, autoComplete: 'off' } }}
+            sx={{ flex: { sm: 1 }, maxWidth: { sm: 360 } }}
+          />
           <Button
             variant="contained"
             onClick={handleSubmit}
