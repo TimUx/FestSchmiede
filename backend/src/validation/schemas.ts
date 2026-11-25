@@ -160,6 +160,8 @@ export const createEventSchema = z.object({
   onlineOrdersActive: z.boolean().optional(),
   cashierActive: z.boolean().optional(),
   ordersClosed: z.boolean().optional(),
+  preorderDeadline: z.string().datetime({ offset: true, message: 'Ungültiger Stichtag' }).nullable().optional(),
+  onlineOrdersOnEventDay: z.boolean().optional(),
   isActive: z.boolean().optional(),
   activateOnCreate: z.boolean().optional(),
 });
@@ -236,6 +238,7 @@ export const createOnlineOrderSchema = z.object({
 
 export const createCashierOrderSchema = z.object({
   eventId: z.string().uuid('Veranstaltung erforderlich'),
+  customerName: z.string().trim().max(100, 'Name darf maximal 100 Zeichen lang sein').optional(),
   items: z.array(orderItemSchema).min(1, 'Mindestens ein Gericht erforderlich'),
   paymentMethodId: z.string().optional(),
 });

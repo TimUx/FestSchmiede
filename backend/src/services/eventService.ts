@@ -13,6 +13,8 @@ function mapPublicEvent(event: {
   date: Date;
   startTime: string;
   endTime: string;
+  preorderDeadline?: Date | null;
+  onlineOrdersOnEventDay?: boolean;
 }) {
   return {
     id: event.id,
@@ -22,7 +24,28 @@ function mapPublicEvent(event: {
     eventDateLabel: formatEventDate(event.date),
     startTime: event.startTime,
     endTime: event.endTime,
+    preorderDeadline: event.preorderDeadline ?? null,
+    onlineOrdersOnEventDay: event.onlineOrdersOnEventDay ?? false,
   };
+}
+
+/**
+ * Online-Vorbestellung offen? Ohne Stichtag immer; mit Stichtag bis zu diesem Zeitpunkt.
+ * Danach nur am Veranstaltungstag selbst, sofern `onlineOrdersOnEventDay` aktiv ist.
+ */
+export function isOnlinePreorderOpen(
+  event: { date: Date; preorderDeadline?: Date | null; onlineOrdersOnEventDay?: boolean },
+  now: Date = new Date()
+): boolean {
+  if (!event.preorderDeadline) return true;
+  if (now.getTime() < event.preorderDeadline.getTime()) return true;
+  return Boolean(event.onlineOrdersOnEventDay) && normalizeDate(event.date).getTime() === getTodayDate().getTime();
+}
+
+function parseDeadline(value: string | null | undefined): Date | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === null || value === '') return null;
+  return new Date(value);
 }
 
 function pickDefaultStaffEvent(
@@ -45,7 +68,11 @@ export const eventService = {
 
   async getPublicOnlineEvents() {
     const events = await eventRepository.findOnlineOrderableEvents();
-    return events.map(mapPublicEvent);
+    // Veranstaltungen mit abgelaufenem Stichtag bleiben sichtbar, werden aber als nicht bestellbar markiert.
+    return events.map((event) => ({
+      ...mapPublicEvent(event),
+      onlineOrderable: isOnlinePreorderOpen(event),
+    }));
   },
 
   async getCashierEvents() {
@@ -120,6 +147,14 @@ export const eventService = {
     if (channel === 'online' && !event.onlineOrdersActive) {
       throw new AppError(403, 'Online-Bestellung ist für diese Veranstaltung nicht verfügbar');
     }
+    if (channel === 'online' && !isOnlinePreorderOpen(event)) {
+      throw new AppError(
+        403,
+        event.onlineOrdersOnEventDay
+          ? 'Der Stichtag für Vorbestellungen ist abgelaufen. Am Veranstaltungstag ist die Online-Bestellung wieder möglich.'
+          : 'Der Stichtag für Vorbestellungen ist abgelaufen'
+      );
+    }
     if (channel === 'cashier' && !event.cashierActive) {
       throw new AppError(403, 'Bestellung vor Ort ist für diese Veranstaltung nicht verfügbar');
     }
@@ -135,6 +170,8 @@ export const eventService = {
     onlineOrdersActive?: boolean;
     cashierActive?: boolean;
     ordersClosed?: boolean;
+    preorderDeadline?: string | null;
+    onlineOrdersOnEventDay?: boolean;
     isActive?: boolean;
     activateOnCreate?: boolean;
   }) {
@@ -148,6 +185,8 @@ export const eventService = {
       onlineOrdersActive: eventData.onlineOrdersActive ?? true,
       cashierActive: eventData.cashierActive ?? true,
       ordersClosed: eventData.ordersClosed ?? false,
+      preorderDeadline: parseDeadline(eventData.preorderDeadline) ?? null,
+      onlineOrdersOnEventDay: eventData.onlineOrdersOnEventDay ?? false,
       isActive: eventData.isActive ?? activateOnCreate ?? false,
     });
     hookSystem.emitAsync(CORE_HOOKS.EVENT_CREATED, event);
@@ -163,6 +202,8 @@ export const eventService = {
     onlineOrdersActive: boolean;
     cashierActive: boolean;
     ordersClosed: boolean;
+    preorderDeadline: string | null;
+    onlineOrdersOnEventDay: boolean;
     isActive: boolean;
     activateOnCreate?: boolean;
   }>) {
@@ -171,6 +212,7 @@ export const eventService = {
     void _activateOnCreate;
     const updateData: Record<string, unknown> = { ...raw };
     if (raw.date) updateData.date = new Date(raw.date);
+    if (raw.preorderDeadline !== undefined) updateData.preorderDeadline = parseDeadline(raw.preorderDeadline);
     const event = await eventRepository.update(id, updateData);
     emitEventUpdate(event);
     hookSystem.emitAsync(CORE_HOOKS.EVENT_UPDATED, event);

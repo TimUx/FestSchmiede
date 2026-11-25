@@ -258,6 +258,10 @@ model Event {
   onlineOrdersActive  Boolean    @default(true)
   cashierActive       Boolean    @default(true)
   ordersClosed        Boolean    @default(false)
+  /// Optionaler Stichtag: bis zu diesem Zeitpunkt sind Online-Vorbestellungen möglich.
+  preorderDeadline    DateTime?  @map("preorder_deadline")
+  /// Nach Ablauf des Stichtags am Veranstaltungstag selbst wieder Online-Bestellungen zulassen.
+  onlineOrdersOnEventDay Boolean @default(false) @map("online_orders_on_event_day")
   isActive            Boolean    @default(false)
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt

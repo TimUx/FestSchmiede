@@ -44,6 +44,10 @@ export interface Event {
   onlineOrdersActive: boolean;
   cashierActive: boolean;
   ordersClosed: boolean;
+  /** Optionaler Stichtag (ISO) für Online-Vorbestellungen */
+  preorderDeadline?: string | null;
+  /** Nach dem Stichtag am Veranstaltungstag wieder Online-Bestellungen zulassen */
+  onlineOrdersOnEventDay?: boolean;
   isActive: boolean;
 }
 
@@ -57,6 +61,10 @@ export interface PublicEvent {
   eventDateLabel: string;
   startTime: string;
   endTime: string;
+  preorderDeadline?: string | null;
+  onlineOrdersOnEventDay?: boolean;
+  /** false = sichtbar, aber derzeit nicht online bestellbar (Stichtag abgelaufen) */
+  onlineOrderable?: boolean;
 }
 
 export interface FoodItem {

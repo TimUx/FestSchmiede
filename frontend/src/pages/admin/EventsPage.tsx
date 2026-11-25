@@ -44,7 +44,23 @@ interface EventForm {
   onlineOrdersActive: boolean;
   cashierActive: boolean;
   ordersClosed: boolean;
+  /** Lokaler Wert für <input type="datetime-local">, leer = kein Stichtag */
+  preorderDeadline: string;
+  onlineOrdersOnEventDay: boolean;
   isActive: boolean;
+}
+
+/** ISO-Zeitpunkt → "YYYY-MM-DDTHH:mm" in lokaler Zeit (für datetime-local). */
+function toLocalDateTimeInput(iso?: string | null): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function formatDeadline(iso: string): string {
+  return new Date(iso).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' });
 }
 
 const emptyForm: EventForm = {
@@ -56,6 +72,8 @@ const emptyForm: EventForm = {
   onlineOrdersActive: true,
   cashierActive: true,
   ordersClosed: false,
+  preorderDeadline: '',
+  onlineOrdersOnEventDay: false,
   isActive: true,
 };
 
@@ -102,6 +120,8 @@ export function EventsPage() {
       onlineOrdersActive: event.onlineOrdersActive,
       cashierActive: event.cashierActive,
       ordersClosed: event.ordersClosed,
+      preorderDeadline: toLocalDateTimeInput(event.preorderDeadline),
+      onlineOrdersOnEventDay: event.onlineOrdersOnEventDay ?? false,
       isActive: event.isActive,
     });
     setDialogOpen(true);
@@ -156,7 +176,10 @@ export function EventsPage() {
 
   const handleSave = async () => {
     if (!token) return;
-    const payload = { ...form };
+    const payload = {
+      ...form,
+      preorderDeadline: form.preorderDeadline ? new Date(form.preorderDeadline).toISOString() : null,
+    };
     try {
       if (editing) {
         await api.updateEvent(token, editing.id, payload);
@@ -246,6 +269,13 @@ export function EventsPage() {
                   }}>
                   <Chip label={event.onlineOrdersActive ? 'Online aktiv' : 'Online inaktiv'} size="small" color={event.onlineOrdersActive ? 'success' : 'default'} />
                   <Chip label={event.cashierActive ? 'Bestellung vor Ort aktiv' : 'Bestellung vor Ort inaktiv'} size="small" color={event.cashierActive ? 'success' : 'default'} />
+                  {event.preorderDeadline && (
+                    <Chip
+                      label={`Vorbestellung bis ${formatDeadline(event.preorderDeadline)}`}
+                      size="small"
+                      color={new Date(event.preorderDeadline).getTime() <= Date.now() ? 'warning' : 'info'}
+                    />
+                  )}
                   {event.ordersClosed && <Chip label="Bestellungen geschlossen" size="small" color="error" />}
                 </Stack>
               </CardContent>
@@ -271,6 +301,28 @@ export function EventsPage() {
             <TextField label="Beginn" type="time" fullWidth required value={form.startTime} onChange={(e) => setForm({ ...form, startTime: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} />
             <TextField label="Ende" type="time" fullWidth required value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} />
             <FormControlLabel control={<Switch checked={form.onlineOrdersActive} onChange={(e) => setForm({ ...form, onlineOrdersActive: e.target.checked })} />} label="Onlinebestellungen aktiv" />
+            <TextField
+              label="Vorbestellung möglich bis (optional)"
+              type="datetime-local"
+              fullWidth
+              value={form.preorderDeadline}
+              onChange={(e) => setForm({ ...form, preorderDeadline: e.target.value })}
+              disabled={!form.onlineOrdersActive}
+              helperText="Stichtag für Online-Vorbestellungen. Leer lassen, um bis zur Veranstaltung Bestellungen anzunehmen."
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
+            {form.preorderDeadline && (
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={form.onlineOrdersOnEventDay}
+                    onChange={(e) => setForm({ ...form, onlineOrdersOnEventDay: e.target.checked })}
+                    disabled={!form.onlineOrdersActive}
+                  />
+                }
+                label="Am Veranstaltungstag wieder online bestellen (vor Ort)"
+              />
+            )}
             <FormControlLabel control={<Switch checked={form.cashierActive} onChange={(e) => setForm({ ...form, cashierActive: e.target.checked })} />} label="Bestellung vor Ort aktiv" />
             <FormControlLabel control={<Switch checked={form.ordersClosed} onChange={(e) => setForm({ ...form, ordersClosed: e.target.checked })} />} label="Bestellungen geschlossen" />
             <FormControlLabel control={<Switch checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} />} label="Veranstaltung aktiv" />
