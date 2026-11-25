@@ -51,3 +51,27 @@ describe('payment module QA', () => {
     expect(parsed.methodTypes?.['stripe:card']?.sortOrder).toBe(2);
   });
 });
+
+describe('payment module QA: Stripe checkout guard', () => {
+  it('never offers delayed payment methods, because kitchen release depends on immediate payment', async () => {
+    const { buildCheckoutSessionParams } = await import('../providers/StripeProvider');
+    const params = buildCheckoutSessionParams({
+      internalSessionId: 'qa',
+      expiresAt: new Date(),
+      resource: {
+        type: 'order',
+        id: 'qa-order',
+        amountCents: 100,
+        currency: 'EUR',
+        description: 'QA',
+        returnUrl: 'https://example.org/ok',
+        cancelUrl: 'https://example.org/cancel',
+      },
+    });
+    const delayed = ['sepa_debit', 'sofort', 'customer_balance', 'us_bank_account', 'bacs_debit', 'klarna'];
+    expect(params.allowed_payment_method_types?.length).toBeGreaterThan(0);
+    for (const method of params.allowed_payment_method_types ?? []) {
+      expect(delayed).not.toContain(method);
+    }
+  });
+});

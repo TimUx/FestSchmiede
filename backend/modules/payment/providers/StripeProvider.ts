@@ -18,6 +18,61 @@ import { logger } from '../../../src/utils/logger';
 
 const CHECKOUT_EXPIRY_HOURS = 24;
 
+/**
+ * API-Version, gegen die dieser Provider geschrieben und getestet ist.
+ * Muss zur von `stripe` gepinnten Version passen (Typ `Stripe.LatestApiVersion`).
+ */
+export const STRIPE_API_VERSION = '2026-11-18.endive' satisfies Stripe.LatestApiVersion;
+
+/**
+ * Zahlungsarten, die im Stripe-Checkout angeboten werden dürfen.
+ *
+ * Seit stripe-node 23 / API `2026-09-30.endive` gibt es `payment_method_types`
+ * nicht mehr. `allowed_payment_method_types` wirkt als Filter auf die im
+ * Dashboard/automatisch ermittelten Zahlungsarten. Ohne diesen Filter würde
+ * Stripe alle im Dashboard aktiven Methoden anbieten – inklusive verzögerter
+ * Methoden (SEPA-Lastschrift, Sofortüberweisung o. Ä.), deren Erfolg erst
+ * Tage später feststeht. Da die Küchenfreigabe an der erfolgreichen Zahlung
+ * hängt, erlauben wir bewusst nur Karte (Apple Pay / Google Pay laufen als
+ * Karten-Wallets ebenfalls darüber).
+ */
+export const STRIPE_ALLOWED_PAYMENT_METHOD_TYPES = ['card'] as const satisfies readonly Stripe.Checkout.SessionCreateParams.AllowedPaymentMethodType[];
+
+export interface StripeCheckoutInput {
+  internalSessionId: string;
+  expiresAt: Date;
+  resource: PayableResource;
+}
+
+export function buildCheckoutSessionParams({
+  internalSessionId,
+  expiresAt,
+  resource: params,
+}: StripeCheckoutInput): Stripe.Checkout.SessionCreateParams {
+  return {
+    mode: 'payment',
+    allowed_payment_method_types: [...STRIPE_ALLOWED_PAYMENT_METHOD_TYPES],
+    expires_at: Math.floor(expiresAt.getTime() / 1000),
+    line_items: [{
+      price_data: {
+        currency: params.currency.toLowerCase(),
+        unit_amount: params.amountCents,
+        product_data: { name: params.description },
+      },
+      quantity: 1,
+    }],
+    customer_email: params.customerEmail,
+    success_url: params.returnUrl,
+    cancel_url: params.cancelUrl,
+    metadata: {
+      payableResourceType: params.type,
+      payableResourceId: params.id,
+      internalSessionId,
+      ...params.metadata,
+    },
+  };
+}
+
 export class StripeProvider implements PaymentProvider {
   readonly id = 'stripe';
   readonly name = 'Stripe';
@@ -48,7 +103,7 @@ export class StripeProvider implements PaymentProvider {
     const s = this.getStripeConfig(config)!;
     const secretKey = decryptSecret(s.secretKey!);
     return new Stripe(secretKey, {
-      apiVersion: '2026-08-26.dahlia',
+      apiVersion: STRIPE_API_VERSION,
     });
   }
 
@@ -73,28 +128,9 @@ export class StripeProvider implements PaymentProvider {
 
     await paymentRepository.updatePayment(sessionId, { paymentStatus: 'PAYMENT_PENDING' });
 
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      payment_method_types: ['card'],
-      expires_at: Math.floor(expiresAt.getTime() / 1000),
-      line_items: [{
-        price_data: {
-          currency: params.currency.toLowerCase(),
-          unit_amount: params.amountCents,
-          product_data: { name: params.description },
-        },
-        quantity: 1,
-      }],
-      customer_email: params.customerEmail,
-      success_url: params.returnUrl,
-      cancel_url: params.cancelUrl,
-      metadata: {
-        payableResourceType: params.type,
-        payableResourceId: params.id,
-        internalSessionId: sessionId,
-        ...params.metadata,
-      },
-    });
+    const session = await stripe.checkout.sessions.create(
+      buildCheckoutSessionParams({ internalSessionId: sessionId, expiresAt, resource: params })
+    );
 
     await paymentRepository.updatePayment(sessionId, {
       externalSessionId: session.id,
