@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { StripeProvider } from './providers/StripeProvider';
+import Stripe from 'stripe';
+import {
+  StripeProvider,
+  STRIPE_API_VERSION,
+  STRIPE_ALLOWED_PAYMENT_METHOD_TYPES,
+  buildCheckoutSessionParams,
+} from './providers/StripeProvider';
 import { PaypalProvider } from './providers/placeholders';
 import { defaultPaymentConfig } from './config';
 import { toPaymentMethodInfo } from './providerMetadata';
@@ -140,5 +146,52 @@ describe('isMissingPaymentsSchema', () => {
     };
 
     expect(isMissingPaymentsSchema(err)).toBe(false);
+  });
+});
+
+describe('Stripe Checkout parameters (stripe-node 23)', () => {
+  const resource = {
+    type: 'order',
+    id: 'order_42',
+    amountCents: 1990,
+    currency: 'EUR',
+    description: 'Bestellung #42',
+    customerEmail: 'gast@example.org',
+    returnUrl: 'https://fest.example.org/ok',
+    cancelUrl: 'https://fest.example.org/abbruch',
+    metadata: { tenant: 't1' },
+  };
+  const expiresAt = new Date('2026-12-01T12:00:00Z');
+
+  it('pins the API version shipped with the installed stripe SDK', () => {
+    const client = new Stripe('sk_test_x', { apiVersion: STRIPE_API_VERSION });
+    expect(client.getApiField('version')).toBe(STRIPE_API_VERSION);
+    expect(STRIPE_API_VERSION).toMatch(/^\d{4}-\d{2}-\d{2}\.[a-z]+$/);
+  });
+
+  it('only allows card payments (no delayed methods like SEPA)', () => {
+    expect([...STRIPE_ALLOWED_PAYMENT_METHOD_TYPES]).toEqual(['card']);
+    const params = buildCheckoutSessionParams({ internalSessionId: 'pay_1', expiresAt, resource });
+    expect(params.allowed_payment_method_types).toEqual(['card']);
+    expect(params).not.toHaveProperty('payment_method_types');
+    expect(params).not.toHaveProperty('payment_method_configuration');
+  });
+
+  it('maps the payable resource onto the checkout session', () => {
+    const params = buildCheckoutSessionParams({ internalSessionId: 'pay_1', expiresAt, resource });
+    expect(params.mode).toBe('payment');
+    expect(params.expires_at).toBe(Math.floor(expiresAt.getTime() / 1000));
+    expect(params.line_items).toEqual([{
+      price_data: { currency: 'eur', unit_amount: 1990, product_data: { name: 'Bestellung #42' } },
+      quantity: 1,
+    }]);
+    expect(params.metadata).toEqual({
+      payableResourceType: 'order',
+      payableResourceId: 'order_42',
+      internalSessionId: 'pay_1',
+      tenant: 't1',
+    });
+    expect(params.success_url).toBe(resource.returnUrl);
+    expect(params.cancel_url).toBe(resource.cancelUrl);
   });
 });
