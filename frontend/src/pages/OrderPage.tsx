@@ -117,16 +117,24 @@ export function OrderPage() {
         if (!active) return;
         setAvailableEvents(events);
         setFieldConfig(settings.fields);
+        const orderable = events.filter((event) => event.onlineOrderable !== false);
         const selected = requestedEventId
-          ? events.find((event) => event.id === requestedEventId)
-          : events.length === 1 ? events[0] : undefined;
+          ? orderable.find((event) => event.id === requestedEventId)
+          : events.length === 1 ? orderable[0] : undefined;
         if (selected) {
           setSelectedEventId(selected.id);
           return loadMenu(selected.id);
         }
         setSelectedEventId(null);
         setItems([]);
-        if (requestedEventId) setError('Diese Veranstaltung ist nicht für Onlinebestellungen verfügbar.');
+        if (requestedEventId) {
+          const blocked = events.find((event) => event.id === requestedEventId && event.onlineOrderable === false);
+          setError(
+            blocked
+              ? `Die Vorbestellung für ${blocked.name} ist beendet.${blocked.onlineOrdersOnEventDay ? ' Am Veranstaltungstag ist die Online-Bestellung wieder möglich.' : ''}`
+              : 'Diese Veranstaltung ist nicht für Onlinebestellungen verfügbar.'
+          );
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -343,6 +351,7 @@ export function OrderPage() {
               <Button
                 variant="outlined"
                 onClick={() => handleSelectEvent(event.id)}
+                disabled={event.onlineOrderable === false}
                 sx={eventSelectButtonSx}
               >
                 <Box
@@ -394,6 +403,29 @@ export function OrderPage() {
                     }}>
                     {event.startTime} – {event.endTime}
                   </Typography>
+                  {event.onlineOrderable === false ? (
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "text.secondary",
+                        fontWeight: 600,
+                        lineHeight: 1.2,
+                        mt: 0.25
+                      }}>
+                      Vorbestellung beendet
+                      {event.onlineOrdersOnEventDay ? ' – am Veranstaltungstag wieder möglich' : ''}
+                    </Typography>
+                  ) : event.preorderDeadline && new Date(event.preorderDeadline).getTime() > Date.now() && (
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "warning.main",
+                        lineHeight: 1.2,
+                        mt: 0.25
+                      }}>
+                      Vorbestellung bis {new Date(event.preorderDeadline).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' })} Uhr
+                    </Typography>
+                  )}
                 </Box>
               </Button>
             </Grid>

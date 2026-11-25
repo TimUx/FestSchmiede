@@ -286,11 +286,12 @@ export const api = {
     token: string,
     eventId: string,
     items: { foodItemId: string; quantity: number }[],
-    paymentMethodId?: string
+    paymentMethodId?: string,
+    customerName?: string
   ) =>
     request<Order>('/staff/orders/cashier', {
       method: 'POST',
-      body: JSON.stringify({ eventId, items, paymentMethodId }),
+      body: JSON.stringify({ eventId, items, paymentMethodId, ...(customerName ? { customerName } : {}) }),
     }, token),
   abortCashierPayment: (token: string, orderId: string, sessionId: string) =>
     request<Order>(`/staff/orders/${orderId}/abort-payment`, { method: 'POST', body: JSON.stringify({ sessionId }) }, token),

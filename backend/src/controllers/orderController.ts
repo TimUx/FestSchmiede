@@ -40,12 +40,24 @@ export const orderController = {
   },
 
   async createCashier(
-    req: { body: { eventId: string; items: { foodItemId: string; quantity: number }[]; paymentMethodId?: string } },
+    req: {
+      body: {
+        eventId: string;
+        items: { foodItemId: string; quantity: number }[];
+        paymentMethodId?: string;
+        customerName?: string;
+      };
+    },
     res: Response,
     next: NextFunction
   ) {
     try {
-      const order = await orderService.createCashierOrder(req.body.eventId, req.body.items, req.body.paymentMethodId);
+      const order = await orderService.createCashierOrder(
+        req.body.eventId,
+        req.body.items,
+        req.body.paymentMethodId,
+        req.body.customerName
+      );
       res.status(201).json(order);
     } catch (err) {
       next(err);

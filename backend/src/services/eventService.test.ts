@@ -38,6 +38,7 @@ vi.mock('../platform/bootstrap', () => ({
 
 import { eventService } from './eventService';
 import { emitEventUpdate } from '../socket';
+import { getTodayDate } from '../utils/helpers';
 
 describe('eventService.delete', () => {
   beforeEach(() => {
@@ -155,5 +156,80 @@ describe('public event queries', () => {
     await expect(eventService.getPublicActive()).resolves.toEqual(publicEvent);
     expect(mockFindPublicActiveEvents).toHaveBeenCalledOnce();
     expect(mockFindById).toHaveBeenCalledWith(publicEvent.id);
+  });
+});
+
+describe('eventService.getOrderableById – Vorbestellungs-Stichtag', () => {
+  const baseEvent = {
+    id: 'event-1',
+    isActive: true,
+    ordersClosed: false,
+    onlineOrdersActive: true,
+    cashierActive: true,
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('erlaubt Online-Bestellungen ohne Stichtag', async () => {
+    mockFindById.mockResolvedValue({ ...baseEvent, preorderDeadline: null });
+    await expect(eventService.getOrderableById('event-1', 'online')).resolves.toMatchObject({ id: 'event-1' });
+  });
+
+  it('erlaubt Online-Bestellungen vor dem Stichtag', async () => {
+    mockFindById.mockResolvedValue({ ...baseEvent, preorderDeadline: new Date(Date.now() + 60_000) });
+    await expect(eventService.getOrderableById('event-1', 'online')).resolves.toMatchObject({ id: 'event-1' });
+  });
+
+  it('verweigert Online-Bestellungen nach dem Stichtag', async () => {
+    mockFindById.mockResolvedValue({ ...baseEvent, preorderDeadline: new Date(Date.now() - 60_000) });
+    await expect(eventService.getOrderableById('event-1', 'online')).rejects.toMatchObject({ statusCode: 403 });
+  });
+
+  it('öffnet Online-Bestellungen am Veranstaltungstag wieder, wenn aktiviert', async () => {
+    mockFindById.mockResolvedValue({
+      ...baseEvent,
+      date: getTodayDate(),
+      preorderDeadline: new Date(Date.now() - 60_000),
+      onlineOrdersOnEventDay: true,
+    });
+    await expect(eventService.getOrderableById('event-1', 'online')).resolves.toMatchObject({ id: 'event-1' });
+  });
+
+  it('öffnet Online-Bestellungen am Veranstaltungstag nicht ohne Option', async () => {
+    mockFindById.mockResolvedValue({
+      ...baseEvent,
+      date: getTodayDate(),
+      preorderDeadline: new Date(Date.now() - 60_000),
+      onlineOrdersOnEventDay: false,
+    });
+    await expect(eventService.getOrderableById('event-1', 'online')).rejects.toMatchObject({ statusCode: 403 });
+  });
+
+  it('bleibt vor dem Veranstaltungstag trotz Option geschlossen', async () => {
+    const tomorrow = new Date(getTodayDate().getTime() + 24 * 60 * 60 * 1000);
+    mockFindById.mockResolvedValue({
+      ...baseEvent,
+      date: tomorrow,
+      preorderDeadline: new Date(Date.now() - 60_000),
+      onlineOrdersOnEventDay: true,
+    });
+    await expect(eventService.getOrderableById('event-1', 'online')).rejects.toMatchObject({ statusCode: 403 });
+  });
+
+  it('listet Veranstaltungen mit abgelaufenem Stichtag weiter, aber als nicht bestellbar', async () => {
+    const tomorrow = new Date(getTodayDate().getTime() + 24 * 60 * 60 * 1000);
+    mockFindOnlineOrderableEvents.mockResolvedValue([
+      { id: 'open', name: 'A', description: null, date: tomorrow, startTime: '11:00', endTime: '20:00', preorderDeadline: null },
+      { id: 'closed', name: 'B', description: null, date: tomorrow, startTime: '11:00', endTime: '20:00', preorderDeadline: new Date(Date.now() - 60_000) },
+    ]);
+    const events = await eventService.getPublicOnlineEvents();
+    expect(events.map((e) => [e.id, e.onlineOrderable])).toEqual([['open', true], ['closed', false]]);
+  });
+
+  it('lässt Kassenbestellungen nach dem Stichtag weiterhin zu', async () => {
+    mockFindById.mockResolvedValue({ ...baseEvent, preorderDeadline: new Date(Date.now() - 60_000) });
+    await expect(eventService.getOrderableById('event-1', 'cashier')).resolves.toMatchObject({ id: 'event-1' });
   });
 });

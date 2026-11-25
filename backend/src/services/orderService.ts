@@ -497,14 +497,20 @@ export const orderService = {
   async createCashierOrder(
     eventId: string,
     items: { foodItemId: string; quantity: number }[],
-    paymentMethodId?: string
+    paymentMethodId?: string,
+    customerName?: string
   ) {
     const event = await eventService.getOrderableById(eventId, 'cashier');
+
+    // Optionaler Name an der Kasse – wird als Nachname gespeichert, damit Anzeige und
+    // Suche nach Nachname wie bei Online-Bestellungen funktionieren.
+    const trimmedName = customerName?.trim();
+    const customerData = trimmedName ? { firstName: '', lastName: trimmedName } : undefined;
 
     const paymentAvailable = await resolvePaymentAvailable();
     const payOnline = Boolean(paymentAvailable && paymentMethodId);
 
-    const mapped = await this._createOrder(event, 'CASHIER', items, undefined, {
+    const mapped = await this._createOrder(event, 'CASHIER', items, customerData, {
       // Vor-Ort Bestellungen sind sofort für die Küche freigegeben – unabhängig vom Zahlstatus.
       skipKitchenNotify: false,
     });

@@ -8,6 +8,7 @@ import {
   Alert,
   CircularProgress,
   Stack,
+  TextField,
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import { StaffLayout } from '@/components/StaffLayout';
@@ -32,6 +33,7 @@ export function BestellungPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [lastOrderNumber, setLastOrderNumber] = useState<string | null>(null);
+  const [customerName, setCustomerName] = useState('');
 
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodsResponse | null>(null);
   const [paymentMethodsLoading, setPaymentMethodsLoading] = useState(false);
@@ -102,6 +104,7 @@ export function BestellungPage() {
     const reset: Record<string, number> = {};
     items.forEach((i) => { reset[i.id] = 0; });
     setQuantities(reset);
+    setCustomerName('');
     setPendingOrder(null);
     setPosPaymentOpen(false);
     setChangeMethodMode(false);
@@ -122,7 +125,8 @@ export function BestellungPage() {
         token,
         selectedEventId,
         selectedItems,
-        isOnlineChoice(effectiveChoice) ? effectiveChoice : undefined
+        isOnlineChoice(effectiveChoice) ? effectiveChoice : undefined,
+        customerName.trim() || undefined
       );
 
       if (order.payment?.required) {
@@ -315,6 +319,19 @@ export function BestellungPage() {
           </Grid>
         ))}
       </Grid>
+
+      {cashierReady && totalCount > 0 && (
+        <TextField
+          label="Name (optional)"
+          placeholder="z. B. für den Abholaufruf"
+          fullWidth
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
+          disabled={posPaymentOpen}
+          slotProps={{ htmlInput: { maxLength: 100, autoComplete: 'off' } }}
+          sx={{ mb: 2 }}
+        />
+      )}
 
       {!changeMethodMode && paymentSelection.showSelection && totalCount > 0 && (
         paymentMethodsLoading ? (
