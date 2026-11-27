@@ -295,10 +295,10 @@ export const api = {
     }, token),
   abortCashierPayment: (token: string, orderId: string, sessionId: string) =>
     request<Order>(`/staff/orders/${orderId}/abort-payment`, { method: 'POST', body: JSON.stringify({ sessionId }) }, token),
-  lookupOrderByNumber: (token: string, eventId: string, orderNumber: number, lastName?: string) =>
+  lookupOrderByNumber: (token: string, eventId: string, orderNumber: number) =>
     request<Order>(
       '/staff/orders/lookup',
-      { method: 'POST', body: JSON.stringify({ eventId, orderNumber, ...(lastName ? { lastName } : {}) }) },
+      { method: 'POST', body: JSON.stringify({ eventId, orderNumber }) },
       token
     ),
   updateOrderStatus: (token: string, id: string, status: OrderStatus) =>
