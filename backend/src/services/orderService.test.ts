@@ -373,3 +373,31 @@ describe('orderService.lookupByNumberAndName', () => {
     );
   });
 });
+
+describe('orderService.lookupByNumber (Staff-Abholung)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockGetActive.mockResolvedValue({ id: 'event-1', date: eventDate });
+    mockFindByResource.mockResolvedValue(null);
+  });
+
+  it('findet Online-Bestellungen ohne Nachnamen und liefert den Kundennamen zur Kontrolle', async () => {
+    mockFindByOrderNumber.mockResolvedValue(
+      buildOrder({
+        source: 'ONLINE',
+        customer: { firstName: 'Max', lastName: 'Mustermann', email: null, phone: null },
+      })
+    );
+
+    const result = await orderService.lookupByNumber('event-1', 42);
+
+    expect(result.orderNumber).toBe(42);
+    expect(result.customer?.lastName).toBe('Mustermann');
+  });
+
+  it('meldet unbekannte Abholnummern mit Nummer', async () => {
+    mockFindByOrderNumber.mockResolvedValue(null);
+
+    await expect(orderService.lookupByNumber('event-1', 7)).rejects.toMatchObject({ statusCode: 404 });
+  });
+});
