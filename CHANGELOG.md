@@ -15,6 +15,13 @@ Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1
 - **Öffentlicher Bestellstatus:** Gelöschte Bestellungen werden über WebSocket und Polling als nicht mehr vorhanden angezeigt. Die Realtime-API liefert bei einer nicht mehr vorhandenen Bestellung nun explizit `data: null` statt eines fehlenden `data`-Felds. Externe Clients müssen diesen Fall berücksichtigen.
 - **Zahlungsnachweise:** Bleiben beim endgültigen Löschen erhalten, ebenso gemeinsam genutzte Kunden-/Katalogdaten und Bestellnummernzähler. Das Löschen erstattet keine Zahlungen und beendet keine laufenden Onlinezahlungen; Zahlungsstatistiken bleiben davon unberührt.
 
+## 2.7.1 - 2026-11-27
+
+### Geändert
+
+- **Abholung (Service-Bereich):** Online-Bestellungen werden allein über die Abholnummer gefunden, ein Nachname muss nicht mehr eingegeben werden. Der Kundenname wird in der Bestellkarte zur Kontrolle angezeigt. Die öffentliche Statussuche für Gäste verlangt weiterhin den Nachnamen.
+- **Mehrere Abholnummern:** An der Abholung lassen sich mehrere Abholnummern nacheinander oder kommagetrennt erfassen, z. B. wenn eine Person mehrere Bestellungen abholt oder für andere mitbezahlt hat. Gesamtsumme und Sammelbestätigung aller abholbereiten Bestellungen; einzelne Bestellungen können separat bestätigt oder aus der Liste entfernt werden.
+
 ## 2.6.5 - 2026-11-01
 
 ### Behoben

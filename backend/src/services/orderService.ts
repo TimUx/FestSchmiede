@@ -388,8 +388,16 @@ export const orderService = {
     return mapOrderWithCancellation(order as OrderWithRelations);
   },
 
-  async lookupByNumber(eventId: string, orderNumber: number, lastName?: string) {
-    return this.lookupByNumberAndName(eventId, orderNumber, lastName);
+  /**
+   * Staff-Lookup für die Abholung: Die Abholnummer genügt, ein Nachname ist
+   * nicht erforderlich. Das Personal kontrolliert den angezeigten Kundennamen.
+   */
+  async lookupByNumber(eventId: string, orderNumber: number) {
+    const event = await eventService.getStaffPickupEvent(eventId);
+    const orderDate = getEventOrderDate(event.date);
+    const order = await orderRepository.findByOrderNumber(event.id, orderDate, orderNumber);
+    if (!order) throw new AppError(404, `Bestellung ${formatOrderNumber(orderNumber)} nicht gefunden`);
+    return mapOrderWithCancellation(order as OrderWithRelations);
   },
 
   async createOnlineOrder(data: {

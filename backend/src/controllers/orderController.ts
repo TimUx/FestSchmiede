@@ -108,9 +108,9 @@ export const orderController = {
     }
   },
 
-  async lookupByNumber(req: { body: { eventId: string; orderNumber: number; lastName?: string } }, res: Response, next: NextFunction) {
+  async lookupByNumber(req: { body: { eventId: string; orderNumber: number } }, res: Response, next: NextFunction) {
     try {
-      const order = await orderService.lookupByNumber(req.body.eventId, req.body.orderNumber, req.body.lastName);
+      const order = await orderService.lookupByNumber(req.body.eventId, req.body.orderNumber);
       res.json(order);
     } catch (err) {
       next(err);
