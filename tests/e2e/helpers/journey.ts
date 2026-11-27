@@ -231,7 +231,7 @@ export async function confirmPickup(
       (res) => res.url().includes('/staff/orders/lookup') && res.request().method() === 'POST',
       { timeout: 15_000 },
     );
-    await page.getByRole('button', { name: /abholnummer hinzufügen/i }).click();
+    await page.getByRole('button', { name: /^nummer hinzufügen$/i }).click();
     const response = await lookupResponse;
     if (!response.ok()) {
       const alertText = (await page.locator('[role="alert"]').first().textContent())?.trim() ?? '';

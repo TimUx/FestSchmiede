@@ -224,7 +224,7 @@ export function AbholungPage() {
               variant="contained"
               onClick={() => void handleAdd()}
               disabled={busy || !pickupReady || parseOrderNumbers(orderNumber).length === 0}
-              aria-label="Abholnummer hinzufügen"
+              aria-label="Nummer hinzufügen"
               sx={{ ...touchIconButtonSx, minWidth: 72, minHeight: 72, width: 72, height: 72, flexShrink: 0 }}
             >
               {loading ? <CircularProgress size={28} color="inherit" /> : <AddIcon sx={{ fontSize: 36 }} />}
