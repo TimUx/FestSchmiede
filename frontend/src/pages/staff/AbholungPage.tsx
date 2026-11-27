@@ -74,22 +74,32 @@ export function AbholungPage() {
   useEffect(() => clearResetTimer, []);
 
   const pickupReady = Boolean(selectedEventId && isPickupOrderable(selectedEventId));
+  const busy = loading || confirming;
+
+  /** Neue Eingabe nach abgeschlossener Abholung beginnt eine neue Liste. */
+  const startNewListIfDone = () => {
+    if (!done) return;
+    clearResetTimer();
+    setOrders([]);
+    setErrors([]);
+    setDone(false);
+  };
+
+  const handleNumberChange = (value: string) => {
+    startNewListIfDone();
+    setOrderNumber(value);
+  };
   const readyOrders = orders.filter((o) => o.status === 'READY');
   const total = orders.reduce((sum, o) => sum + o.totalPrice, 0);
 
   const handleAdd = async () => {
-    if (!token || !pickupReady) return;
+    if (!token || !pickupReady || busy) return;
     const numbers = parseOrderNumbers(orderNumber);
     if (numbers.length === 0) return;
 
-    // Nach einer abgeschlossenen Abholung beginnt eine neue Liste.
-    const base = done ? [] : orders;
-    if (done) {
-      clearResetTimer();
-      setDone(false);
-    }
-
-    const toFetch = numbers.filter((n) => !base.some((o) => o.orderNumber === n));
+    startNewListIfDone();
+    const known = done ? [] : orders;
+    const toFetch = numbers.filter((n) => !known.some((o) => o.orderNumber === n));
     setLoading(true);
     setErrors([]);
     const results = await Promise.allSettled(
@@ -105,7 +115,7 @@ export function AbholungPage() {
         failed.push(`Nr. ${toFetch[i]}: ${reason}`);
       }
     });
-    setOrders([...base, ...found.filter((o) => !base.some((b) => b.id === o.id))]);
+    setOrders((prev) => [...prev, ...found.filter((o) => !prev.some((p) => p.id === o.id))]);
     setErrors(failed);
     setOrderNumber('');
     setLoading(false);
@@ -116,7 +126,7 @@ export function AbholungPage() {
   };
 
   const handleConfirmPickup = async (targets: Order[]) => {
-    if (!token || targets.length === 0) return;
+    if (!token || targets.length === 0 || busy) return;
     setConfirming(true);
     setErrors([]);
     const results = await Promise.allSettled(
@@ -132,8 +142,10 @@ export function AbholungPage() {
         failed.push(`Nr. ${targets[i].displayNumber}: ${reason}`);
       }
     });
+    // Während der Bestätigung ist Hinzufügen gesperrt; `orders` entspricht daher
+    // dem aktuellen Stand. Das funktionale Update hält die Liste trotzdem konsistent.
     const next = orders.map((o) => updatedById.get(o.id) ?? o);
-    setOrders(next);
+    setOrders((prev) => prev.map((o) => updatedById.get(o.id) ?? o));
     setErrors(failed);
     setConfirming(false);
 
@@ -198,7 +210,7 @@ export function AbholungPage() {
             <TextField
               label="Abholnummer"
               value={orderNumber}
-              onChange={(e) => setOrderNumber(e.target.value)}
+              onChange={(e) => handleNumberChange(e.target.value)}
               placeholder="z.B. 042"
               fullWidth
               autoFocus
@@ -211,14 +223,14 @@ export function AbholungPage() {
             <Button
               variant="contained"
               onClick={() => void handleAdd()}
-              disabled={loading || !pickupReady || parseOrderNumbers(orderNumber).length === 0}
+              disabled={busy || !pickupReady || parseOrderNumbers(orderNumber).length === 0}
               aria-label="Abholnummer hinzufügen"
               sx={{ ...touchIconButtonSx, minWidth: 72, minHeight: 72, width: 72, height: 72, flexShrink: 0 }}
             >
               {loading ? <CircularProgress size={28} color="inherit" /> : <AddIcon sx={{ fontSize: 36 }} />}
             </Button>
           </Stack>
-          <Numpad value={orderNumber} onChange={setOrderNumber} />
+          <Numpad value={orderNumber} onChange={handleNumberChange} />
         </Stack>
       </Paper>
 
@@ -236,7 +248,7 @@ export function AbholungPage() {
                   <IconButton
                     aria-label={`Bestellung ${order.displayNumber} entfernen`}
                     onClick={() => removeOrder(order.id)}
-                    disabled={confirming}
+                    disabled={busy}
                     sx={{ position: 'absolute', top: 8, right: 8 }}
                   >
                     <CloseIcon />
@@ -298,7 +310,7 @@ export function AbholungPage() {
                     color="success"
                     fullWidth
                     onClick={() => void handleConfirmPickup([order])}
-                    disabled={confirming}
+                    disabled={busy}
                     startIcon={<DoneAllIcon />}
                     sx={{ minHeight: 56, fontSize: '1.1rem' }}
                   >
@@ -340,7 +352,7 @@ export function AbholungPage() {
                 color="success"
                 fullWidth
                 onClick={() => void handleConfirmPickup(readyOrders)}
-                disabled={confirming}
+                disabled={busy}
                 sx={{
                   ...touchPrimaryButtonSx,
                   minHeight: 80,
@@ -368,7 +380,7 @@ export function AbholungPage() {
                 variant="text"
                 fullWidth
                 onClick={resetForNext}
-                disabled={confirming}
+                disabled={busy}
                 sx={{ mt: readyOrders.length > 0 ? 1.5 : 0, minHeight: 48 }}
               >
                 Liste leeren

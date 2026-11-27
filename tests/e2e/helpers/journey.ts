@@ -205,12 +205,16 @@ async function enterPickupNumber(page: Page, orderNumber: number): Promise<void>
   await expect(page.getByLabel('Abholnummer')).toHaveValue(String(orderNumber));
 }
 
+/**
+ * Erfasst eine oder mehrere Abholnummern an der Abholstation und bestätigt alle
+ * gemeinsam. Ein Nachname wird nicht eingegeben; ist `customerLastName` gesetzt,
+ * muss der Kundenname zur Kontrolle in der Bestellkarte sichtbar sein.
+ */
 export async function confirmPickup(
   page: Page,
-  order: { orderNumber: number; lastName?: string; eventName?: string }
+  orders: Array<{ orderNumber: number; customerLastName?: string }>,
+  eventName = 'Sommerfest Haupttag',
 ): Promise<void> {
-  const eventName = order.eventName ?? 'Sommerfest Haupttag';
-
   await expect(page.getByLabel('Abholnummer')).toBeEnabled({ timeout: 15_000 });
 
   const eventSelect = page.getByRole('combobox', { name: /veranstaltung/i }).first();
@@ -220,32 +224,34 @@ export async function confirmPickup(
   }
   await expect(eventSelect).toContainText(eventName);
 
-  await enterPickupNumber(page, order.orderNumber);
-  const lastNameField = page.getByLabel(/nachname \(optional/i);
-  if (order.lastName) {
-    await lastNameField.fill(order.lastName);
-  } else {
-    await lastNameField.clear();
-  }
+  for (const order of orders) {
+    await enterPickupNumber(page, order.orderNumber);
 
-  const lookupResponse = page.waitForResponse(
-    (res) => res.url().includes('/staff/orders/lookup') && res.request().method() === 'POST',
-    { timeout: 15_000 },
-  );
-  await page.getByRole('button', { name: /^suchen$/i }).click();
-  const response = await lookupResponse;
-  if (!response.ok()) {
-    const alertText = (await page.locator('[role="alert"]').first().textContent())?.trim() ?? '';
-    const payload = response.request().postDataJSON() as Record<string, unknown> | undefined;
-    throw new Error(
-      `Abholung-Suche fehlgeschlagen (${response.status()}): ${alertText || await response.text()}`
-      + (payload ? ` · Payload: ${JSON.stringify(payload)}` : ''),
+    const lookupResponse = page.waitForResponse(
+      (res) => res.url().includes('/staff/orders/lookup') && res.request().method() === 'POST',
+      { timeout: 15_000 },
     );
+    await page.getByRole('button', { name: /abholnummer hinzufügen/i }).click();
+    const response = await lookupResponse;
+    if (!response.ok()) {
+      const alertText = (await page.locator('[role="alert"]').first().textContent())?.trim() ?? '';
+      const payload = response.request().postDataJSON() as Record<string, unknown> | undefined;
+      throw new Error(
+        `Abholung-Suche fehlgeschlagen (${response.status()}): ${alertText || await response.text()}`
+        + (payload ? ` · Payload: ${JSON.stringify(payload)}` : ''),
+      );
+    }
+    if (order.customerLastName) {
+      await expect(page.getByText(order.customerLastName).first()).toBeVisible({ timeout: 15_000 });
+    }
   }
 
-  await expect(page.getByRole('button', { name: /abholung bestätigen/i })).toBeVisible({ timeout: 15_000 });
-  await page.getByRole('button', { name: /abholung bestätigen/i }).click();
-  await expect(page.getByText(/abholung bestätigt/i)).toBeVisible({ timeout: 15_000 });
+  const confirmButton = orders.length > 1
+    ? page.getByRole('button', { name: new RegExp(`alle ${orders.length} abholbereiten bestätigen`, 'i') })
+    : page.getByRole('button', { name: /^abholung bestätigen$/i });
+  await expect(confirmButton).toBeVisible({ timeout: 15_000 });
+  await confirmButton.click();
+  await expect(page.getByText(/abholung bestätigt – formular wird zurückgesetzt/i)).toBeVisible({ timeout: 15_000 });
 }
 
 export async function deletePlatformTenantFromDetail(page: Page): Promise<void> {

@@ -261,8 +261,12 @@ test.describe('FestSchmiede Nutzerreise (End-to-End)', () => {
     await selectStaffEvent(page, 'Sommerfest Haupttag');
     await expect(page.getByLabel('Abholnummer')).toBeEnabled({ timeout: 15_000 });
 
-    await confirmPickup(page, { orderNumber: state.onlineOrderNum, lastName: state.onlineCustomerLastName });
-    await confirmPickup(page, { orderNumber: state.cashierOrderNum });
+    // Beide Abholnummern gemeinsam erfassen (z. B. eine Person holt für andere mit ab).
+    // Bei der Online-Bestellung wird kein Nachname eingegeben, sondern der angezeigte Name kontrolliert.
+    await confirmPickup(page, [
+      { orderNumber: state.onlineOrderNum, customerLastName: state.onlineCustomerLastName },
+      { orderNumber: state.cashierOrderNum },
+    ]);
   });
 
   test('12 · Mandant DSGVO-konform löschen (Plattform)', async () => {
